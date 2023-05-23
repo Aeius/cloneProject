@@ -1,0 +1,209 @@
+
+<!DOCTYPE html>
+<html lang="ko" class="leaf">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>CheckPay</title>
+<meta http-equiv="Cache-Control" content="No-Cache">
+<meta http-equiv="Pragma" content="No-Cache">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<!--<meta name="title" content="">-->
+<meta name="description" content="">
+<!--<meta name="keywords" content="">-->
+<!-- The Open Graph protocol -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="">
+<meta property="og:description" content="">
+<meta property="og:url" content="">
+<meta property="og:image" content=""><!-- [D]리얼경로로 변경하세요 -->
+<!-- //The Open Graph protocol -->
+<link rel="SHORTCUT ICON" href=""><!-- [D]리얼경로로 변경하세요 -->
+<link rel="stylesheet" type="text/css" href="../css/jquery-ui.min.css">
+<link rel="stylesheet" type="text/css" href="../css/reset.css">
+<link rel="stylesheet" type="text/css" href="../css/content.css">
+<link rel="stylesheet" type="text/css" href="../css/theme_checkpay.css">
+<script type="text/javascript" src="../js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="../js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="../js/jquery.ui.touch-punch.min.js"></script>
+<script type="text/javascript" src="../js/slide_slick.js"></script>
+<script type="text/javascript" src="../js/publishing.ui.library.1.0.0.js"></script>
+<script type="text/javascript" src="../js/cmd.js"></script>
+<script>
+    $(function(){
+		var listTit;
+		var asList;
+		var accItem;
+		var tBalAmount=0;
+		var member_id=window.location.pathname.replace('/bank/detail/','');
+		console.log(member_id);
+        $.ajax({
+            // url:'http://localhost:8080/api/member/1',
+            // url:'http://192.168.240.208:8081/checkpay/api/member/1',
+            url:'http://192.168.240.208:8081/api/bank/memberact/'+window.location.pathname.replace('/bank_jquery/',''),
+			// url:'http://localhost:8080/api/bank/memberact/'+window.location.pathname.replace('/bank/',''),
+            type : 'get',
+            success:function(result){
+                // console.log(result);
+				//member_account_list에서 해당 유저 계좌상품 이름과 갯수 가지고 오기
+				listTit=function (prod_name,prod_cnt){//변수 받아서 아래 입출금, 숫자 바꾸기
+					var listTit_Html="";
+					listTit_Html+="<div class='listTit'>";
+					listTit_Html+="<h3>"+prod_name+"<em class='pointColor'>"+prod_cnt+"</em></h3>";//api값에 따라 변동
+					listTit_Html+="</div>";
+					$('.asGroup').append(listTit_Html);
+					
+				};
+				//account_type 1001 입출금
+				//예적금 1002, 1003
+				//balance_amt는 각 계좌 금액, 이를 바탕으로 합한 총합을 총 계좌 금액으로
+				//org_code로 이미지 적용하기
+				//org_name으로 alt에 적용
+				//prod_name 상품명 적용
+				
+				//해당 상품 상세 정보
+				// asList=function(ellipsis,orgName,amount,btnTransfer_boolean,amt_error,imgname){
+				asList=function(apiVarList){
+					var asList_Html="";
+					var accItem_Html="";
+					//accItem
+					
+					for(list of apiVarList){
+						console.log(list.account_num);
+						accItem_Html+="<div class='accItem ableTrf'>";
+						accItem_Html+="<a href='/detail/'"+list.account_num+">";
+						accItem_Html+="<div class='im'>";
+						accItem_Html+="<img src='../img/bank/"+list.org_code+".png' alt="+list.org_name+">";
+						accItem_Html+="</div>";
+						accItem_Html+="<div class='tx'>";
+							
+						// if(amt_error) {
+						if(list.is_consent) {
+							accItem_Html+="<p class='prdName'><span class='ellipsis'><span class='orgName'></span>"+list.prod_name+"</span></p>";
+						}else {
+							accItem_Html+="<p class='prdName'><span class='error'><span class='blind'>오류</span></span><span class='ellipsis'><span class='orgName'></span>"+list.prod_name+"</span></p>";
+						}
+						
+						accItem_Html+="<p class='amount'><em>"+Number(list.balance_amt).toLocaleString()+"</em>원</p>";
+						accItem_Html+="</div>";
+						accItem_Html+="</a>";
+						if(list.account_type==1001)	{//입출금 통장인지 아닌지 판별하는 불린타입의 변수
+							accItem_Html+="<button href='#'' class='btnTransfer'>송금</button>";
+						}
+						accItem_Html+="</div>";
+						parseInt(list.account_type,10);
+						if(list.account_type>3000){
+							tBalAmount-=list.balance_amt;
+						}
+						else{
+							tBalAmount+=list.balance_amt;
+						}
+					}
+
+					//asList
+					asList_Html+="<div class='asList'>";
+					// for(t){
+
+					// }
+					asList_Html+=accItem_Html;
+					asList_Html+="</div>";
+					$('.asGroup').append(asList_Html);
+				}
+
+				var listTit_num=0;
+				var listTit_first=0;
+				var apiVarList1=[];
+				var apiVarList2=[];
+				var apiVarList3=[];
+				for(list of result){
+					parseInt(list.account_type,10);
+					if(list.account_type==1001){
+						//console.log(list);
+						apiVarList1.push(list);
+					}
+					else if(list.account_type==1002 || list.account_type==1003){
+						//console.log(list);
+						apiVarList2.push(list);
+					}
+					else if(list.account_type>3000){
+						//console.log(list);
+						apiVarList3.push(list);
+					}
+				}
+				// console.log(apiVarList4);
+				// console.log(apiVarList4.length);
+				listTit('입출금 ', apiVarList1.length);
+				asList(apiVarList1);
+				listTit('예적금 ', apiVarList2.length);
+				asList(apiVarList2);
+				listTit('대출 ', apiVarList3.length);
+				asList(apiVarList3);
+				//총 계좌 잔액
+				var tBalAmount_Html="";
+				tBalAmount_Html+="<p class='tBalAmount'><em class='amount'>"+Number(tBalAmount).toLocaleString()+"</em>원</p>";// 금액에 api에서 계산해온 값 넣기
+				$('.tBalance').append(tBalAmount_Html);
+            }
+        });
+
+    });
+</script>
+</head>
+
+<body>
+
+<!-- wrap -->
+<div class="wrap">
+
+	<!-- header -->
+	<div class="header">
+		<div class="header_inn">
+			<div class="left">
+				<a href="#none" class="btnBack"><span class="blind">Back</span></a>
+			</div>
+			<div class="right">
+                <a href="#none" class="btnClose"><span class="blind">close</span></a>
+			</div>
+		</div>
+	</div>
+	<!-- //header -->
+
+	<!-- container -->
+	<div class="container">
+		<div class="content">
+
+			<div class="tBalance">
+				<h3 class="tBaltit">총 계좌 잔액<a href="#layer1_short" class="btn_open_layer_pop btn_more_ask" role="button"><span class="ico_ask type_gray"><em class="blind">더보기</em></span></a></h3>
+			</div>
+			<div class="asGroup">
+				
+			</div>
+			<div class="btn_wrap">
+				<div class="btnGroup type2">
+					<p><a href="#none" class="btnBl1">계좌 추가</a></p>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- //container -->
+
+</div>
+<!-- //wrap -->
+<!-- [S] layer_popup type1 A타입 짧은문구, 총 계좌 잔액 -->
+<div id="layer1_short" class="layer_popup type1 short" role="dialog" tabindex="-1" aria-hidden="true"><!-- 2021-09-08 A타입 짧은문구, 클래스 'short' 추가 -->
+	<div class="layer_position">
+		<div class="layer_inner">
+			<div class="layer_tit">
+				<strong class="tit">총 계좌 잔액</strong>
+				<button type="button" class="js_pop_close btn_close"><span class="blind">닫기</span></button>
+			</div>
+			<div class="layer_cont">
+				<div class="msg_box">
+					입출금 잔액 + 예적금 잔액 + IRP평가금액 + 펀드신탁 평가금액<br>(외화 결제내역 제외)
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- [E] layer_popup type1 A타입 짧은문구, 총 계좌 잔액 -->
+</body>
+</html>

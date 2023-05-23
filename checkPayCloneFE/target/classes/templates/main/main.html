@@ -1,0 +1,1392 @@
+﻿<!DOCTYPE html>
+<html lang="ko" class="leaf">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport"
+		content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+	<title>CheckPay</title>
+	<meta http-equiv="Cache-Control" content="No-Cache">
+	<meta http-equiv="Pragma" content="No-Cache">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<!--<meta name="title" content="">-->
+	<meta name="description" content="">
+	<!--<meta name="keywords" content="">-->
+	<!-- The Open Graph protocol -->
+	<meta property="og:type" content="website">
+	<meta property="og:title" content="">
+	<meta property="og:description" content="">
+	<meta property="og:url" content="">
+	<meta property="og:image" content=""><!-- [D]리얼경로로 변경하세요 -->
+	<!-- //The Open Graph protocol -->
+	<link rel="SHORTCUT ICON" href=""><!-- [D]리얼경로로 변경하세요 -->
+	<link rel="stylesheet" type="text/css" href="../css/jquery-ui.min.css">
+	<link rel="stylesheet" type="text/css" href="../css/reset.css">
+	<link rel="stylesheet" type="text/css" href="../css/content.css">
+	<link rel="stylesheet" type="text/css" href="../css/theme_checkpay.css">
+	<script type="text/javascript" src="../js/jquery-1.8.3.min.js"></script>
+	<script type="text/javascript" src="../js/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="../js/jquery.ui.touch-punch.min.js"></script>
+	<script type="text/javascript" src="../js/slide_slick.js"></script>
+	<script type="text/javascript" src="../js/publishing.ui.library.1.0.0.js"></script>
+	<script type="text/javascript" src="../js/cmd.js"></script>
+	<script src="../js/common.js"></script>
+	<!-- thymeleaf -->
+	<html xmlns:th="http://www.thymeleaf.org">
+
+	<!-- [S] chart -->
+	<script src="../js/highcharts/highcharts.js"></script>
+	<script src="../js/highcharts/modules/exporting.js"></script>
+	<script src="../js/highcharts/modules/export-data.js"></script>
+	<!-- [E] chart -->
+</head>
+
+<th:block th:with="
+	bank1000Size=${bankAccList1000.size},
+	bank2000Size=${bankAccList2000.size},
+	bank3000Size=${bankAccList3000.size},
+	bankIrpListSize=${bankIrpList.size},
+	cardListSize=${cardIdList.size},
+	cardloanSize=${cardloanList.size},
+	capitalSize=${capitalList.size+capitalForignList.size},
+	capforsize=${capitalForignList.size},
+	efinList_size=${efinList.size},
+	investListSize=${investList.size},
+	bank1000Val=${bank1000Size}==0?0:${#aggregates.sum(bankAccList1000.?[currency_code=='원'].![balance_amt])},
+	bank2000Val=${bank2000Size}==0?0:${#aggregates.sum(bankAccList2000.?[currency_code=='원'].![balance_amt])},
+	bank3000Val=${bank3000Size}==0?0:${#aggregates.sum(bankAccList3000.?[currency_code=='원'].![balance_amt])},
+	bankIrpListVal=${bankIrpListSize}==0?0:${#aggregates.sum(bankIrpList.![eval_amt])},
+	cardVal=${cardListSize}==0?0:${#aggregates.sum(cardIdList.![price_sum])},
+	cardLongVal=${cardloanSize}==0?0:${#aggregates.sum(cardloanList.![balance_amt])},
+	efinList_val=${efinList_size}==0?0:${#aggregates.sum(efinList.?[currency_code=='KRW'].![total_balance_amt])},
+	investListVal=${investListSize}==0?0:${#aggregates.sum(investList.?[currency_code=='원'].![eval_amt])}
+	
+">
+<body>
+	<!-- wrap -->
+	<div class="wrap">
+		<!-- header -->
+		<div class="header">
+			<!-- nav -->
+			<div class="nav">
+				<div class="menu">
+					<ul class="menu_inn">
+						<li class="item home on"><a  class="link"><span class="tx">나의 자산</span></a></li>
+						<!-- 활성화일때 클래스 'on'추가 -->
+						<li class="item calendar"><a href="../calender" class="link"><span class="tx">캘린더</span></a></li>
+						<li class="item setup"><a href="../mypage/" class="link"><span class="tx">마이페이지</span></a></li>
+					</ul>
+				</div>
+			</div>
+			<!-- //nav -->
+			<!-- <div class="header_inn">
+         <div class="left">
+            <a  class="btnBack"><span class="blind">Back</span></a>
+         </div>
+         <div class="center">
+            <h2 class="tit_h2">자산 연동하기</h2>
+         </div>
+         <div class="right">
+            <a  class="btnBack"><span class="blind">Back</span></a>
+         </div>
+      </div> -->
+		</div>
+		<!-- //header -->
+
+		<!-- container -->
+		<div class="container">
+			<div class="content">
+
+				<div class="wrap_time_remind">
+					<h2 class="tit_h2 none_head"><span>My자산</span></h2>
+					<p class="time_remind" th:if="1!=1">
+						<span class="time">2분전</span><a href="#" class="btnRef" role="button"><span
+								class="blind">새로고침</span></a><!-- 새로고침중 일때 class에 ing 추가 -->
+					</p>
+				</div>
+
+				<!-- <div class="topErrPop">
+                <p class="tx">신한은행 업데이트 오류입니다. <br>
+                    잠시 후 다시 업데이트해 주세요.</p>
+            </div> -->
+
+				<!--             [S] 슬라이드 배너 타입 등록전 메인 -->
+               <th:block th:with="isExsist=${bank1000Size+bankIrpListSize+bank3000Size+cardListSize+cardloanSize+capitalSize+investListSize}">
+            <div class="wrap_slider type_banner" th:if="${isExsist}==0">
+                <div class="slider_container">
+                    <div class="slider">
+                        <div class="asset_noti ico_04">
+                            <h2 class="tit_h2">
+                                모든 자산을 연결하고<br>
+                                자산현황을
+                                확인하세요!
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+<!--             [E] 슬라이드 배너 타입 등록 메인 -->
+            
+<!--             [S] 슬라이드 배너 타입 등록후 메인 -->
+            <div class="wrap_slider type_banner" th:if="${isExsist}!=0">
+               <div class="slider_container">
+                  <div class="slider">
+                     <div class="asset_noti ico_01" th:with="amt=${bank1000Val+bank2000Val+bankIrpListVal-bank3000Val-cardVal-cardLongVal-capitalKrwSum+efinList_val+investListVal}">
+                            <h2 class="tit_h2">
+                        <h2 class="tit_h2">
+                                  <span id="member_name"></span>님
+                                <span class="tx_s">의</span> 순자산 현황<br>
+                                <span class="asset"><span class="highlighter"><em class="num" th:utext="${#numbers.formatInteger(amt, 0, 'COMMA')}">336,000,876</em>원</span></span>
+                            </h2>
+                            <p class="compare" th:if="${amt-assetSum}>0">지난달 오늘보다 <span class="num" th:utext="${#numbers.formatInteger(amt-assetSum, 0, 'COMMA')}">1,000,000</span>원 증가</p>
+                            <p class="compare" th:if="${amt-assetSum}<0">지난달 오늘보다 <span class="num" th:utext="${#numbers.formatInteger(assetSum-amt, 0, 'COMMA')}">1,000,000</span>원 감소</p>
+                            </h2>
+                        </div>
+                  </div>
+               </div>
+            </div>
+            </th:block>
+<!--             [E] 슬라이드 배너 타입 등록후 메인 -->
+
+
+				<!-- [S] 2022-02-15 공지영역 수정 -->
+				<div class="noti_box">
+					<div class="inner box_bg">
+						<div class="tit pointColor">공지</div>
+						<div class="cont">
+							<div class="slider_container">
+								
+								<!-- 2022-02-21 span > a태그로 변경 -->
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- [E] 2022-02-15 공지영역 수정 -->
+
+				<!-- [S] 자산 현황 -->
+				<div class="wrap_assets" th:with="asset=${bank1000Val+bank2000Val+bankIrpListVal-bank3000Val-cardVal-capitalKrwSum-cardLongVal-efinList_val+investListVal+investListVal}" >
+					<div class="asGroup type_chart" th:with="asset_check=${bank1000Val+bank2000Val+bankIrpListVal+bank3000Val+cardVal+efinList_val+cardLongVal+capitalKrwSum+investListVal+investListVal}"
+					th:style="${(asset == 0 && asset_check ==0)	?'display:none':'display:block'}">
+						<div class="listTit" >
+							<div class="asset_link">
+								<h3>
+									자산 현황<a href="#layer1_short" class="btn_open_layer_pop btn_more_ask"
+										role="button"><span class="ico_ask type_gray"><em
+												class="blind">툴팁열기</em></span></a>
+								</h3>
+								<a  class="assets" th:if="false"><span class="tx"><em class="blind">자산
+											현황</em>더보기</span></a>
+							</div>
+						</div>
+						<div class="asList">
+							<!-- [S] 차트 파이 타입 -->
+							<div class="wrap_chart type_main" >
+								<figure class="highcharts-figure" role="img" aria-labelledby="chartLabelId"
+									aria-describedby="chartDescId">
+									<div id="chart_pie_main"></div>
+								<x/figure>
+								<!-- 접근성 -->
+								<div class="chart_disable blind">
+									<p id="chartLabelId">종목별 자산현황</p>
+									<table class="info_tbl" id="chartDescId">
+										<caption>대출, 카드대금, 현금자산의 자산현황</caption>
+										<colgroup>
+											<col />
+											<col />
+										</colgroup>
+										<thead>
+											<tr>
+												<th scope="col">종목</th>
+												<th scope="col">비율</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+												<th scope="row">
+													<div>대출</div>
+												</th>
+												<td>
+													<div><span class="rate_loan"></span></div>
+												</td>
+											</tr>
+											<tr>
+												<th scope="row">
+													<div>카드대금</div>
+												</th>
+												<td>
+													<div><span class="rate_card"></span></div>
+												</td>
+											</tr>
+											<tr>
+												<th scope="row">
+													<div>현금자산</div>
+												</th>
+												<td>
+													<div><span class="rate_acc"></span></div>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+							<!-- [E] 차트 파이 타입 -->
+							<!-- [S] 차트 자산 영역 -->
+							<div class="wrap_ratio" th:if="1!=1">
+								<div class="inner">
+									<h4 class="tit_h4">자산비율</h4>
+									<div class="graph">
+										<p class="acc"><span class="blind"></span></p>
+										<!-- 자산비율 width, 하단 js(차트 자산 영역) -->
+										<p class="dept"><span class="blind"></span></p>
+										<!-- 부채비율 width, 하단 js(차트 자산 영역) -->
+									</div>
+									<div class="asset">
+										<p class="acc">
+											<span class="tit">자산<em class="num">3</em></span>
+										</p>
+										<p class="debt">
+											<span class="tit">부채<em class="num">7</em></span>
+										</p>
+									</div>
+								</div>
+							</div>
+							<!-- [E] 차트 자산 영역 -->
+						</div>
+					</div>
+				</div>
+				<!-- [E] 자산 현황 -->
+				
+				<!-- [S] 외화계좌만 존재시 -->
+				<div class="wrap_assets" th:if="1!=1">
+					<div class="asGroup">
+						<div class="listTit">
+							<div class="asset_link">
+								<a >
+									<h3>은행<em class="pointColor">1</em></h3>
+								</a>
+								<p class="assets agChkItem">
+									<span class="num">0</span>원<a  class="btnFolding red show"
+										data-target="#asList_00" aria-expanded="true"><span class="blind">닫힘</span></a>
+								</p>
+							</div>
+						</div>
+						<div id="asList_00" class="asList">
+							<div class="msgResult">
+								<p>불러올 내역이 없습니다</p>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- [E] 외화계좌만 존재시 -->
+
+				<!-- [S] 메인 계좌 자산 -->
+				<div class="wrap_assets" id="mainbank">
+					<div class="asGroup" th:if="${bank1000Size}!=0">
+						<div class="listTit">
+							<div class="asset_link">
+								<a th:href="@{../bank/}">
+									<h3
+										th:utext="'은행<em class=pointColor>'+${bank1000Size+bankIrpListSize+bank3000Size}+'</em>'">
+										<em>은행<em class="pointColor">12</em></h3>
+								</a>
+								<p class="assets agChkItem" th:with="amt=${bank1000Val+bank2000Val+bankIrpListVal-bank3000Val}">
+									<span class="num"
+										th:utext="${#numbers.formatInteger(amt, 0, 'COMMA')}">100,590,000</span>원<a  class="btnFolding red show" data-target="#asList_01" aria-expanded="true"><span class="blind">닫힘</span></a>
+								</p>
+							</div>
+						</div>
+						<div id="asList_01" class="asList">
+							<!-- 입출금 / 예적금 -->
+							<div class="list_cate" th:if="${bank1000Size}!=0"><span class="cate">입출금 /
+									예적금</span></div>
+							<!-- [S] 슬라이드 목록 타입 -->
+							<div class="wrap_slider type_acc" th:if="${bank1000Size}!=0">
+								<div class="slider_container">
+									<!-- slider 1 -->
+									<div class="slider" th:each="abc,cnt : ${bankAccList1000}" th:if="${cnt.index}%3==0">
+										<div class="sliderTx">
+											<!-- item1 -->
+											<div class="accItem" th:each="bankList, accCnt : ${bankAccList1000}"
+												th:if="${accCnt.index}>=${cnt.index} and ${accCnt.index}<(${cnt.index}+3)">
+												<!-- 이체버튼 있을 시 클래스 'ableTrf' 추가 -->
+												<a  th:onclick="javascript:detailmove('/bank/deposittrans','org_code',/*[[${bankList.org_code}]]*/null, 'account_num',/*[[${bankList.account_num}]]*/null)">
+													<div class="im">
+														<img th:src="'../img/bank/'+${bankList.org_code}+'.png'"
+															src="../img/bank/D1AABJ0000.png"
+															th:alt="${bankList.org_name}" alt="국민은행">
+													</div>
+													<div class="tx" th:with="currency_code=${bankList.currency_code}==null?'원':${bankList.currency_code}">
+														<p class="prdName"><span
+																class="ellipsis">[[${bankList.prod_name}]]</span></p>
+														<p class="amount"
+															th:utext="'<em>'+${#numbers.formatInteger(bankList.balance_amt, 0, 'COMMA')}+'</em>'+${currency_code}">
+															<em>359,153,000</em>원</p>
+													</div>
+												</a>
+												<!--                                             <button href="#" class="btnTransfer">송금</button> -->
+											</div>
+											<!-- // item1 -->
+										</div>
+									</div>
+									<!-- // slider 1 -->
+								</div>
+							</div>
+
+							<!-- 신탁 / 펀드 / 연금 -->
+							<div class="list_cate" th:if="${bankIrpListSize}!=0"><span class="cate">신탁 / 펀드 /
+									연금</span></div>
+							<!-- [S] 슬라이드 목록 타입 -->
+							<div class="wrap_slider type_acc" th:if="${bankIrpListSize}!=0">
+								<div class="slider_container">
+									<!-- slider 1 -->
+									<div class="slider" th:each="abc,cnt : ${bankIrpList}" th:if="${cnt.index}%3==0"
+										)>
+										<div class="sliderTx">
+											<!-- item1 -->
+											<div class="accItem" th:each="bankList, accCnt : ${bankIrpList}"
+												th:if="${accCnt.index}>=${cnt.index} and ${accCnt.index}<(${cnt.index}+3)">
+												<!-- 펀드 신탁 -->
+												<th:block th:if="${bank2000Size>cnt.index}">
+													<a  th:onclick="javascript:detailmove('/bank/investdetail','org_code',/*[[${bankList.org_code}]]*/null,'account_num', /*[[${bankList.account_num}]]*/null)">
+												</th:block>
+												<!-- 은행 IRP -->
+												<th:block th:if="${bank2000Size<=cnt.index}">
+													<a  th:onclick="javascript:detailmove('/bank/irpdetail','org_code',/*[[${bankList.org_code}]]*/null,'account_num', /*[[${bankList.account_num}]]*/null)">
+												</th:block>
+														<div class="im">
+															<img th:src="'../img/bank/'+${bankList.org_code}+'.png'"
+																src="../img/bank/D1AABJ0000.png"
+																th:alt="${bankList.org_name}" alt="국민은행">
+														</div>
+														<div class="tx" th:with="currency_code=${bankList.currency_code}==null?'원':${bankList.currency_code}">
+															<p class="prdName"><span
+																	class="ellipsis">[[${bankList.prod_name}]]</span></p>
+															<!-- 펀드 신탁 -->
+															<p class="amount" th:if ="${bank2000Size>cnt.index}"
+																th:utext="'<em>'+${#numbers.formatInteger(bankList.balance_amt, 0, 'COMMA')}+'</em>'+${currency_code}">
+																<em>359,153,000</em>원</p>
+															<!-- 은행 IRP -->
+															<p class="amount" th:if ="${bank2000Size<=cnt.index}"
+																th:utext="'<em>'+${#numbers.formatInteger(bankList.eval_amt, 0, 'COMMA')}+'</em>+${currency_code}'">
+																<em>359,153,000</em>원</p>
+														</div>
+												</a>
+												<!--                                             <button href="#" class="btnTransfer">송금</button> -->
+											</div>
+											<!-- // item1 -->
+										</div>
+									</div>
+									<!-- // slider 1 -->
+								</div>
+							</div>
+
+							<!-- 대출 -->
+							<div class="list_cate" th:if="${bank3000Size}!=0"><span class="cate">대출</span></div>
+							<!-- [S] 슬라이드 목록 타입 -->
+							<div class="wrap_slider type_acc" th:if="${bank3000Size}!=0">
+								<div class="slider_container">
+									<!-- slider 1 -->
+									<div class="slider" th:each="abc,cnt : ${bankAccList3000}" th:if="${cnt.index}%3==0"
+										)>
+										<div class="sliderTx">
+											<!-- item1 -->
+											<div class="accItem" th:each="bankList, accCnt : ${bankAccList3000}"
+												th:if="${accCnt.index}>=${cnt.index} and ${accCnt.index}<(${cnt.index}+3)">
+												<!-- 이체버튼 있을 시 클래스 'ableTrf' 추가 -->
+												<a  th:onclick="javascript:detailmove('/bank/bankloandetail','org_code',/*[[${bankList.org_code}]]*/null,'account_num', /*[[${bankList.account_num}]]*/null )">
+													<div class="im">
+														<img th:src="'../img/bank/'+${bankList.org_code}+'.png'"
+															src="../img/bank/D1AABJ0000.png"
+															th:alt="${bankList.org_name}" alt="국민은행">
+													</div>
+													<div class="tx" th:with="currency_code=${bankList.currency_code}==null?'원':${bankList.currency_code}">
+														<p class="prdName"><span
+																class="ellipsis">[[${bankList.prod_name}]]</span></p>
+														<p class="amount"
+															th:utext="'<em>'+${#numbers.formatInteger(bankList.balance_amt, 0, 'COMMA')}+'</em>'+${currency_code}">
+															<em>359,153,000</em>원</p>
+														<p class="deposit">금리 <em class="num" th:utext="${bankList.last_offered_rate}+'%'">30.88%</em></p>
+													</div>
+												</a>
+												<!--                                             <button href="#" class="btnTransfer">송금</button> -->
+											</div>
+											<!-- // item1 -->
+										</div>
+									</div>
+									<!-- // slider 1 -->
+								</div>
+							</div>
+
+							<p class="asList_link"><!-- 2021-11-11 더보기 버튼 추가 -->
+								<a  class="btn_txt"><span>더보기</span></a>
+							</p>
+							<!-- [E] 슬라이드 목록 타입 -->
+						</div>
+					</div>
+					<a  class="asset_link" th:if="${bank1000Size+bankIrpListSize+bank3000Size}==0">
+	                    <h3>은행</h3>
+	                    <p class="asBanner type_acc">
+	                        <span class="tx">다양한 은행 계좌<br>한번에 관리하세요</span>
+	                    </p>
+	                </a>
+				</div>
+				<!-- [E] 메인 계좌 자산 -->
+
+				<!-- [S] 메인 카드 자산 -->
+				<!--   
+					카드 id 은 ${cardList.card_id} 으로 호출하고
+					멤버 id 는 ${id} 하면 가져올 수 있어요
+				-->
+				<div class="wrap_assets" id="maincard">
+					<div class="asGroup" th:if="${cardListSize}!=0">
+						<div class="listTit">
+							<div class="asset_link">
+								<a th:href="@{../card}">
+									<h3 th:utext="'카드<em class=pointColor>'+${cardListSize+cardloanSize}+'</em>'"><em>카드<em
+												class="pointColor">8</em></h3>
+								</a>
+								<p class="assets agChkItem" th:with="price=${#aggregates.sum(cardIdList.![price_sum])}">
+									<span class="num"
+										th:utext="${#numbers.formatInteger(price+cardLongVal, 0, 'COMMA')}">100,590,000</span>원<a
+										 class="btnFolding red show" data-target="#asList_02"
+										aria-expanded="true"><span class="blind">닫힘</span></a>
+								</p>
+							</div>
+						</div>
+						<div id="asList_02" class="asList">
+							<!-- [S] 슬라이드 목록 타입 -->
+							<div class="wrap_slider type_acc">
+								<div class="slider_container">
+									<!-- slider 1 -->
+									<div class="slider" th:each="abc,cnt : ${cardIdList}" th:if="${cnt.index}%3==0" )>
+										<div class="sliderTx">
+											<div class="accItem" th:each="cardList, cardCnt : ${cardIdList}"
+												th:if="${cardCnt.index}>=${cnt.index} and ${cardCnt.index}<(${cnt.index}+3)">
+												<a th:onclick="javascript:detailmove('/card/payinfo/detail','card_id',/*[[${cardList.card_id}]]*/null)">
+													<div class="im card">
+														<img th:src="${cardList.img_uri}!='N' ? ${cardList.img_uri} : '../img/card/'+${cardList.org_code}+'.png'"
+															src="../img/bank/D1AABJ0000.png"
+															 alt="BNK 탑모아 신용카드">
+													</div>
+													<div class="tx">
+														<p class="prdName"><span class="ellipsis"><span class="orgName"
+																	></span>
+																[[${cardList.card_name}]]</span></p>
+														<p class="amount"
+															th:utext="'<em>'+${#numbers.formatInteger(cardList.price_sum, 0, 'COMMA')}+'</em>원'">
+															><em>359,153,000</em>원</p>
+													</div>
+												</a>
+											</div>
+										</div>
+									</div>
+									<!-- // slider 1 -->
+								</div>
+							</div>
+							<!-- 카드 대출 -->
+							<div class="list_cate" th:if="${cardloanSize}!=0"><span class="cate">대출</span></div>
+							<div class="wrap_slider type_acc">
+								<div class="slider_container">
+									<!-- slider 1 -->
+									<div class="slider" th:each="abc,cnt : ${cardloanList}" th:if="${cnt.index}%3==0" )>
+										<div class="sliderTx">
+											<div class="accItem" th:each="cardList, cardCnt : ${cardloanList}"
+												th:if="${cardCnt.index}>=${cnt.index} and ${cardCnt.index}<(${cnt.index}+3)">
+												<!--[S]카드 장기대출-->
+												<th:block th:if="${cardList.isLong}==true">
+												<a th:onclick="javascript:detailmove('/card/loanlong','loan_name',/*[[${cardList.loan_name}]]*/null)">
+													<div class="im card">
+														<img th:src="'../img/bank/'+${cardList.org_code}+'.png'"
+															src="../img/bank/D1AABJ0000.png"
+																alt="BNK 탑모아 신용카드">
+													</div>
+													<div class="tx">
+														<p class="prdName"><span class="ellipsis"><span class="orgName"></span>
+																[[${cardList.loan_name}]]</span></p>
+														<p class="amount" th:utext="'<em>'+${#numbers.formatInteger(cardList.balance_amt, 0, 'COMMA')}+'</em>원'">><em>359,153,000</em>원</p>
+														<p class="deposit">금리 <em class="num" th:utext="${#numbers.formatDecimal(cardList.int_rate,0,2)}+'%'">9.88%</em></p>
+													</div>
+												</a>
+												</th:block>
+												<!--[E]카드 장기대출-->
+												
+												<!--[S]카드 단기대출-->		
+												<th:block th:if="${cardList.isLong}!=true">										
+													<a th:onclick="javascript:detailmove('/card/loanshort','loan_dtime',/*[[${cardList.loan_dtime}]]*/null)">
+													<div class="im card">
+														<img th:src="'../img/bank/'+${cardList.org_code}+'.png'"
+															src="../img/bank/D1AABJ0000.png"
+																alt="BNK 탑모아 신용카드">
+													</div>
+													<div class="tx">
+														<p class="prdName"><span class="ellipsis"><span class="orgName"></span>
+																[[${cardList.descrption}]] 단기 대출</span></p>
+														<p class="amount" th:utext="'<em>'+${#numbers.formatInteger(cardList.balance_amt, 0, 'COMMA')}+'</em>원'">><em>359,153,000</em>원</p>
+														<p class="deposit">금리 <em class="num" th:utext="${cardList.int_rate}+'%'">9.88%</em></p>
+													</div>
+												</a>
+												</th:block>
+												<!--[E]카드 단기대출-->												
+											</div>
+										</div>
+									</div>
+									<!-- // slider 1 -->
+								</div>
+							</div>
+							<!-- [E] 슬라이드 목록 타입 -->
+						</div>
+					</div>
+					<a  class="asset_link" th:if="${cardListSize}==0">
+	                    <h3>카드</h3>
+	                    <p class="asBanner type_card">
+	                        <span class="tx">이번 달 청구내역을<br>모아보세요</span>
+	                    </p>
+	                </a>
+				</div>
+				<!-- [E] 메인 카드 자산 -->
+
+				<!-- [S] 통신 체크페이 2021-12-06 -->
+				<div class="wrap_assets" id="mainphone">
+					<div class="asGroup" th:if="${telecomNameList.size}!=0">
+						<div class="listTit">
+							<div class="asset_link">
+								<a href="/telecom/">
+									<h3>통신<em class="pointColor" th:utext="${telecomNameList.size}"></em></h3>
+								</a>
+								<p class="assets agChkItem">
+									<!--<span class="num">100,590,000</span>원--><a 
+										class="btnFolding red show" data-target="#asList_07_checkpay"
+										aria-expanded="true"><span class="blind">닫힘</span></a>
+								</p>
+							</div>
+						</div>
+						<div id="asList_07_checkpay" class="asList">
+							<!-- [S] 슬라이드 목록 타입 -->
+							<div class="wrap_slider type_acc">
+								<div class="slider_container">
+									<!-- slider 1 -->
+									<div class="slider" th:each="abc,cnt : ${telecomNameList}" th:if="${cnt.index}%3==0">
+										<div class="sliderTx">
+											<div class="accItem" th:each="telecomList,cnt1 : ${telecomNameList}"
+											th:if="${cnt1.index}>=${cnt.index} and ${cnt1.index}<(${cnt.index}+3)"><!-- 변수명,변수값-->
+												<a th:onclick="javascript:detailmove('/telecom/bill','org_name_abb',/*[[${telecomList.key}]]*/null,'charge_date',/*[[${now_time}]]*/null);">
+													<div class="im">
+														<img th:src="'../img/bank/'+${telecomList.value}+'.png'" alt="samsung">
+													</div>
+													<div class="tx">
+														<!-- 2021-12-06 금액제외 클래스 'payId' 추가 -->
+														<p class="prdName payId">
+															<span class="ellipsis">
+																<span
+																	class="orgNo">[[${telecomList.key}]]</span><!-- 2021-11-16 통신 기관명 없을때 노출 -->
+															</span>
+														</p>
+													</div>
+												</a>
+											</div>
+										</div>
+									</div>
+									<!-- // slider 1 -->
+
+								</div>
+							</div>
+							<p class="asList_link"><!-- 2021-11-11 더보기 버튼 추가 -->
+								<a  class="btn_txt"><span>더보기</span></a>
+							</p>
+							<!-- [E] 슬라이드 목록 타입 -->
+						</div>
+					</div>
+					<!-- [S] 통신 연결하기 -->
+					<div class="wrap_assets" th:if="${telecomNameList.size}==0">
+					    <a href="#none" class="asset_link">
+					        <h3>통신</h3>
+					        <p class="asBanner type_com">
+					            <span class="tx">이번달 청구된 통신금액<br>간편하게 확인하세요</span>
+					        </p>
+					    </a>
+					</div>
+					<!-- [E] 통신 연결하기 -->
+				</div>
+				<!-- [E] 통신 체크페이 2021-12-06 -->
+
+				<!-- [S] 선불·페이 -->
+	            <div class="wrap_assets" id="mainpay">
+	                <div class="asGroup" th:if="${efinList_size}!=0">
+	                    <div class="listTit">
+	                        <div class="asset_link">
+	                            <a 
+	                            th:href = @{'../efin/prepaidList'}>
+	                                <h3>선불·페이<em class="pointColor" th:utext="${efinList_size}">8</em></h3>
+	                            </a>
+	                            <p class="assets agChkItem">
+	                                <span class="num" th:utext="${#numbers.formatInteger(efinList_val,0,'COMMA')}">100,590,000</span>원<a  class="btnFolding red show" data-target="#asList_06" aria-expanded="true"><span class="blind">닫힘</span></a>
+	                            </p>
+	                        </div>
+	                    </div>
+	                    <div id="asList_06" class="asList">
+	                        <!-- 선불카드 -->
+								
+	                        <div class="list_cate"><span class="cate">Pay</span></div>
+	                        <!-- [S] 슬라이드 목록 타입 -->
+	                        <div class="wrap_slider type_acc">
+	                            <div class="slider_container">
+	                                <!-- slider 1 -->
+	                                <div class="slider" th:each="abc,cnt : ${efinList}" th:if="${cnt.index}%3==0">
+	                                    <div class="sliderTx">
+	                                        <div class="accItem"
+												th:each="efinList,cnt1 : ${efinList}"
+												th:if="${cnt1.index}>=${cnt.index} and ${cnt1.index}<(${cnt.index}+3)"
+												>
+												<a >
+													<div class="im">
+														<img th:src="'../img/bank/'+${efinList.org_code}+'.png'">
+													</div>
+													<div class="tx">
+														<p class="prdName"><span class="ellipsis"
+																th:utext="${efinList.fob_name}">페이 포인트</span></p>
+														<p class="amount"><em
+																th:utext="${#numbers.formatInteger(efinList.total_balance_amt,0,'COMMA')}">1,000,000</em>원
+														</p>
+													</div>
+												</a>
+											</div>
+	                                    </div>
+	                                </div>
+	                                <!-- // slider 1 -->
+	                            </div>
+	                        </div>
+	                        <p class="asList_link"><!-- 2021-11-11 더보기 버튼 추가 -->
+	                            <a  class="btn_txt"><span>더보기</span></a>
+	                        </p>
+	                        <!-- [E] 슬라이드 목록 타입 -->
+	                    </div>
+	                </div>
+	                <!-- [S] Pay 연결하기 -->
+					<div class="wrap_assets" th:if="${efinList_size}==0">
+					    <a href="#none" class="asset_link">
+					        <h3>Pay</h3>
+					        <p class="asBanner type_pay">
+					            <span class="tx">다양한 Pay 충전금액<br>한번에 관리하세요</span>
+					        </p>
+					    </a>
+					</div>
+					<!-- [E] Pay 연결하기 -->
+	            </div>
+	            <!-- [E] 선불·페이 -->
+
+				<!-- [S] 캐피탈 -->
+				
+            <div class="wrap_assets" id="maincap">
+                <div class="asGroup" th:if="${capitalSize}!=0">
+                    <div class="listTit">
+                        <div class="asset_link">
+                            <a th:href="@{../capital}">
+                                <h3 th:utext="'캐피탈<em class=pointColor>'+${capitalSize}+'</em>'">캐피탈<em class="pointColor">8</em></h3>
+                            </a>
+                            <p class="assets agChkItem">
+                                <span class="num" th:utext="${#numbers.formatInteger(capitalKrwSum, 0, 'COMMA')}">100,590,000</span>원<a  class="btnFolding red show" data-target="#asList_04" aria-expanded="true"><span class="blind">닫힘</span></a>
+                            </p>
+                        </div>
+                    </div>
+                    <div id="asList_04" class="asList">
+                        <!-- [S] 슬라이드 목록 타입 -->
+                        <div class="wrap_slider type_acc" th:if="${capitalSize}!=0" >
+                            <div class="slider_container">
+                                <!-- slider 1 -->
+                                <div class="slider"  th:each="abc,cnt : ${capitalList}" th:if="${cnt.index}%3==0">
+                                    <div class="sliderTx">
+                                        <div class="accItem" th:each="capitalEach, accCnt : ${capitalList}"
+												th:if="${accCnt.index}>=${cnt.index} and ${accCnt.index}<(${cnt.index}+3)">
+                                            <a th:onclick="javascript:detailmove('/capital/loandetail','org_code',/*[[${capitalEach.org_code}]]*/null,'account_num', /*[[${capitalEach.account_num}]]*/null)">
+                                                <div class="im">
+                                                    <img th:src="'../img/bank/'+${capitalEach.org_code}+'.png'" src="../../img/bank/D1AAAH0000.png" th:alt="${capitalEach.org_name}" alt="이런회사는 존재하지 않습니다(철진)">
+                                                </div>
+                                                <div class="tx">
+                                                    <p class="prdName"><span class="ellipsis" th:text="${capitalEach.prod_name}">다이렉트론</span></p>
+                                                    <p class="amount" th:if="${capitalEach.currency_code=='KRW'}" th:utext="'<em>'+${#numbers.formatInteger(capitalEach.balance_amt, 0, 'COMMA')}+'</em>원'"><em>359,153,000</em>원</p>
+                                                    <p class="amount" th:unless="${capitalEach.currency_code=='KRW'}" th:utext="'<em>'+${#numbers.formatInteger(capitalEach.balance_amt, 0, 'COMMA')}+ '</em> '+${capitalEach.currency_code}"><em>359,153,000</em>원</p>
+                                                    <p class="deposit" th:utext="'금리<em>'+${#numbers.formatDecimal(capitalEach.last_offered_rate,0,2)}+'%</em>'">금리<em class="num">9.88%</em></p>
+                                                </div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- // slider 1 -->
+                            </div>
+                        </div>
+                        <p class="asList_link"><!-- 2021-11-11 더보기 버튼 추가 -->
+                            <a  class="btn_txt"><span>더보기</span></a>
+                        </p>
+                        <!-- [E] 슬라이드 목록 타입 -->
+                        <!-- 외화 -->
+							<div class="list_cate" th:if="${capforsize}!=0"><span class="cate">외화</span></div>
+							<!-- [S] 슬라이드 목록 타입 -->
+							<div class="wrap_slider type_acc" th:if="${capforsize}!=0">
+								<div class="slider_container">
+									<!-- slider 1 -->
+									<div class="slider"  th:each="abc,cnt : ${capitalForignList}" th:if="${cnt.index}%3==0">
+	                                    <div class="sliderTx">
+	                                        <div class="accItem" th:each="capitalEach, accCnt : ${capitalForignList}"
+													th:if="${accCnt.index}>=${cnt.index} and ${accCnt.index}<(${cnt.index}+3)">
+	                                            <a th:onclick="javascript:detailmove('/capital/loandetail','org_code',/*[[${capitalEach.org_code}]]*/null,'account_num', /*[[${capitalEach.account_num}]]*/null)">
+	                                                <div class="im">
+	                                                    <img th:src="'../img/bank/'+${capitalEach.org_code}+'.png'" src="../../img/bank/D1AAAH0000.png" th:alt="${capitalEach.org_name}" alt="이런회사는 존재하지 않습니다(철진)">
+	                                                </div>
+	                                                <div class="tx">
+	                                                    <p class="prdName"><span class="ellipsis" th:text="${capitalEach.prod_name}">다이렉트론</span></p>
+	                                                    <p class="amount" th:utext="'<em>'+${#numbers.formatInteger(capitalEach.balance_amt, 0, 'COMMA')}+ '</em> '+${capitalEach.currency_code}"><em>359,153,000</em>원</p>
+	                                                    <p class="deposit" th:utext="'금리<em>'+${capitalEach.last_offered_rate}+'%</em>'">금리<em class="num">9.88%</em></p>
+	                                                </div>
+	                                            </a>
+	                                        </div>
+	                                    </div>
+	                                </div>
+									<!-- // slider 1 -->
+								</div>
+							</div>
+                    </div>
+                    
+                </div>
+                <!-- [S] 캐피탈 연결하기 -->
+				<div class="wrap_assets" th:if="${capitalSize}==0">
+				    <a href="#none" class="asset_link">
+				        <h3>캐피탈</h3>
+				        <p class="asBanner type_loan">
+				            <span class="tx">나의 대출 상품<br>간편하게 확인하세요</span>
+				        </p>
+				    </a>
+				</div>
+				<!-- [E] 캐피탈 연결하기 -->
+            </div>
+            <!-- [E] 캐피탈 -->
+
+				<!-- [S] 증권 체크페이 2021-12-06 -->
+            	<div class="wrap_assets" id="maininvest">
+	                <div class="asGroup" th:if="${investListSize}!=0">
+	                    <div class="listTit">
+	                        <div class="asset_link">
+	                            <a href="/invest">
+	                                <h3>증권<em class="pointColor" th:text="${investListSize}">5</em></h3>
+	                            </a>
+	                            <p class="assets agChkItem">
+	                                <span class="num" th:text="${#numbers.formatInteger(investListVal, 0, 'COMMA')}">100,590,000</span>원<a  class="btnFolding red show" data-target="#asList_03_checkpay" aria-expanded="true"><span class="blind">닫힘</span></a>
+	                            </p>
+	                        </div>
+	                    </div>
+	                    <div id="asList_03_checkpay" class="asList">
+	                        <!-- [S] 슬라이드 목록 타입 -->
+	                        <div class="wrap_slider type_acc" th:if="${investListSize}!=0">
+	                            <div class="slider_container">
+	                                <!-- slider 1 -->
+	                                <div class="slider" th:each="abc,cnt : ${investList}" th:if="${cnt.index}%3==0">
+	                                    <div class="sliderTx">
+	                                        <div class="accItem" th:each="investEach, accCnt : ${investList}" th:if="${accCnt.index}>=${cnt.index} and ${accCnt.index}<(${cnt.index}+3)">
+	                                            <a  class="investDetailMove">
+	                                                <div class="im">
+	                                                    <img th:src="'../img/invest/'+${investEach.org_code}+'.png'" src="../../img/bank/D1AAAH0000.png" alt="bnk">
+	                                                </div>
+	                                                <div class="tx">
+	                                                    <p class="prdName"><span class="ellipsis" th:text="${investEach.prod_name}">일임형ISA</span></p>
+	                                                    <p class="amount" th:utext="'<em>'+${#numbers.formatInteger(investEach.eval_amt, 0, 'COMMA')}+'</em>'+${investEach.currency_code}">><em>359,153,000</em>원</p>
+	                                                    <p class="profit plus" th:if="${investEach.difference>0}")><em class="num">[[${#numbers.formatInteger(investEach.difference, 0, 'COMMA')}]]</em>[[${investEach.currency_code}]]<em class="num">([[${#numbers.formatDecimal(investEach.return_rate,0,2)}]]%)</em></p>
+	                                                    <p class="profit zero" th:if="${investEach.difference==0}")><em class="num">[[${#numbers.formatInteger(investEach.difference, 0, 'COMMA')}]]</em>[[${investEach.currency_code}]]<em class="num">([[${#numbers.formatDecimal(investEach.return_rate,0,2)}]]%)</em></p>
+	                                                    <p class="profit minus" th:if="${investEach.difference<0}")><em class="num">[[${#numbers.formatInteger(investEach.difference, 0, 'COMMA')}]]</em>[[${investEach.currency_code}]]<em class="num">([[${#numbers.formatDecimal(investEach.return_rate,0,2)}]]%)</em></p>
+	                                                </div>
+	                                                <div class="stock_name" style="display: none;">[[${investEach.prod_name}]]</div>
+	                                                <div class="org_code" style="display: none;">[[${investEach.org_code}]]</div>
+	                                                <div class="account_num" style="display: none;">[[${investEach.account_num}]]</div>
+	                                                <div class="profit" style="display: none;">[[${investEach.difference}]]</div>
+	                                                <div class="prod_type" style="display: none;">[[${investEach.prod_type}]]</div>
+	                                                <div class="seq" style="display: none;">[[${investEach.seq}]]</div>
+	                                            </a>
+	                                        </div>
+	                                       
+	                                    </div>
+	                                </div>
+	                                <!-- // slider 1 -->
+	                            </div>
+	                        </div>
+	                        
+	                        <p class="asList_link"><!-- 2021-11-11 더보기 버튼 추가 -->
+	                            <a  class="btn_txt"><span>더보기</span></a>
+	                        </p>
+	                        <!-- [E] 슬라이드 목록 타입 -->
+	                    </div>
+	                </div>
+	                <!-- [S] 증권 연결하기 -->
+				<div class="wrap_assets" th:if="${investListSize}==0">
+				    <a href="#none" class="asset_link">
+				        <h3>증권</h3>
+				        <p class="asBanner type_stock">
+				            <span class="tx">오늘 총 평가금액은<br>얼마일까요?</span>
+				        </p>
+				    </a>
+				</div>
+				<!-- [E] 증권 연결하기 -->
+	            </div>
+          		<!-- [E] 증권 체크페이 2021-12-06 -->
+
+				<!-- [S] 자산편집, 연동관리 버튼 -->
+				<div class="btn_wrap">
+					<div class="btnGroup type2">
+						<p><a href="#layerAssetEdit" class="btn_open_bottom_sheet btnBl1" role="button">자산 편집</a></p>
+						<p><a id="logout" class="btnBl1" role="button">로그아웃</a></p>
+					</div>
+				</div>
+				<!-- [E] 자산편집, 연동관리 버튼 -->
+			</div>
+		</div>
+		<!-- //container -->
+	</div>
+	<!-- //wrap -->
+
+	<!-- [S] layer_popup type1 A타입 짧은문구, 자산 현황 -->
+	<div id="layer1_short" class="layer_popup type1 short">
+		<div class="layer_position">
+			<div class="layer_inner">
+				<div class="layer_tit">
+					<strong class="tit">자산 현황</strong>
+					<button type="button" class="js_pop_close btn_close"><span class="blind">닫기</span></button>
+				</div>
+				<div class="layer_cont">
+					<div class="msg_box">
+						[자산]<br>
+						현금자산: 입출금, 예적금, 선불충전금액<br>
+						투자 : 증권(종합계좌 평가금액, 예수금), 은행(펀드)<br>
+						연금 : 은행, 보험, 증권<br>
+						*저축보험, 연금(저축)보험 상품 제외<br><br>
+						[부채]<br>
+						카드대금 : 이번달 신용카드 승인내역<br>
+						*카드 리볼빙, 체크카드 제외<br>
+						대출 : 은행,카드,캐피탈,보험,증권(신요융자,주식담보)<br>
+						*할부금융 운용리스 제외<br><br>
+						[참고]<br>
+						*은행 ISA/신탁 계좌 제외(추후 포함 예정)<br>
+						*외화 자산 제외<br>
+						*수익률은 실제와 상이할 수 있음<br>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- [E] layer_popup type1 A타입 짧은문구, 자산 현황 -->
+
+	<!-- [S] bottomsheet -->
+	<div id="layerAssetEdit" class="layer_bottomsheet">
+		<div class="layer_inner">
+			<div class="layer_cont">
+				<!-- 내용 -->
+				<div class="asGroup editList">
+					<div class="listTit">
+						<h3 class="tac">자산 편집</h3>
+					</div>
+					<span class="blind">목록이동 방법 선택</span>
+					<ul class="sortCtrl"></ul>
+					<div class="asList" id="sortList">
+						<div class="accItem" id="sortbank">
+							<div class="category">은행</div>
+							<div class="ctrl">
+								<a role="button" class="btnHide"><span class="blind">목록에서 숨기기</span></a>
+								<ul class="sortChg">
+									<li>
+										<a role="button" class="btnHandle"><span class="blind">드래그 앤 드롭</span></a>
+									</li>
+								</ul>
+							</div>
+						</div>
+						<div class="accItem" id="sortcap">
+	                        <div class="category">캐피탈</div>
+	                        <div class="ctrl">
+	                            <a role="button" class="btnHide"><span class="blind">목록에서 숨기기</span></a>
+	                            <ul class="sortChg">
+	                                <li>
+	                                    <a role="button" class="btnHandle"><span class="blind">드래그 앤 드롭</span></a>
+	                                </li>
+	                            </ul>
+	                        </div>
+                    	</div>
+						<div class="accItem" id="sortinvest">
+							<div class="category">증권</div>
+							<div class="ctrl">
+								<a role="button" class="btnHide"><span class="blind">목록에서 숨기기</span></a>
+								<ul class="sortChg">
+									<li>
+										<a role="button" class="btnHandle"><span class="blind">드래그 앤 드롭</span></a>
+									</li>
+								</ul>
+							</div>
+						</div>
+						<div class="accItem" id="sortcard">
+							<div class="category">카드</div>
+							<div class="ctrl">
+								<a role="button" class="btnHide"><span class="blind">목록에서 숨기기</span></a>
+								<ul class="sortChg">
+									<li>
+										<a role="button" class="btnHandle"><span class="blind">드래그 앤 드롭</span></a>
+									</li>
+								</ul>
+							</div>
+						</div>
+						<div class="accItem" id="sortpay">
+							<div class="category">선불·페이</div>
+							<div class="ctrl">
+								<a role="button" class="btnHide"><span class="blind">목록에서 숨기기</span></a>
+								<ul class="sortChg">
+									<li>
+										<a role="button" class="btnHandle"><span class="blind">드래그 앤 드롭</span></a>
+									</li>
+								</ul>
+							</div>
+						</div>
+						<div class="accItem" id="sortphone">
+							<div class="category">통신</div>
+							<div class="ctrl">
+								<a role="button" class="btnHide"><span class="blind">목록에서 숨기기</span></a>
+								<ul class="sortChg">
+									<li>
+										<a role="button" class="btnHandle"><span class="blind">드래그 앤 드롭</span></a>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- //내용 -->
+			</div>
+			<div class="layer_footer">
+				<button type="button" class="js_pop_close btn_cancel"><span>취소</span></button>
+				<button type="button" class="js_pop_close btn_confirm"><span>저장</span></button>
+			</div>
+		</div>
+
+	</div>
+	<!-- [E] bottomsheet -->
+
+	<script th:inline="javascript">
+ 
+		var card_data = /*[[(${cardIdList.size}==0?0:${#aggregates.sum(cardIdList.![price_sum])})]]*/ 0;
+		var bank1000_data = /*[[(${bankAccList1000.size}==0?0:${#aggregates.sum(bankAccList1000.?[currency_code=='원'].![balance_amt])})]]*/ 0;
+		var bank2000_data = /*[[(${bankAccList2000.size}==0?0:${#aggregates.sum(bankAccList2000.?[currency_code=='원'].![balance_amt])})]]*/ 0;
+		var bankIRP_data = /*[[(${bankIrpList.size}==0?0:${#aggregates.sum(bankIrpList.![eval_amt])})]]*/ 0;
+		var bank3000_data = /*[[(${bankAccList3000.size}==0?0:${#aggregates.sum(bankAccList3000.![balance_amt])})]]*/ 0;
+		var cardlong_data = /*[[${cardloanList}==0?0:${#aggregates.sum(cardloanList.![balance_amt])}]]*/0;
+		var investList_data = /*[[${investListSize}==0?0:${#aggregates.sum(investList.?[currency_code=='원'].![eval_amt])}]]*/0;
+		var capitalKrwSum_data= /*[[${capitalKrwSum}]]*/0;
+		var efin_data = /*[[${efinList_size}==0?0:${#aggregates.sum(efinList.?[currency_code=='KRW'].![total_balance_amt])}]]*/0;
+		$(document).ready(function () {
+			localStorage.removeItem("val");	
+			var token = getCookie("jwt");
+				$.ajax({
+					url: 'http://192.168.240.208:8081/api/mypage/notice/1?use_yn=Y&board_tp=000001&pagination_yn=Y',	
+					type: 'GET',
+					contentType: 'application/json',
+					dataType: 'json',
+					async: false,
+					beforeSend: function (xhr) {
+                		xhr.setRequestHeader("Authorization", "Bearer " +token);
+           			},
+					success: function (data, status, xhr) {
+						(data.noticeList).forEach(function(data){
+							$('.noti_box .slider_container').append('<div class="slider"><a href="/mypage/YY1400" class="ellipsis">'+data.subject+'</a></div>');
+						})			                  	
+					},
+					error: function (jqXHR) {
+		                if (jqXHR.status == 401 && jqXHR.responseText=="토큰 기한 만료") {
+		              		tokenCall2();
+		                }
+		            }
+				})
+			getEditList = () => {
+				var result = null;
+				$.ajax({
+				url: 'http://192.168.240.208:8081/api/asset/main/editinfo/' + parseJwt(getCookie("jwt")).sub,
+				//url: 'http://localhost:8081/api/asset/main/editinfo/' + parseJwt(getCookie("jwt")).sub,
+					type: 'GET',
+					contentType: 'application/json',
+					dataType: 'json',
+					async: false,
+					beforeSend: function (xhr) {
+                		xhr.setRequestHeader("Authorization", "Bearer " +token);
+           			},
+					success: function (data, status, xhr) {
+						result = data.catg_cd;
+					},
+					error: function (jqXHR) {
+		                if (jqXHR.status == 401 && jqXHR.responseText=="토큰 기한 만료") {
+		              		tokenCall2();
+		                }
+		            }
+				})
+
+				return result;
+			}
+			$.ajax({
+	            type : "GET",
+	            url : "http://192.168.240.208:8081/api/member/auth",
+	            headers: {
+	                       "Authorization" : "Bearer " + getCookie("jwt")
+	                    },
+	            success : function(data){
+	               $('#member_name').text(data.member_name);
+	               
+	            },
+				error: function (jqXHR) {
+	                if (jqXHR.status == 401 && jqXHR.responseText=="토큰 기한 만료") {
+	               tokenCall2();
+	                }
+	            }
+	         });
+			// 자산 순서 선택 리스트
+			var asset_arr1 = getEditList();
+			//모든 리스트
+			var asset_arr2 = ["mainbank", "maincard", "mainphone", "mainpay","maininvest","maincap"];
+			var asset_hide=asset_arr2.filter(x=>!asset_arr1.includes(x));
+			var showList=()=>{
+				for (var i = 0; i < asset_arr2.length; i++) {
+					$('#' + asset_arr2[i]).attr("class", "wrap_assets hide");
+				}
+				for (var i = 0; i < asset_arr1.length; i++) {
+					asset_arr1[i] = asset_arr1[i].replace('sort', 'main');
+					$('#' + asset_arr1[i]).attr("class", "wrap_assets");
+					$('#' + asset_arr1[i]).appendTo('.wrap_assets.assets_chart');
+				}
+			}
+			showList();
+			//불러온 EditList 순서에 따라 자산편집 Modal 순서 수정
+			for (var i = 0; i < asset_arr1.length; i++) {	//불러온 순서대로 append
+				var str = asset_arr1[i].replace('main', '');
+				$('#sort' + str).appendTo('#sortList');
+			}
+			
+			// EditList 순서에 포함되지 않은 숨긴 List 숨김표시 & 하단 배치
+			for (var i = 0; i < asset_hide.length; i++) {
+				asset_hide[i] = asset_hide[i].replace('main', 'sort');
+				var tog=$('#'+asset_hide[i]).eq(0);
+				tog.attr("class", "accItem hidden");
+				tog.children(".category").attr("class", "tx category");
+				tog.appendTo('#sortList');
+			}
+						
+
+			//자산목록 숨기기
+			//2023-03-29 철진(0)
+			$('.btnHide').click(function (a) {
+				var tog = $(this).closest('div').parents('div').eq(0);
+				if (tog.attr("class") == "accItem") {
+					tog.attr("class", "accItem hidden");
+					tog.children(".category").attr("class", "tx category");
+					tog.appendTo('#sortList');
+				}
+				else {
+					tog.attr("class", "accItem");
+					tog.children(".category").attr("class", "category");
+
+				}
+
+				listOrders = $(".editList>.asList.ui-sortable").sortable('toArray').toString();
+			});
+
+			
+			
+			
+			
+			//자산 목록에 따라 목록 출력함수
+			var printList = () => {
+				listOrders = $(".editList>.asList.ui-sortable").sortable('toArray').toString();
+				asset_arr1 = listOrders.split(",");
+				showList();
+				asset_hide=asset_arr2.filter(x=>!asset_arr1.includes(x));
+			}
+
+			//자산목록 정렬 저장 버튼
+			$('.js_pop_close.btn_confirm').click(function (a) {
+				listUpdate();
+			});
+			var listUpdate=()=>{
+					printList();
+					var data = {
+						"member_id": parseJwt(getCookie("jwt")).sub,
+						"edit_list": asset_arr1,
+						"hide_list": asset_hide
+					}
+					data = JSON.stringify(data);
+					token=getCookie("jwt");
+					
+					$.ajax({
+						url: 'http://192.168.240.208:8081/api/asset/main/editinfo/',
+						//url: 'http://localhost:8081/api/asset/main/editinfo/' + parseJwt(getCookie("jwt")).sub,
+						type: 'POST',
+						contentType: 'application/json',
+						dataType: 'json',
+						data: data,
+						beforeSend: function (xhr) {
+	                		xhr.setRequestHeader("Authorization", "Bearer " +token);
+	           			},
+						success: function (result) {
+							document.location.reload();
+						},
+						error: function (jqXHR) {
+			                if (jqXHR.status == 401) {
+			               		tokenCall2(false).done(function(){
+				               		listUpdate();
+							   });
+			                }
+			            }
+					})
+				}
+
+			/* [S] 차트 파이 타입 */
+			Highcharts.chart('chart_pie_main', {
+				title: {text: ''},// 타이틀 숨김
+				exporting: {enabled: false},// 우측상단 햄버거메뉴 숨김
+				credits: {enabled: false},// highchart 워터마크 숨김
+				tooltip: {enabled: false},// 하이차트 기본툴팁 숨김
+				chart: {
+					plotBackgroundColor: null,
+					plotBorderWidth: null,
+					plotShadow: false,
+					type: 'pie',
+				},
+				plotOptions: {
+					pie: {
+						allowPointSelect: false, // 선택모션
+						slicedOffset: 10, // 슬라이스간격
+						cursor: 'pointer',
+						colors: ['#7b97fd', '#63aff8', '#ff677c','#ff8b67','#fe97a6'], // 색상지정 [대출, 카드대금, 현금자산]
+						colorByPoint: true, // 색상지정
+						point: {
+							events: {
+								click: function () {
+									location.href='/main/mainchart/'
+									
+								}// click
+							}// events
+						},// point
+					},// pie
+				},// plotOptions
+				series: [{
+		            //innerSize: '10%', //도넛모양
+		            size: '58%',// 크기
+		           	startAngle: 90,// 각도 시작
+	            	endAngle: 470,// 각도 끝
+		            center: ['50%', '24%'], //pie 위치
+		            dataLabels: {// 말풍선 설정
+		                distance: 1, //말풍선과 그래프의 간격
+		                color: '#000',
+		                backgroundColor: '#fff',
+		                connectorPadding: -30,
+		                borderWidth: 1,
+		                borderRadius: 15,
+		                overflow: 'inherit',
+		                style : {
+		                        fontFamily: 'notoSans',
+		                        fontSize: '12px',
+		                        fontWeight: '700',
+		                },
+		            },
+		           
+					//말풍선 개별 설정
+					data: [{
+						name: '대출',
+						y: bank3000_data+capitalKrwSum_data+cardlong_data ? bank3000_data+capitalKrwSum_data+cardlong_data : null,// 100퍼센트 비율
+						sliced: false,
+						selected: false,
+						dataLabels: {
+							useHTML: true,
+							format: '<p class="chart_label_box rate_loan"><b> {point.name}</b> <b style="color:#7b97fd;"> {point.percentage:1.0f}%</b></p>',
+							borderColor: '#7b97fd',
+						},
+					}, {
+						name: '카드대금',
+						y: card_data ? card_data : null,// 100퍼센트 비율
+						sliced: false,
+						selected: false,
+						dataLabels: {
+							useHTML: true,
+							format: '<p class="chart_label_box rate_card"><b> {point.name}</b> <b style="color:#63aff8;"> {point.percentage:1.0f}%</b></p>',
+							borderColor: '#99cdff',
+						},
+					}, {
+						name: '현금자산',
+						y: bank1000_data + bank2000_data + bankIRP_data +efin_data ? bank1000_data + bank2000_data + bankIRP_data + efin_data : null,// 100퍼센트 비율
+						sliced: false,
+						selected: false,
+						dataLabels: {
+							useHTML: true,
+							format: '<p class="chart_label_box rate_acc"><b> {point.name}</b> <b style="color:#ff677c;" > {point.percentage:1.0f}%</b></p>',
+							borderColor: '#fe97a6',
+						},
+					}
+					, {
+		                name: 'Pay',
+		                y: efin_data ? efin_data : null,// 100퍼센트 비율
+		                sliced: false,
+		                selected: false,
+		                dataLabels: {
+		                    useHTML: true,
+		                    format: '<p class="chart_label_box rate_pay"><b> {point.name}</b> <b style="color:#ff8b67;"> {point.percentage:1.0f}% </b> </p>',
+		                    borderColor: '#ff8b67',
+		                },
+		            }, {
+		                name: '증권',
+		                y: investList_data ? investList_data : null,// 100퍼센트 비율
+		                sliced: false,
+		                selected: false,
+		                dataLabels: {
+		                    useHTML: true,
+		                    format: '<p class="chart_label_box rate_pay"><b> {point.name}</b> <b style="color:#ff8b67;"> {point.percentage:1.0f}% </b> </p>',
+		                    borderColor: '#fe97a6',
+		                },
+		            }
+					]// data
+				}]// series
+			});
+			//접근성
+			// $('.chart_disable .rate_loan').text($('.chart_label_box.rate_loan b:last-child').html());
+			// $('.chart_disable .rate_card').text($('.chart_label_box.rate_card b:last-child').html());
+			// $('.chart_disable .rate_acc').text($('.chart_label_box.rate_acc b:last-child').html());
+			/* [E] 차트 파이 타입 */
+
+			/* [S] 차트 자산 영역 */
+			if ($('.wrap_ratio').length) {
+				$('.wrap_ratio .graph .acc').animate({'width': '20%'});//자산비율 예시
+				$('.wrap_ratio .graph .dept').animate({'width': '80%'});//부채비율 예시
+				//접근성
+				// setTimeout(function() {
+				//    var ratioAccWidth = document.querySelector('.wrap_ratio .graph .acc').style.width;
+				//    var deptAccWidth = document.querySelector('.wrap_ratio .graph .dept').style.width;
+				//    $('.wrap_ratio .graph .acc').find('.blind').text('자산비율'+ratioAccWidth);
+				//    $('.wrap_ratio .graph .dept').find('.blind').text('부채비율'+deptAccWidth);
+				// }, 1500);
+			}
+			/* [E] 차트 자산 영역 */
+
+			/* [S] 슬라이드 공지 */
+			var $sliderNotice = $('.noti_box .slider_container');
+			$sliderNotice.slick({
+				vertical: true,
+				dots: false,
+				arrows: false,
+				slidesToShow: 1,
+				slidesToScroll: 1,
+				autoplay: true,
+				autoplaySpeed: 3000
+			});
+			/* [E] 슬라이드 공지 */
+
+			/* [S] 슬라이드 목록형 */
+			var $sliderAccList = $('.wrap_slider.type_acc .slider_container');
+			$sliderAccList.slick({
+				dots: true,
+				slidesToShow: 1,
+				slidesToScroll: 1,
+				autoplay: false
+			});
+			/* [E] 슬라이드 목록형 */
+			
+			
+			setTimeout(()=>{
+			// "btnFolding" 클래스를 가진 요소를 찾아서 자동으로 클릭
+			$(".btnFolding").trigger("click");
+			},100)
+		});
+
+
+		// [S] 바텀시트
+		$(document).on("click", ".btn_open_bottom_sheet", function (e) {
+			e.preventDefault();
+
+			var $href = $(this).attr('href');
+			layer_bottomsheet($href);
+			$('html').addClass('scroll_lock');//2021-10-28 html 스크롤 잠금 수정
+
+			// [S] multi layer 2021-08-02 추가
+			var dimIdx = $('.dim').index();
+			eval('$focusReturn' + [dimIdx] + '= $(this)');
+			//$focusReturn = $(this); // multi layer 2021-08-02 삭제
+			// [E] multi layer 2021-08-02 추가
+
+		});
+		function layer_bottomsheet(el) {
+			var $el = $(el);
+			$el.append("<div class=\"dim\"></div>");
+			isDim ? $('.layer_bottomsheet').show() : $el.show().attr({'tabindex': '0', 'aria-hidden': 'false'}).focus();
+			setTimeout(function () {
+				$el.find('.layer_inner').addClass('on');
+			}, 50);
+
+			// [S] multi layer 2021-08-02 추가
+			//var isDim = $el.siblings().hasClass('dim');
+			var isDim;
+			var dimIdx = $('.dim').index();
+			var thisDim = $el.find('.dim');
+			var thisLyZindex = dimIdx + 4000;
+			$('.dim').css('opacity', '0');
+			thisDim.css('opacity', '.7');
+			thisDim.closest('.layer_bottomsheet, .layer_popup').css('z-index', thisLyZindex);
+			// [E] multi layer 2021-08-02 추가
+
+			$el.find('.js_pop_close').click(function () {
+
+				$el.find('.layer_inner').removeClass('on');
+				setTimeout(function () {
+					isDim ? $('.layer_bottomsheet').hide() : $el.hide();
+					$('html').removeClass('scroll_lock');//2021-10-28 html 스크롤 잠금 수정
+					$el.attr({'tabindex': '-1', 'aria-hidden': 'true'}).find(".dim").remove();
+					// [S] multi layer 2021-08-02 추가
+					if ($('.dim').length == '2') {
+						$('.dim:eq(1)').css('opacity', '.7');
+					} else if ($('.dim').length == '1') {
+						$('.dim').css('opacity', '.7');
+					}
+					// [E] multi layer 2021-08-02 추가
+				}, 200);
+
+				// [S] multi layer 2021-08-02 추가
+				eval('$focusReturn' + [dimIdx]).focus();
+				//$focusReturn.focus(); // multi layer 2021-08-02 삭제
+				// [E] multi layer 2021-08-02 추가
+
+				return false;
+			});
+		}
+// [E] 바텀시트
+	
+
+		// [S] 종목 클릭 시 -> D1300 | D1303
+		$(document).on('click', '.investDetailMove', function (e) {
+			e.preventDefault();
+			localStorage.setItem('stock_name', $(this).find('.stock_name').text());
+			localStorage.setItem('org_code', $(this).find('.org_code').text());
+			localStorage.setItem('account_num', $(this).find('.account_num').text());
+			localStorage.setItem('profit', $(this).find('.profit').text());
+			localStorage.setItem('prod_type', $(this).find('.prod_type').text());
+			localStorage.setItem('seq', $(this).find('.seq').text());
+			location.href="/invest/stock"
+		})
+		// [E] 종목 클릭 시 
+
+	$('#logout').click(() => {
+		baseUrl='http://192.168.240.208:8081';
+		$.ajax({
+			url: baseUrl + "/api/login/logout",
+			type: 'post',
+			data: {
+				"rtk": getCookie("rtk")
+			},
+			success: function () {
+				deleteCookie('jwt');
+				deleteCookie('rtk');
+				location.replace('/login');
+			},
+			error: function (jqXHR) {
+				alert("로그아웃 error" + jqXHR.status);
+			}
+		});
+	});
+	
+
+	</script>
+</body>
+</th:block>
+</html>

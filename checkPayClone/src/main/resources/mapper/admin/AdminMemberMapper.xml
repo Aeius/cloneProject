@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bit.checkpayclone.admin.member.model.AdminMemberMapper">
+
+	<select id="getMember" resultType="com.bit.checkpayclone.member.model.MemberVo"> 
+		<![CDATA[
+		select 
+		memb_cd,
+		data_decrypt(email) as member_email, 
+		data_decrypt(memb_nm) as member_name, 
+		data_decrypt(ph_no) as member_tel,
+		memb_pwd as member_password,
+		gndr as member_gender,
+		reg_dttm as member_reg_date
+		from tb_member 
+		where 1=1
+		and memb_cd not in ('admin','admin5') 
+		]]>
+		<if test='(searchColumn != null and !searchColumn.equals("")) and (searchValue != null and !searchColumn.equals(""))'>
+			<![CDATA[
+			and data_decrypt(${searchColumn}) like concat('%',#{searchValue},'%')
+			]]>
+		</if>
+		<if test='(beginDate != null and !beginDate.equals("")) and (endDate != null and !endDate.equals(""))'>
+			<![CDATA[
+			and reg_dttm between to_char(#{beginDate}::timestamp,'YYYYMMDDHHIISS') and to_char(#{endDate}::timestamp,'YYYYMMDDHHIISS')
+			]]>
+		</if>
+		<if test='member_id != null and !member_id.equals("")'>
+			<![CDATA[
+			and memb_cd = #{member_id}
+			]]>
+		</if>
+		<![CDATA[ 
+		order by reg_dttm desc limit #{countDataInPage} offset #{startPage}
+		]]>
+	</select>
+	
+	<select id="getMemberCount" resultType="int">
+		<![CDATA[
+		select count(*) as totalCount from tb_member where 1=1
+		]]>
+		<if test='(searchColumn != null and !searchColumn.equals("")) and (searchValue != null and !searchColumn.equals(""))'>
+			<![CDATA[
+			and data_decrypt(${searchColumn}) like concat('%',#{searchValue},'%')
+			]]>
+		</if>
+		<if test='(beginDate != null and !beginDate.equals("")) and (endDate != null and !endDate.equals(""))'>
+			<![CDATA[
+			and reg_dttm between to_char(#{beginDate}::timestamp,'YYYYMMDDHHIISS') and to_char(#{endDate}::timestamp,'YYYYMMDDHHIISS')
+			]]>
+		</if>
+	</select>
+	
+	<insert id="addMemberLog">
+		<![CDATA[ 
+		insert into member_log (member_id, action_type, api_url) values(#{member_id},#{action_type},#{api_url})
+		]]>
+	</insert>
+	
+	<select id="getMemberAsset" resultMap="getMemberAssetMap">
+		<![CDATA[ 
+		select * 
+		from member_asset_view as a
+		left join code_info co on co.code = a.asset_type
+		where a.member_id=#{member_id}
+		order by a.asset_category limit #{countDataInPage} offset #{startPage}
+		]]>
+	</select>
+	
+	<resultMap id="getMemberAssetMap" type="com.bit.checkpayclone.admin.member.model.AdminMemberAssetVo">
+		<result column="member_id" property="member_id" javaType="String" />
+		<result column="member_name" property="member_name" javaType="String" />
+		<result column="asset_name" property="asset_name" javaType="String" />
+		<result column="asset_type" property="asset_type" javaType="String" />
+		<result column="asset_category" property="asset_category" javaType="String" />
+	</resultMap>
+	
+	<select id="getMemberAssetCount" resultType="int">
+		<![CDATA[ 
+		select count(*) as totalCount
+		from member_asset_view as a
+		where member_id=#{member_id}
+		]]>
+	</select>
+	
+</mapper>
+

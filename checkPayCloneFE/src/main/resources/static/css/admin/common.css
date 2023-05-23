@@ -1,0 +1,130 @@
+/*
+초기화
+*/
+:root {
+    --theme-color1: #0762db;
+    --theme-color2: #eff5ff;
+}
+body{
+    padding: 0px 20px;
+	background: linear-gradient(white 60%, var(--theme-color2) 40%);
+	background-attachment: fixed;
+}
+a{
+	color:black;
+	text-decoration: unset;
+}
+
+/*
+부트스트랩 css 커스텀
+*/
+.btn-primary{
+	background-color: var(--theme-color1);	
+}
+.panel-body{
+	height: 75px;
+    padding: 20px 30px;
+}
+
+/*
+헤더
+*/
+#header{
+    height: 70px;
+    padding: 20px 0px;
+    position: fixed;
+}
+#header .logo{
+    background-image: url('/img/logo/logo.png');
+    background-size: 100%;
+    background-repeat: no-repeat;
+    width: 165px;
+    height: 100%;
+    margin-left: 40px;
+}
+
+/*
+네비게이션
+*/
+#navigation{
+    float: left;
+    width: 250px;
+    height: 830px;
+    background-color: var(--theme-color1);
+    border-radius: 5px;
+    position: fixed;
+    margin-top: 80px;
+}
+#navigation .nav-container{
+    position: relative;
+    top: 50px;
+    left: 18%;
+}
+#navigation .nav-item{
+	margin: 25px 0px;
+}
+#navigation .nav-item span{
+	margin-right:20px;
+}
+#navigation .nav-item a, #navigation .nav-item span{
+    color: #85a1d1;
+    font-size: 14px;
+    cursor: pointer;
+}
+#navigation .nav-item.active a, #navigation .nav-item.active span{
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+}
+#navigation .logout{
+    position: absolute;
+    bottom: 60px;
+    left: 48%;
+    color: white;
+    font-size: 25px;
+    cursor: pointer;
+}
+
+/*
+메인
+*/
+#main{
+    float: left;
+    width: 83%;
+    margin-left: 290px;
+    margin-top: 80px;
+}
+#main .panel-heading{
+    background-color: var(--theme-color1);
+    color: white;
+}
+
+/*
+메인 - 테이블
+*/
+#main table{
+    margin: 0 auto;
+    width: 96%;
+}
+#main table tr th,td{
+    text-align: center;
+}
+#main table.table-striped>tbody>tr:nth-of-type(odd){
+    background-color: var(--theme-color2);
+}
+#main .page-pagination{
+	text-align: center;
+}
+
+/*
+메인 - 입력 폼
+*/
+.form-container {
+    padding: 20px;
+}
+.form-group {
+    width: 100%;
+}
+.form-group pre{
+	height: 500px;
+}

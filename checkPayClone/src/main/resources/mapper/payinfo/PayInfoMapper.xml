@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bit.checkpayclone.payinfo.model.PayInfoMapper">
+
+	<!-- 특정 멤버 월별 카드 결제 쓴 총 금액 및 결제 정보(전체, 최신순) 디폴트-->
+	<select id="findPayInfoAll" resultType="com.bit.checkpayclone.payinfo.model.PayInfoVo">
+		 SELECT 	
+		    tac.memb_cd ,
+		    tac.card_id ,
+			tacad.approved_num, 
+			tacad.merchant_name, 
+			tacad.merchant_regno ,
+			tacad.status,
+			og.org_name, 
+			tac.card_name, 
+			tacad.approved_amt, 
+			to_timestamp(tacad.approved_dtime,'YYYYMMDDHH24MIss')::timestamp as approved_dtime,
+			tamc.catg_nm, 
+			case 
+				when tacad.trans_dtime='' then null
+				else to_timestamp(tacad.trans_dtime,'YYYYMMDDHH24MIss')::timestamp
+			end trans_dtime,
+			tacad.modified_amt,
+			tacad.total_install_cnt												
+		FROM tb_a_card tac 
+			inner join tb_a_card_appr_domestic tacad on tac.memb_cd=tacad.memb_cd and tac.org_code=tacad.org_code and tac.card_id=tacad.card_id
+			inner join tb_a_card_appr_domestic_catg tacadc on tacadc.card_id=tacad.card_id and tacadc.memb_cd=tacad.memb_cd and tacadc.org_code=tacad.org_code and tacadc.approved_num=tacad.approved_num and tacadc.status=tacad.status and tacadc.approved_dtime=tacad.approved_dtime and tacadc.seq=tacad.seq
+			inner join tb_a_apis_orgs og on og.org_code=tacad.org_code
+			inner join tb_a_merchant_category tamc on tamc.catg_cd=tacadc.catg_cd
+		where tac.memb_cd =#{member_id} and tac.card_id =#{card_id} and tacad.approved_dtime like concat(#{year_month},'%')	
+		order by approved_dtime desc LIMIT 10 offset #{limit};	
+	</select>
+	
+	<!-- 특정 멤버 월별 카드 결제 쓴 총 금액 및 결제 정보(결제방법 별로 나누기)-->
+	<select id="findPayInfoInstallments" resultType="com.bit.checkpayclone.payinfo.model.PayInfoVo">
+		<![CDATA[ 
+		 SELECT 	
+		    tac.memb_cd ,
+		    tac.card_id ,
+			tacad.approved_num, 
+			tacad.merchant_name, 
+			tacad.merchant_regno ,
+			tacad.status,
+			og.org_name, 
+			tac.card_name, 
+			tacad.approved_amt, 
+			to_timestamp(tacad.approved_dtime,'YYYYMMDDHH24MIss')::timestamp as approved_dtime,
+			tamc.catg_nm, 
+			case 
+				when tacad.trans_dtime='' then null
+				else to_timestamp(tacad.trans_dtime,'YYYYMMDDHH24MIss')::timestamp
+			end trans_dtime, 
+			tacad.modified_amt,
+			tacad.total_install_cnt												
+		   FROM tb_a_card tac 
+			inner join tb_a_card_appr_domestic tacad on tac.memb_cd=tacad.memb_cd and tac.org_code=tacad.org_code and tac.card_id=tacad.card_id
+			inner join tb_a_card_appr_domestic_catg tacadc on tacadc.card_id=tacad.card_id and tacadc.memb_cd=tacad.memb_cd and tacadc.org_code=tacad.org_code and tacadc.approved_num=tacad.approved_num and tacadc.status=tacad.status and tacadc.approved_dtime=tacad.approved_dtime and tacadc.seq=tacad.seq
+			inner join tb_a_apis_orgs og on og.org_code=tacad.org_code
+			inner join tb_a_merchant_category tamc on tamc.catg_cd=tacadc.catg_cd
+		where tac.memb_cd =#{member_id} 
+		and tac.card_id =#{card_id} and tacad.approved_dtime like concat(#{year_month},'%')
+		]]>
+		<choose>
+			<when test="installments != null and installments==0">
+				<![CDATA[ 
+				and tacad.total_install_cnt = #{installments}
+				]]>
+			</when>
+			<otherwise>
+				<![CDATA[ 
+				and tacad.total_install_cnt > 0
+				]]>		
+			</otherwise>
+		</choose>
+		<![CDATA[ 
+		order by approved_dtime desc LIMIT 10 offset #{limit};	
+		]]>
+	</select>
+	
+	<!-- 필터 날자 범위 총 금액 -->
+	<select id="findPayFilterAmt" resultType="com.bit.checkpayclone.payinfo.model.PayInfoVo">
+		 <![CDATA[ 
+		 SELECT 	
+		    tacad.status,
+			tacad.approved_amt, 
+			tacad.modified_amt											
+		   FROM tb_a_card tac 
+			inner join tb_a_card_appr_domestic tacad on tac.memb_cd=tacad.memb_cd and tac.org_code=tacad.org_code and tac.card_id=tacad.card_id
+			inner join tb_a_card_appr_domestic_catg tacadc on tacadc.card_id=tacad.card_id and tacadc.memb_cd=tacad.memb_cd and tacadc.org_code=tacad.org_code and tacadc.approved_num=tacad.approved_num and tacadc.status=tacad.status and tacadc.approved_dtime=tacad.approved_dtime and tacadc.seq=tacad.seq
+		where tac.memb_cd =#{member_id} and tac.card_id =#{card_id} and tacad.approved_dt >= #{startDate} and tacad.approved_dt <= #{endDate};
+		]]>	
+	</select>
+	
+	<!-- card_payinfo 날짜별 필터 처리 쿼리문(전체) 최신순,과거순-->
+	<select id="findPayFilterAll" resultType="com.bit.checkpayclone.payinfo.model.PayInfoVo">
+		 <![CDATA[ 
+		 SELECT 	
+		    tac.memb_cd ,
+		    tac.card_id ,
+			tacad.approved_num, 
+			tacad.merchant_name, 
+			tacad.merchant_regno ,
+			tacad.status,
+			og.org_name, 
+			tac.card_name, 
+			tacad.approved_amt, 
+			to_timestamp(tacad.approved_dtime,'YYYYMMDDHH24MIss')::timestamp as approved_dtime, 
+			tamc.catg_nm, 
+			case 
+				when tacad.trans_dtime='' then null
+				else to_timestamp(tacad.trans_dtime,'YYYYMMDDHH24MIss')::timestamp
+			end trans_dtime, 
+			tacad.modified_amt,
+			tacad.total_install_cnt												
+		   FROM tb_a_card tac 
+			inner join tb_a_card_appr_domestic tacad on tac.memb_cd=tacad.memb_cd and tac.org_code=tacad.org_code and tac.card_id=tacad.card_id
+			inner join tb_a_card_appr_domestic_catg tacadc on tacadc.card_id=tacad.card_id and tacadc.memb_cd=tacad.memb_cd and tacadc.org_code=tacad.org_code and tacadc.approved_num=tacad.approved_num and tacadc.status=tacad.status and tacadc.approved_dtime=tacad.approved_dtime and tacadc.seq=tacad.seq
+			inner join tb_a_apis_orgs og on og.org_code=tacad.org_code
+			inner join tb_a_merchant_category tamc on tamc.catg_cd=tacadc.catg_cd
+		where tac.memb_cd =#{member_id} 
+		and tac.card_id =#{card_id} and tacad.approved_dt >= #{startDate} and tacad.approved_dt <= #{endDate} and tacad.merchant_name like concat('%',#{keyword},'%')
+		]]>
+		<if test='sort != null and sort.equals("desc")'>
+			order by approved_dtime desc			
+		</if>
+		<if test='sort != null and sort.equals("asc")'>
+			order by approved_dtime asc			
+		</if>
+			LIMIT 10 offset #{limit};	
+	</select>
+	
+	<!-- card_payinfo 날짜별 필터 처리 쿼리문(결제방법) 최신순-->
+	<select id="findPayFilterInstall" resultType="com.bit.checkpayclone.payinfo.model.PayInfoVo"> 
+		<![CDATA[ 
+		 SELECT 	
+		    tac.memb_cd ,
+		    tac.card_id ,
+			tacad.approved_num, 
+			tacad.merchant_name, 
+			tacad.merchant_regno ,
+			tacad.status,
+			og.org_name, 
+			tac.card_name, 
+			tacad.approved_amt, 
+			to_timestamp(tacad.approved_dtime,'YYYYMMDDHH24MIss')::timestamp as approved_dtime, 
+			tamc.catg_nm, 
+			case 
+				when tacad.trans_dtime='' then null
+				else to_timestamp(tacad.trans_dtime,'YYYYMMDDHH24MIss')::timestamp
+			end trans_dtime, 
+			tacad.modified_amt,
+			tacad.total_install_cnt												
+		   FROM tb_a_card tac 
+			inner join tb_a_card_appr_domestic tacad on tac.memb_cd=tacad.memb_cd and tac.org_code=tacad.org_code and tac.card_id=tacad.card_id
+			inner join tb_a_card_appr_domestic_catg tacadc on tacadc.card_id=tacad.card_id and tacadc.memb_cd=tacad.memb_cd and tacadc.org_code=tacad.org_code and tacadc.approved_num=tacad.approved_num and tacadc.status=tacad.status and tacadc.approved_dtime=tacad.approved_dtime and tacadc.seq=tacad.seq
+			inner join tb_a_apis_orgs og on og.org_code=tacad.org_code
+			inner join tb_a_merchant_category tamc on tamc.catg_cd=tacadc.catg_cd
+		where tac.memb_cd =#{member_id} 
+		and tac.card_id =#{card_id} and tacad.approved_dt >= #{startDate} and tacad.approved_dt <= #{endDate} and tacad.merchant_name like concat('%',#{keyword},'%')
+		]]>
+		<choose>
+			<when test="installments != null and installments==0">
+				and tacad.total_install_cnt = #{installments}
+			</when>
+			<otherwise>
+				<![CDATA[ 
+				and tacad.total_install_cnt > 0
+				]]>		
+			</otherwise>
+		</choose>
+		
+		<if test='sort != null and sort.equals("desc")'>
+			order by approved_dtime desc			
+		</if>
+		<if test='sort != null and sort.equals("asc")'>
+			order by approved_dtime asc			
+		</if>
+			LIMIT 10 offset #{limit};	
+	</select>	
+	
+	<!-- card_payinfo 날짜별 필터 처리 쿼리문(결제 상태,최근순, 과거순) -->
+	<select id="findPayFilterStatus" resultType="com.bit.checkpayclone.payinfo.model.PayInfoVo">
+		<![CDATA[ 
+		 SELECT 	
+		    tac.memb_cd ,
+		    tac.card_id ,
+			tacad.approved_num, 
+			tacad.merchant_name, 
+			tacad.merchant_regno ,
+			tacad.status,
+			og.org_name, 
+			tac.card_name, 
+			tacad.approved_amt, 
+			to_timestamp(tacad.approved_dtime,'YYYYMMDDHH24MIss')::timestamp as approved_dtime, 
+			tamc.catg_nm, 
+			case 
+				when tacad.trans_dtime='' then null
+				else to_timestamp(tacad.trans_dtime,'YYYYMMDDHH24MIss')::timestamp
+			end trans_dtime,
+			tacad.modified_amt,
+			tacad.total_install_cnt												
+		   FROM tb_a_card tac 
+			inner join tb_a_card_appr_domestic tacad on tac.memb_cd=tacad.memb_cd and tac.org_code=tacad.org_code and tac.card_id=tacad.card_id
+			inner join tb_a_card_appr_domestic_catg tacadc on tacadc.card_id=tacad.card_id and tacadc.memb_cd=tacad.memb_cd and tacadc.org_code=tacad.org_code and tacadc.approved_num=tacad.approved_num and tacadc.status=tacad.status and tacadc.approved_dtime=tacad.approved_dtime and tacadc.seq=tacad.seq
+			inner join tb_a_apis_orgs og on og.org_code=tacad.org_code
+			inner join tb_a_merchant_category tamc on tamc.catg_cd=tacadc.catg_cd
+		where tac.memb_cd =#{member_id} 
+		and tac.card_id =#{card_id} and tacad.status=#{state} and tacad.approved_dt >= #{startDate} and tacad.approved_dt <= #{endDate} and tacad.merchant_name like concat('%',#{keyword},'%')
+		]]>
+		<if test='sort != null and sort.equals("desc")'>
+			order by approved_dtime desc			
+		</if>
+		<if test='sort != null and sort.equals("asc")'>
+			order by approved_dtime asc			
+		</if>
+			LIMIT 10 offset #{limit};	
+	</select>
+	
+	
+	<!-- card_payinfo 날짜별 필터 처리 쿼리문(결제 상태,최근순,과거순 결제 방법) 까지 분류-->
+	<select id="findPayFilterInstallStatus" resultType="com.bit.checkpayclone.payinfo.model.PayInfoVo">
+		<![CDATA[ 
+		 SELECT 	
+		    tac.memb_cd ,
+		    tac.card_id ,
+			tacad.approved_num, 
+			tacad.merchant_name,
+			tacad.merchant_regno , 
+			tacad.status,
+			og.org_name, 
+			tac.card_name,
+			tacad.approved_amt,  
+			to_timestamp(tacad.approved_dtime,'YYYYMMDDHH24MIss')::timestamp as approved_dtime, 
+			tamc.catg_nm, 
+			case 
+				when tacad.trans_dtime='' then null
+				else to_timestamp(tacad.trans_dtime,'YYYYMMDDHH24MIss')::timestamp
+			end trans_dtime, 
+			tacad.modified_amt,
+			tacad.total_install_cnt												
+		   FROM tb_a_card tac 
+			inner join tb_a_card_appr_domestic tacad on tac.memb_cd=tacad.memb_cd and tac.org_code=tacad.org_code and tac.card_id=tacad.card_id
+			inner join tb_a_card_appr_domestic_catg tacadc on tacadc.card_id=tacad.card_id and tacadc.memb_cd=tacad.memb_cd and tacadc.org_code=tacad.org_code and tacadc.approved_num=tacad.approved_num and tacadc.status=tacad.status and tacadc.approved_dtime=tacad.approved_dtime and tacadc.seq=tacad.seq
+			inner join tb_a_apis_orgs og on og.org_code=tacad.org_code
+			inner join tb_a_merchant_category tamc on tamc.catg_cd=tacadc.catg_cd
+		where tac.memb_cd =#{member_id} 
+		and tac.card_id =#{card_id} and tacad.status=#{state} and tacad.approved_dt >= #{startDate} and tacad.approved_dt <= #{endDate} and tacad.merchant_name like concat('%',#{keyword},'%')
+		]]>
+		<choose>
+			<when test="installments != null and installments==0">
+				and tacad.total_install_cnt = #{installments}
+			</when>
+			<otherwise>
+				<![CDATA[ 
+				and tacad.total_install_cnt > 0
+				]]>		
+			</otherwise>
+		</choose>
+		<if test='sort != null and sort.equals("desc")'>
+			order by approved_dtime desc			
+		</if>
+		<if test='sort != null and sort.equals("asc")'>
+			order by approved_dtime asc			
+		</if>
+			LIMIT 10 offset #{limit};	
+	</select>
+	
+</mapper>

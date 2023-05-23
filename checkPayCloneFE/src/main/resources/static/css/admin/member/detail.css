@@ -1,0 +1,17 @@
+/*
+회원 기본 정보
+*/
+.member_info_container{
+	padding: 30px;
+    font-size: 16px;
+}
+.member_info_header .glyphicon{
+    font-size: 40px;
+} 
+.member_info_row{
+    text-align: left;
+    padding: 10px;
+} 
+.member_info_row .text{
+    margin-left: 30px;
+} 

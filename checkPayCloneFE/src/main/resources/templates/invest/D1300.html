@@ -1,0 +1,193 @@
+﻿<!DOCTYPE html>
+<html lang="ko" class="leaf">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>CheckPay</title>
+<meta http-equiv="Cache-Control" content="No-Cache">
+<meta http-equiv="Pragma" content="No-Cache">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<!--<meta name="title" content="">-->
+<meta name="description" content="">
+<!--<meta name="keywords" content="">-->
+<!-- The Open Graph protocol -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="">
+<meta property="og:description" content="">
+<meta property="og:url" content="">
+<meta property="og:image" content=""><!-- [D]리얼경로로 변경하세요 -->
+<!-- //The Open Graph protocol -->
+<link rel="SHORTCUT ICON" href=""><!-- [D]리얼경로로 변경하세요 -->
+<link rel="stylesheet" type="text/css" href="../../css/jquery-ui.min.css">
+<link rel="stylesheet" type="text/css" href="../../css/reset.css">
+<link rel="stylesheet" type="text/css" href="../../css/content.css">
+<link rel="stylesheet" type="text/css" href="../../css/theme_checkpay.css">
+<script type="text/javascript" src="../../js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="../../js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="../../js/jquery.ui.touch-punch.min.js"></script>
+<script type="text/javascript" src="../../js/slide_slick.js"></script>
+<script type="text/javascript" src="../../js/publishing.ui.library.1.0.0.js"></script>
+<script type="text/javascript" src="../../js/cmd.js"></script>
+<script type="text/javascript" src="../../js/common.js"></script>
+</head>
+
+<body>
+
+<!-- wrap -->
+<div class="wrap">
+
+	<!-- header -->
+	<div class="header">
+		<div class="header_inn">
+			<div class="left">
+				<a href="#none" class="btnBack"><span class="blind">Back</span></a>
+			</div>
+			<!--
+			<div class="right">
+                <a href="/invest" class="btnClose"><span class="blind">close</span></a>
+			</div>
+			-->
+		</div>
+	</div>
+	<!-- //header -->
+
+	<!-- container -->
+	<div class="container">
+		<div class="content">
+			<div class="accSetting">
+				<div class="tBalance">
+					<h3 class="tBaltit">쿠콘</h3>
+					<p class="tBalAmount"><em class="amount">0</em><em>원</em></p>
+					<p class="invest plus"><em class="num">0</em>원 <em class="num">0%</em></p>
+					<a href="" class="btnRef"><span class="blind">새로고침</span></a>
+					<!-- 새로고침중 일때 class에 ing 추가 -->
+					<!-- <a href="#" class="btnRef ing"><span class="blind">새로고침</span></a> -->
+				</div>
+				<div class="instItem">
+					<div class="instTotal">
+						<p class="itemTit">평가금</p>
+						<p class="itemData"><span class="num">0</span><em>원</em></p>
+					</div>
+					<ul class="accDetailList">
+						<li>
+							<span class="itemTit">보유수량</span>
+							<span class="itemData"><em class="num">0</em>주</span>
+						</li>
+						<li>
+							<span class="itemTit">총 매입금액</span>
+							<span class="itemData"><em class="num">0</em><em>원</em></span>
+						</li>
+						<li>
+							<span class="itemTit">평균 매입가</span>
+							<span class="itemData"><em class="num">0</em><em>원</em></span>
+						</li>
+						<li>
+							<span class="itemTit">수익률</span>
+							<span class="itemData"><em class="plus">0%</em></span>
+						</li>
+					</ul>
+				</div>
+				<ul class="accDetailList">
+					<li>
+						<span class="itemTit">연결계좌</span>
+						<div class="itemData">
+							<!-- 2021-12-01 연결계좌 영역 수정 -->
+							<p><a href="#" class="edit" title="더보기">()</a></p>
+						</div>
+					</li>
+					<li>
+						<span class="itemTit">상품종류</span>
+						<span class="itemData">()</span>
+					</li>
+				</ul>
+
+			</div>
+		</div>
+	</div>
+	<!-- //container -->
+
+</div>
+<!-- //wrap -->
+<script>
+	// 뒤로가기
+	$(document).on('click', '.btnBack', function(){
+		history.back();
+	})
+	$(document).ready(function(){
+		// 순서대로 접근하지 않았을 경우
+		if(localStorage.getItem('org_code') === null){
+			location.href = "/invest"
+		}
+		let values = {
+			"memb_cd": parseJwt(getCookie("jwt")).sub,
+			"account_num": localStorage.getItem('account_num'),
+			"org_code": localStorage.getItem('org_code'),
+			"prod_type": localStorage.getItem('prod_type'),
+			"seq": localStorage.getItem('seq')
+		}
+		ajax_invest_product_detail(values).done(function(response){
+			// 종목명
+			$('.tBaltit').text(localStorage.getItem('stock_name'));
+			// 총 보유 금액
+			$('.tBalAmount>.amount').text(response[0].eval_amt.toLocaleString());
+			// 손익금액 & 손익률
+			$('.invest').text(localStorage.getItem('profit'));
+			if(localStorage.getItem('profit').includes('-')){
+				$('.invest').attr('class', 'invest minus');
+			}
+			
+			// 평가금
+			$('.instItem>.instTotal>.itemData>.num').text(response[0].eval_amt.toLocaleString());
+			// 보유수량
+			$('.instItem>.accDetailList>li').eq(0).find('.itemData>.num').text(response[0].holding_num);
+			// 총 매입금액
+			$('.instItem>.accDetailList>li').eq(1).find('.itemData>.num').text(response[0].purchase_amt.toLocaleString());
+			// 평균 매입가
+			$('.instItem>.accDetailList>li').eq(2).find('.itemData>.num').text(response[0].purchase_avg.toLocaleString());
+			// 수익률
+			$('.instItem>.accDetailList>li').eq(3).find('.itemData>em').text(response[0].return_rate.toFixed(2)+'%');
+			if (response[0].return_rate < 0) {
+				$('.instItem>.accDetailList>li').eq(3).find('.itemData>em').attr('class', 'minus');
+			} else if (response[0].return_rate === 0) {
+				$('.instItem>.accDetailList>li').eq(3).find('.itemData>em').attr('class', 'zero');
+			}
+			if(response[0].currency_code != "KRW"){
+				$('.tBalAmount>em').eq(1).text(response[0].currency_code);
+				$('.instItem>.instTotal>.itemData>em').text(response[0].currency_code);
+				$('.instItem>.accDetailList>li').eq(1).find('.itemData>em').eq(1).text(response[0].currency_code);
+				$('.instItem>.accDetailList>li').eq(2).find('.itemData>em').eq(1).text(response[0].currency_code);
+			}
+			// 연결 계좌
+			$('.accSetting>ul>li').eq(0).find('.itemData>p>.edit').text(response[0].account_name);
+			// 상품 종류
+			$('.accSetting>ul>li').eq(1).find('.itemData').text(invest_products_type(response[0].prod_type));
+		})
+	})
+	// [S] 연결 계좌 클릭 시 -> D1100
+	$(document).on('click', '.edit', function(e){
+		e.preventDefault();
+		location.href="/invest/account"
+	})
+	// [E] 연결 계좌 클릭 시
+
+	// ajax 함수 리스트
+	function ajax_invest_product_detail(values){
+		return $.ajax({
+			url: 'http://192.168.240.208:8081/api/invest/product/detail',
+			type: 'POST',
+			contentType: 'application/json',
+			dataType: 'json',
+			data: JSON.stringify(values),
+			headers: {
+				"Authorization": "Bearer " + getCookie("jwt")
+			},
+			error: function(jqXHR) {
+				userErrorHandler(jqXHR);
+				ajax_invest_prod(member_id);
+			}
+		})
+	}
+	// ajax 함수 리스트
+</script>
+</body>
+</html>

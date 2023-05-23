@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        
+<mapper namespace="com.bit.checkpayclone.admin.notice.model.AdminNoticeMapper">
+	<select id="getNotice" resultType="com.bit.checkpayclone.admin.notice.model.AdminNoticeVo">
+		<![CDATA[ 
+		select seq as notice_num, title as subject, cntns as content,upd_dttm as nalja, ord_seq, board_tp, use_yn from tb_notice
+		]]>
+		<where>
+			<if test='(board_tp != null and !board_tp.equals(""))'>
+				<![CDATA[
+				and board_tp =#{board_tp}
+				]]>
+			</if>
+			<if test='(use_yn != null and !use_yn.equals(""))'>
+				<![CDATA[
+				and use_yn =#{use_yn}
+				]]>
+			</if>
+			<if test='(searchValue != null and !searchValue.equals(""))'>
+				<![CDATA[
+				and title like concat('%',#{searchValue},'%')
+				]]>
+			</if>
+		</where>
+		
+		<![CDATA[ 
+		order by ${seq_type} desc 
+		]]>
+		<if test='pagination_yn != null and pagination_yn.equals("Y")'>
+			<![CDATA[ 
+			OFFSET #{firstIndex} limit #{recordCountPerPage}
+			]]>
+		</if>
+	</select>
+	
+	<select id="getNoticeCount" resultType="int">
+		<![CDATA[ 
+		select count(*) from tb_notice
+		]]>
+		<where>
+			<if test='(board_tp != null and !board_tp.equals(""))'>
+				<![CDATA[
+				and board_tp =#{board_tp}
+				]]>
+			</if>
+			<if test='(use_yn != null and !use_yn.equals(""))'>
+				<![CDATA[
+				and use_yn =#{use_yn}
+				]]>
+			</if>
+			<if test='(searchValue != null and !searchValue.equals(""))'>
+				<![CDATA[
+				and title like concat('%',#{searchValue},'%')
+				]]>
+			</if>
+		</where>
+	</select>
+	
+	<select id="findOneNotice" resultType="com.bit.checkpayclone.admin.notice.model.AdminNoticeVo">
+		<![CDATA[ 
+		select seq as notice_num, title as subject, cntns as content,upd_dttm as nalja from tb_notice where seq=${num} and board_tp = '000001'
+		]]>
+	</select>
+	
+	<insert id="insertNotice" parameterType="com.bit.checkpayclone.admin.notice.model.AdminNoticeVo">
+		<![CDATA[ 
+		insert into public.tb_notice (title, cntns, board_tp, noti_tp, ord_seq, org_cd, catg_cd, reg_dttm, upd_dttm) 
+		values(#{subject},#{content},'000001',1,10,'BA000001','05',to_char(now(),'YYYYMMDDHHIISS'),to_char(now(),'YYYYMMDDHHIISS'))
+		]]>
+	</insert>
+	
+	<update id="updateNotice" parameterType="com.bit.checkpayclone.admin.notice.model.AdminNoticeVo">
+		<![CDATA[ 
+		update tb_notice 
+		]]>
+		<set>
+			<if test='(subject != null and !subject.equals(""))'>
+			<![CDATA[ 
+	          title = #{subject},
+	        ]]>
+	        </if>
+		    <if test='(content != null and !content.equals(""))'>
+				<![CDATA[ 
+		      cntns = #{content},
+		      ]]>
+		    </if>
+		    <if test='(use_yn != null and !use_yn.equals(""))'>
+				<![CDATA[ 
+		      use_yn = #{use_yn},
+		      ]]>
+		    </if>
+		    <![CDATA[ 
+		    upd_dttm = to_char(now(),'YYYYMMDDHHIISS')
+		    ]]>
+		</set>
+		<![CDATA[ 
+		where seq=#{num}
+		]]>
+	</update>
+	
+	<delete id="deleteNotice" parameterType="int">
+		<![CDATA[ 
+		delete from tb_notice where seq=#{num}
+		]]>
+	</delete>
+	
+</mapper>

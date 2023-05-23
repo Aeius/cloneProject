@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        
+<mapper namespace="com.bit.checkpayclone.admin.login.model.AdminLoginMapper">
+	<select id="findAdminInfoById" resultType="com.bit.checkpayclone.admin.login.model.AdminLoginVo"> 
+		select memb_cd as id, memb_pwd as password, role from tb_member where memb_cd=#{id}
+	</select>
+	
+	<select id="isExistsAdmin" resultType="boolean">
+		<![CDATA[ 
+		select exists(
+				select * from tb_member where memb_cd=#{id}
+			)
+		]]>
+	</select>
+</mapper>

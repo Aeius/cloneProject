@@ -1,0 +1,249 @@
+﻿<!DOCTYPE html>
+<html lang="ko" class="leaf">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>CheckPay</title>
+<meta http-equiv="Cache-Control" content="No-Cache">
+<meta http-equiv="Pragma" content="No-Cache">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<!--<meta name="title" content="">-->
+<meta name="description" content="">
+<!--<meta name="keywords" content="">-->
+<!-- The Open Graph protocol -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="">
+<meta property="og:description" content="">
+<meta property="og:url" content="">
+<meta property="og:image" content=""><!-- [D]리얼경로로 변경하세요 -->
+<!-- //The Open Graph protocol -->
+<link rel="SHORTCUT ICON" href=""><!-- [D]리얼경로로 변경하세요 -->
+<link rel="stylesheet" type="text/css" href="../../css/jquery-ui.min.css">
+<link rel="stylesheet" type="text/css" href="../../css/reset.css">
+<link rel="stylesheet" type="text/css" href="../../css/content.css">
+<link rel="stylesheet" type="text/css" href="../../css/theme_checkpay.css">
+<script type="text/javascript" src="../../js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="../../js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="../../js/jquery.ui.touch-punch.min.js"></script>
+<script type="text/javascript" src="../../js/slide_slick.js"></script>
+<script type="text/javascript" src="../../js/publishing.ui.library.1.0.0.js"></script>
+<script type="text/javascript" src="../../js/cmd.js"></script>
+<script type="text/javascript" src="../../js/common.js"></script>
+<!-- thymeleaf -->
+<html xmlns:th="http://www.thymeleaf.org">
+</head>
+<script>
+	//[S] 결제 예정 금액 로직- 박진호
+	let today = new Date();
+	let year = today.getFullYear();
+	let month = ('0' + (today.getMonth() + 1)).slice(-2);
+	let year_month = year + month;
+	let member_id = parseJwt(getCookie("jwt")).sub;
+
+	// 결제 예정 금액 api 호출 함수
+	function payment (){
+		return $.ajax({
+			url: 'http://192.168.240.208:8081/api/calender/card/bills/'+ member_id + '/' + year_month,
+			// url: 'http://localhost:8081/api/calender/card/bills/'+ member_id + '/' + year_month,
+			type: 'GET',
+			dataType: 'json',
+			headers: {
+				"Authorization" : "Bearer " + getCookie("jwt")
+			},
+			error: function(jqXHR) {
+				if(jqXHR.status == 401) {
+					tokenCall2(false).done(function(data){
+						$('.detail').find('.num').text(numberWithCommas(data[0].charge_amt));
+					});
+				}
+			}
+		})
+		.done(function(data){
+			if (data.length == 0) {
+				$('.detail').find('.num').text('0');
+				return;
+			} 
+			$(data).each(function(index, item){
+				$('.detail').find('.num').text(numberWithCommas(item.charge_amt));
+			})
+		});
+	}
+	payment();
+	//[E] 결제 예정 금액 로직- 박진호
+	
+</script>
+
+<th:block th:with="
+card01Size=${card01.size},
+card02Size=${card02.size},
+cardloanSize=${cardloanList.size},
+card01Val=${card01Size}==0?0:${#aggregates.sum(card01.![price_sum])},
+card02Val=${card02Size}==0?0:${#aggregates.sum(card02.![price_sum])},
+cardLongVal=${cardloanList}==0?0:${#aggregates.sum(cardloanList.![balance_amt])}
+">
+
+
+<body>
+
+<!-- wrap -->
+<div class="wrap">
+
+	<!-- header -->
+	<div class="header">
+		<div class="header_inn">
+			<div class="left">
+				<a href="javascript:history.back();" class="btnBack"><span class="blind">Back</span></a>
+			</div>
+			<div class="center">
+				<h2 class="tit_h2" th:utext="${#calendars.format(#calendars.createNow(),'MM월 ')}+사용">12월 사용</h2>
+			</div>
+		</div>
+	</div>
+	<!-- //header -->
+
+	<!-- container -->
+	<div class="container">
+		<div class="content">
+
+			<div class="tBalance">
+				<h3 class="tBaltit">
+					이번 달 지출<a href="#layer1_short" class="btn_open_layer_pop btn_more_ask" role="button"><span class="ico_ask type_gray"><em class="blind">더보기</em></span></a>
+				</h3>
+				<p class="tBalAmount" th:with="amt=${card01Val+card02Val}">
+					<em class="amount" th:utext ="${#numbers.formatInteger(amt,0,'COMMA')}">4,153,000</em>원</p>
+				<!-- <p class="tBalDetail">해외 통화 결제 내역 186USD + 896HKD 미합산</p> -->
+			</div>
+			<div class="cardTotal">
+				<!-- [S] 2021-11-30 카드 예정금액 링크영역 확장 -->
+				<a th:href="@{../card/cardBills}" class="link">
+					<p class="itemTit">카드별 결제 예정 금액은?</p>
+					<p class="itemData">
+						<span class="detail"><span class="num"></span>원</span>
+					</p>
+				</a>
+				<!-- [E] 2021-11-30 카드 예정금액 링크영역 확장 -->
+			</div>
+			<div class="asGroup">
+				<div class="listTit" th:if="${card01Size}!=0">
+					<h3 th:utext="'신용카드 <em class=pointColor>'+${card01Size}+'</em>'">신용카드 <em class="pointColor">2</em></h3>
+				</div>
+				<!--   
+					카드 id 은 ${cardList.card_id} 으로 호출하고
+					멤버 id 는 ${id} 하면 가져올 수 있어요
+				-->	
+				<div class="asList" th:if="${card01Size}!=0">
+					<div class="accItem" th:each="cardList,cnt : ${card01}">
+						<a th:onclick="javascript:detailmove('/card/payinfo/detail', 'card_id', /*[[${cardList.card_id}]]*/null)">
+							<div class="im card">
+								<img th:src="'../img/card/'+${cardList.org_code}+'.png'"
+								src="../../img/card/card_logo_001.png" alt="BNK 탑모아 신용카드">
+							</div>
+							<div class="tx">
+								<p class="prdName"><span class="ellipsis"><span class="orgName"
+											></span>
+										[[${cardList.card_name}]]</span></p>
+								<p class="amount"
+									th:utext="'<em>'+${#numbers.formatInteger(cardList.price_sum, 0, 'COMMA')}+'</em>원'">
+									><em>359,153,000</em>원</p>
+							</div>
+						</a>
+					</div>
+				</div>
+				<div class="listTit" th:if="${card02Size}!=0">
+					<h3 th:utext="'체크카드 <em class=pointColor>'+${card02Size}+'</em>'">체크카드 <em class="pointColor">2</em></h3>
+				</div>
+				<div class="asList" th:if="${card02Size}!=0">
+					<div class="accItem" th:each="cardList,cnt : ${card02}">
+						<a th:onclick="javascript:detailmove('/card/payinfo/detail', 'card_id', /*[[${cardList.card_id}]]*/null)">
+							<div class="im card">
+								<img th:src="'../img/card/'+${cardList.org_code}+'.png'"
+								src="../../img/card/card_logo_001.png" alt="BNK 탑모아 신용카드">
+							</div>
+							<div class="tx">
+								<p class="prdName"><span class="ellipsis"><span class="orgName"
+											></span>
+										[[${cardList.card_name}]]</span></p>
+								<p class="amount"
+									th:utext="'<em>'+${#numbers.formatInteger(cardList.price_sum, 0, 'COMMA')}+'</em>원'">
+									><em>359,153,000</em>원</p>
+							</div>
+						</a>
+					</div>
+				</div>
+				<div class="listTit">
+					<h3>카드대출 <em class="pointColor" th:utext="${cardloanList.size}">2</em></h3>
+				</div>
+				<div class="asList loan">
+					<div class="accItem" th:each="cardList, cardCnt : ${cardloanList}">
+						<!--[S]카드 장기대출-->
+						<th:block th:if="${cardList.isLong}==true">
+							<a th:onclick="javascript:detailmove('/card/loanlong', 'loan_name',/*[[${cardList.loan_name}]]*/null)">
+							<div class="im card">
+								<img th:src="'../img/bank/'+${cardList.org_code}+'.png'"
+									src="../img/bank/D1AABJ0000.png"
+										alt="BNK 탑모아 신용카드">
+							</div>
+							<div class="tx">
+								<p class="prdName"><span class="ellipsis"><span class="orgName"></span>
+										[[${cardList.loan_name}]]</span></p>
+								<p class="amount" th:utext="'<em>'+${#numbers.formatInteger(cardList.balance_amt, 0, 'COMMA')}+'</em>원'">><em>359,153,000</em>원</p>
+								<p class="deposit">금리 <em class="num" th:utext="${#numbers.formatDecimal(cardList.int_rate,0,2)}+'%'">9.88%</em></p>
+							</div>
+						</a>
+						</th:block>
+						<!--[E]카드 장기대출-->
+						
+						<!--[S]카드 단기대출-->		
+						<th:block th:if="${cardList.isLong}!=true">										
+						<a th:onclick="javascript:detailmove('/card/loanshort', 'loan_dtime',/*[[${cardList.loan_dtime}]]*/null)">
+							<div class="im card">
+								<img th:src="'../img/bank/'+${cardList.org_code}+'.png'"
+									src="../img/bank/D1AABJ0000.png"
+										alt="BNK 탑모아 신용카드">
+							</div>
+							<div class="tx">
+								<p class="prdName"><span class="ellipsis"><span class="orgName"></span>
+										[[${cardList.descrption}]] 단기 대출</span></p>
+								<p class="amount" th:utext="'<em>'+${#numbers.formatInteger(cardList.balance_amt, 0, 'COMMA')}+'</em>원'">><em>359,153,000</em>원</p>
+								<p class="deposit">금리 <em class="num" th:utext="${cardList.int_rate}+'%'">9.88%</em></p>
+							</div>
+						</a>
+						</th:block>
+						<!--[E]카드 단기대출-->												
+					</div>
+					
+				</div>
+			</div>
+			<!-- <div class="btn_wrap">
+				<div class="btnGroup type2">
+					<p><a href="#none" class="btnBl1">카드 추가</a></p>
+				</div>
+			</div> -->
+		</div>
+	</div>
+	<!-- //container -->
+
+</div>
+<!-- //wrap -->
+<!-- [S] layer_popup type1 A타입 짧은문구, 이번달 보험료 -->
+<div id="layer1_short" class="layer_popup type1 short"><!-- 2021-09-08 A타입 짧은문구, 클래스 'short' 추가 -->
+	<div class="layer_position">
+		<div class="layer_inner">
+			<div class="layer_tit">
+				<strong class="tit">이번 달 지출</strong>
+				<button type="button" class="js_pop_close btn_close"><span class="blind">닫기</span></button>
+			</div>
+			<div class="layer_cont">
+				<div class="msg_box">
+					이번 달 카드 승인내역 합산<br>(외화 결제내역 제외)
+
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- [E] layer_popup type1 A타입 짧은문구, 이번달 보험료 -->
+
+</body>
+</th:block>
+</html>

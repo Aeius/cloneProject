@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <style>
+        /*
+            페이지 내용
+            차트
+            */
+        .page-content .page-container .panel-default .panel-charts {
+            text-align: center;
+        }
+
+        .page-content .page-container .panel-default .panel-charts .chart-container {
+            display: inline-block;
+            width: 500px;
+            position: relative;
+        }
+
+        .page-content .page-container .panel-default .panel-charts .chart-container select {
+            position: absolute;
+            top: -40px;
+            right: 0px;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"
+    integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+<!-- Bootstrap -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css"
+    integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js"
+    integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd"
+    crossorigin="anonymous"></script>
+<!-- custom -->
+<script src="../../js/common.js"></script>
+<script src="../../js/adminCommon.js"></script>
+<!-- [S] chart -->
+<script src="../../js/highcharts/highcharts.js"></script>
+<script src="../../js/highcharts/modules/exporting.js"></script>
+<script src="../../js/highcharts/modules/export-data.js"></script>
+<!-- [E] chart -->
+
+<!-- css -->
+	<link href="../../css/admin/common.css" rel="stylesheet">
+</head>
+	<body>
+        <div id="header">
+            <div class="logo"></div>
+        </div>
+        <div id="navigation">
+            <div class="nav-container">
+                <div class="nav-item"><span class="glyphicon glyphicon-home"></span><a href="/admin/home">홈</a></div>
+                <div class="nav-item active"><span class="glyphicon glyphicon-user"></span><a href="/admin/member/">회원 관리</a></div>
+                <div class="nav-item"><span class="glyphicon glyphicon-bullhorn"></span><a href="/admin/notice/">공지사항 관리</a></div>
+                <div class="nav-item"><span class="glyphicon glyphicon-signal"></span><a href="/admin/statistics/">통계</a></div>
+            </div>
+            <div class="logout" data-toggle="modal" data-target="#logout-modal">
+                <span class="glyphicon glyphicon glyphicon-log-out" aria-hidden="true"></span>
+            </div>
+        </div>
+        <div id="main">
+            <div class="panel panel-default">
+                <!-- Default panel contents -->
+                <div class="panel-heading">회원 목록</div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="searchValue" placeholder="회원명 검색">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" type="button" onclick="searchResult()"><span
+                                            class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+                                </span>
+                            </div><!-- /input-group -->
+                        </div><!-- /.col-lg-6 -->
+                    </div><!-- /.row -->
+                </div>
+                <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>email</th>
+                                <th>이름</th>
+                                <th>연락처</th>
+                                <th>성별</th>
+                                <th>회원상태</th>
+                                <th>가입일</th>
+                            </tr>
+                        </thead>
+                        <tbody id="list">
+                            
+                        </tbody>
+                    </table>
+                <nav aria-label="Page navigation" class="page-pagination">
+                    <ul id="pagination" class="pagination">
+
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        
+<!-- 로그아웃 모달 시작 -->
+    <div class="modal fade" id="logout-modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">로그아웃</h4>
+                </div>
+                <div class="modal-body">
+                    <p>로그아웃 하시겠습니까?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
+                    <button type="button" class="btn btn-danger" id="logout-data" data-toggle="modal"
+                        data-target="#logout-msg">로그아웃</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="logout-msg" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">로그아웃</h4>
+                </div>
+                <div class="modal-body">
+                    <p>로그아웃 완료.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" id="move-loginPage">확인</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 로그아웃 모달 끝 -->
+    
+        <div id="bg">
+            
+        </div>
+        
+	</body>
+<script type="text/javascript">
+    var baseUrl = 'http://192.168.240.208:8081';
+
+    var token = getCookie("jwt");
+    var id = parseJwt(getCookie("jwt")).sub;
+    var rtk = getCookie("rtk");
+
+    var currentPageNum = 1;
+    var countDataInPage = 10;
+    var countInPageGroup = 5;
+    var searchColumn = "";
+    var searchValue = "";
+
+    var dev = false;
+    if (dev) {
+        baseUrl = 'http://localhost:8081';
+    }
+
+    $(function () {
+        getList();
+
+        //임시 로그아웃 처리
+        $('#logout-data').click(function () {
+            $('#logout-modal').remove();
+            $('#move-loginPage').click(function () {
+                $.ajax({
+                    url: baseUrl + "/api/login/logout",
+                    type: 'post',
+                    data: {
+                        "rtk": rtk
+                    },
+                    success: function () {
+                        deleteCookie('jwt');
+                        deleteCookie('rtk');
+                        window.location.href = "/admin/login"
+                    },
+                    error: function (jqXHR) {
+                        console.log("로그아웃 error" + jqXHR.status);
+                    }
+                });
+            })
+        })
+    });
+
+    function searchResult() {
+        currentPageNum = 1;
+        searchColumn = "memb_nm";
+        searchValue = $('#searchValue').val();
+
+        getList();
+    }
+
+    function clickPage(PageNum) {
+        currentPageNum = PageNum;
+
+        getList();
+    }
+
+    /**
+     * 회원 목록 가져오기
+     */
+    function getList() {
+        $.ajax({
+            url: baseUrl + '/api/admin/member/',
+            type: 'get',
+            data: {
+                currentPageNum: currentPageNum,
+                countDataInPage: countDataInPage,
+                countInPageGroup: countInPageGroup,
+                searchColumn: searchColumn,
+                searchValue: searchValue,
+            },
+            dataType: 'json',
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("Authorization", "Bearer " + token);
+            },
+            success: async function (result) {
+                if (result) {
+                    var data = result.data;
+                    var totalDataCount = result.totalDataCount;
+                    var rowsHtml = "";
+
+                    data.map((value, index) => {
+
+                        var gender = '남성';
+                        var class_gender = 'male';
+                        if (value.member_gender == 'F') {
+                            gender = '여성';
+                            class_gender = 'female';
+                        }
+                        var status = '활동 중';
+                        var reg_date = value.member_reg_date.split('.')[0];
+                        reg_date = reg_date.substr(0,4)+'-'+reg_date.substr(4,2)+'-'+reg_date.substr(6,2)+' '+reg_date.substr(8,2)+':'+reg_date.substr(10,2)+':'+reg_date.substr(12,2);
+
+						rowsHtml += '<tr>';
+                        rowsHtml += '<td class="email" onclick="location.href=\'/admin/member/' + value.memb_cd + '\'" style="cursor:pointer; color:var(--theme-color1);"><span>' + value.member_email + '</span></td>';
+                        rowsHtml += '<td class="name">' + value.member_name + '</td>';
+                        rowsHtml += '<td class="tel">' + value.member_tel + '</td>';
+                        rowsHtml += '<td class="gender"><div class="' + class_gender + '">' + gender + '</div></td>';
+                        rowsHtml += '<td class="status">' + status + '</td>';
+                        rowsHtml += '<td class="reg_date">' + reg_date + '</div>';
+                        rowsHtml += '</tr>';
+                    });
+
+                    $('#list').html(rowsHtml);
+
+                    var countTotalPage = Math.ceil(totalDataCount / countDataInPage);
+                    var PageGroup = Math.floor(currentPageNum / countInPageGroup);
+                    if (PageGroup > 0 && Math.floor(currentPageNum % countInPageGroup) == 0) {
+                        PageGroup -= 1;
+                    }
+                    var startPageGroupNum = PageGroup * countInPageGroup + 1;
+                    var endPageGroupNum = startPageGroupNum + (countInPageGroup - 1);
+
+                    if (endPageGroupNum >= countTotalPage) endPageGroupNum = countTotalPage;
+                    var pageGroupHTML = "";
+
+                    if (endPageGroupNum > countInPageGroup) pageGroupHTML += '<li onclick="clickPage(' + (startPageGroupNum - 2) + ')"><a href="#">이전</a></li>';
+                    var activeClass = "";
+                    for (var i = startPageGroupNum; i <= endPageGroupNum; i++) {
+                        activeClass = "";
+                        if (currentPageNum == i) activeClass = "active";
+                        pageGroupHTML +=
+                            '<li class="' +
+                            activeClass +
+                            '" onclick="clickPage(' +
+                            i +
+                            ')"><a href="#">' +
+                            i + '</a>'
+                        "</li>";
+                    }
+                    if (endPageGroupNum < countTotalPage)
+                        pageGroupHTML += '<li onclick="clickPage(' + (endPageGroupNum + 1) + ')"><a href="#">다음</a></li>';
+                    $("#pagination").html(pageGroupHTML);
+                }
+
+            }, error: function (jqXHR) {
+               adminErrorHandler(jqXHR);
+            }
+        });
+    }
+
+</script>
+
+</html>

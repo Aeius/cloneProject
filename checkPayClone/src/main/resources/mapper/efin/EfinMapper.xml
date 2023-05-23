@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bit.checkpayclone.efin.model.EfinMapper">
+	
+	<!-- #prepaid 관련 -->
+	
+	<select id="findPrepaidTranList" resultType="com.bit.checkpayclone.efin.model.EfinVo"> 
+		select 
+			memb_cd,
+			org_code, 
+			fob_id, 
+			account_id, 
+			trans_type, 
+			trans_dtime, 
+			trans_no,
+			merchant_name, 
+			trans_dt, seq, 
+			trans_amt, 
+			balance_amt, 
+			trans_memo,
+			pay_method 
+		from tb_a_efin_prepaid_trans a 
+		where a.memb_cd = #{memb_cd}
+			and a.org_code = #{org_code} 
+			and a.fob_id = #{fob_id} 
+			and trans_dtime between #{startDt} || '000000' and #{endDt} || '999999' 
+		<choose>
+			<when test="flag1 == 'A'">
+				order by trans_dtime asc, seq asc
+			</when>
+			<otherwise>
+				order by trans_dtime desc, seq desc
+			</otherwise>
+		</choose>
+		LIMIT 10 OFFSET #{page}*10; 
+	</select>
+
+	<!-- 2023.04.30 상세보기 추가 -->
+	<select id="findPrepaidTranDetailOne"
+		resultType="com.bit.checkpayclone.efin.model.EfinVo">
+		select
+			memb_cd,
+			org_code,
+			fob_id,
+			account_id,
+			trans_type,
+			trans_dtime,
+			trans_no,
+			trans_dt,
+			trans_amt,
+			balance_amt,
+			trans_org_code,
+			trans_id,
+			trans_memo,
+			merchant_name,
+			trans_title,
+			trans_category,
+			pay_method,
+			reg_dttm,
+			seq,
+			b.catg_name,
+			b.inclusions,
+			CASE
+				WHEN pay_method = '01' THEN '오프라인 결제'
+				WHEN pay_method = '02' THEN '온라인 결제'
+			end as pay_method_name,
+			CASE
+				WHEN SUBSTRING(a.trans_type, LENGTH(a.trans_type)-1, 2) in('03','09','13','19') 
+					then COALESCE((select fob_name from tb_a_efin_prepaid_list ta1 where ta1.memb_cd = a.memb_cd and ta1.org_code = a.org_code and ta1.fob_id = a.trans_id), '')
+				WHEN SUBSTRING(a.trans_type, LENGTH(a.trans_type)-1, 2) = '04' 
+					THEN '-'
+				ELSE a.trans_id
+			END as trans_pay_name
+		from tb_a_efin_prepaid_trans a
+			left join tb_a_efin_item_catg b on a.trans_category = b.item_catg
+		where a.memb_cd = #{memb_cd}
+			and a.org_code = #{org_code}
+			and a.fob_id = #{fob_id}
+			and trans_dtime = #{trans_dtime}
+			and a.account_id = #{account_id}
+			and trans_type = #{trans_type}
+			and trans_dt = #{trans_dt}
+			and seq = #{seq}
+	</select>
+
+	<!-- 2023.05.01 prepaid 종합조회 추가 -->
+	<select id="findPrepaidInfoOne" resultType="com.bit.checkpayclone.efin.model.EfinVo">
+		select
+			a.memb_cd,
+			a.org_code,
+			a.fob_id,
+			a.fob_name,
+			a.is_consent,
+			a.reg_date,
+			a.limit_amt,
+			a.is_charge,
+			a.currency_code,
+			a.reg_dttm,
+			a.upd_dttm,
+			a.account_cnt,
+			b.account_id,
+			b.total_balance_amt,
+			b.charge_balance_amt,
+			b.reserve_balance_amt,
+			b.reserve_due_amt,
+			b.exp_due_amt,
+			c.seq,
+			c.charge_org_code,
+			c.charge_account_num,
+			c.charge_option,
+			c.charge_day,
+			c.charge_base_amt,
+			c.charge_amt
+		from tb_a_efin_prepaid_list a
+			left join tb_a_efin_prepaid_balance b using(memb_cd,org_code,fob_id)
+			left join tb_a_efin_prepaid_charge c using(memb_cd,org_code,fob_id)
+		where memb_cd = #{memb_cd}
+			and org_code = #{org_code}
+			and fob_id = #{fob_id}
+	</select>
+
+	<!-- 2023.04.27 추가  -->
+	<select id="findPrepaidListOne"
+		resultType="com.bit.checkpayclone.efin.model.EfinVo">
+		select * from tb_a_efin_prepaid_list
+		where memb_cd = #{memb_cd}
+		and org_code = #{org_code}
+		and fob_id = #{fob_id}
+	</select>
+
+	<!-- 2023.04.27 추가  -->
+	<select id="findPrepaidBalanceOne"
+		resultType="com.bit.checkpayclone.efin.model.EfinVo">
+		select * from tb_a_efin_prepaid_balance
+		where memb_cd = #{memb_cd}
+		and org_code = #{org_code}
+		and fob_id = #{fob_id}
+	</select>
+	
+	<!--권면 리스트 조회 05/02 수정-->
+	<select id="findPrepaidList" resultType="com.bit.checkpayclone.efin.model.EfinVo">
+		SELECT  tmo.org_name_abb ,tl.fob_name,tpreb.total_balance_amt,tl.currency_code 
+			,ta.account_id, tmo.org_code , tl.fob_id
+		FROM tb_a_efin_prepaid_list as tl
+		left join tb_a_efin_prepaid_account ta 
+		using(memb_cd, org_code, fob_id)
+		left join tb_a_efin_prepaid_balance as tpreb
+		using (memb_cd, org_code, fob_id)
+		left JOIN tb_a_mydata_orgs as tmo 
+		using (org_code)
+		where tl.memb_cd =#{id};
+	</select>
+	
+	
+	<!-- #paid 관련 -->
+	<!-- 2023.05.02 계정 결제정보 리스트 조회 추가 -->
+	<select id="findPaidTranList" resultType="com.bit.checkpayclone.efin.model.EfinVo"> 
+			select 
+			memb_cd,
+			org_code,
+			sub_key,
+			trans_type,
+			trans_num,
+			trans_dtime,
+			trans_no,
+			trans_dt,
+			currency_code,
+			trans_amt,
+			trans_org_code,
+			pay_id,
+			total_install_cnt,
+			trans_memo,
+			merchant_name,
+			trans_title,
+			trans_category,
+			pay_method,
+			reg_dttm,
+			merchant_regno,
+			seq,
+			CASE
+				WHEN pay_method = '01' THEN '오프라인 결제'
+				WHEN pay_method = '02' THEN '온라인 결제'
+			end as pay_method_name
+		from
+			tb_a_efin_paid_trans a
+		where
+			a.memb_cd = #{memb_cd}
+			and a.org_code = #{org_code}
+			and a.sub_key = #{sub_key}
+			and trans_dtime between #{startDt} || '000000' and #{endDt} || '999999' 
+		<choose>
+			<when test="flag1 == 'A'">
+				order by trans_dtime asc, seq asc
+			</when>
+			<otherwise>
+				order by trans_dtime desc, seq desc
+			</otherwise>
+		</choose>
+		LIMIT 10 OFFSET #{page}*10; 
+	</select>
+	
+	<!-- 2023.05.02 계정 결제정보 리스트 상세정보 조회 추가 -->
+	<select id="findPaidTranDetailOne" resultType="com.bit.checkpayclone.efin.model.EfinVo">
+		select 
+			a.memb_cd,
+			a.org_code,
+			a.sub_key,
+			a.trans_type,
+			a.trans_num,
+			a.trans_dtime,
+			a.trans_no,
+			a.trans_dt,
+			a.currency_code,
+			a.trans_amt,
+			a.trans_org_code,
+			a.pay_id,
+			a.total_install_cnt,
+			a.trans_memo,
+			a.merchant_name,
+			a.trans_title,
+			a.trans_category,
+			a.pay_method,
+			a.reg_dttm,
+			a.merchant_regno,
+			a.seq,
+			b.org_name as trans_org_name,
+			c.catg_name,
+			CASE
+				WHEN a.pay_method = '01' THEN '오프라인 결제'
+				WHEN a.pay_method = '02' THEN '온라인 결제'
+			END as pay_method_name,
+			CASE
+				WHEN SUBSTRING(a.trans_type, LENGTH(a.trans_type)-1, 2) in('03','09') 
+					then COALESCE((select fob_name from tb_a_efin_prepaid_list ta1 where ta1.memb_cd = a.memb_cd and ta1.org_code = a.org_code and ta1.fob_id = a.pay_id), '')
+				WHEN SUBSTRING(a.trans_type, LENGTH(a.trans_type)-1, 2) = '04' 
+					THEN '-'
+				ELSE a.pay_id
+			END as trans_pay_name
+		from tb_a_efin_paid_trans a
+			left join tb_a_mydata_orgs b on a.trans_org_code = b.org_code
+			left join tb_a_efin_item_catg c on a.trans_category = c.item_catg 
+		where a.memb_cd = #{memb_cd}
+			and a.org_code = #{org_code}
+			and a.sub_key = #{sub_key}
+			and a.trans_dtime = #{trans_dtime}
+			and a.trans_no = #{trans_no}
+			and a.seq = #{seq}
+	</select>
+			
+	<!-- 2023.05.02 계정 결제정보 리스트 상세정보 조회 추가 -->
+	<select id="findPaidInfoOne" resultType="com.bit.checkpayclone.efin.model.EfinVo">
+			select
+				a.memb_cd,
+				a.org_code,
+				a.sub_key,
+				a.account_id,
+				a.is_consent,
+				a.reg_date,
+				a.is_pay,
+				a.reg_dttm,
+				a.upd_dttm,
+				b.error_yn,
+				b.hidden_yn,
+				b.acct_nick_nm,
+				b.ord_seq,
+				c.org_name
+		from tb_a_efin_paid_list a
+			left join tb_a_efin_paid_member b using(memb_cd,org_code,sub_key)
+			left join tb_a_mydata_orgs c using(org_code)
+		where memb_cd = #{memb_cd}
+			and org_code = #{org_code}
+			and sub_key = #{sub_key}
+	</select>
+	
+	<!-- 2023.05.02 계정 결제수단 조회 추가 -->
+	<select id="findPaidMethod" resultType="com.bit.checkpayclone.efin.model.EfinVo">
+		select
+			a.sub_key,
+			a.memb_cd,
+			a.org_code,
+			a.seq,
+			a.pay_org_code,
+			a.pay_id,
+			a.is_primary,
+			a.reg_dttm,
+			COALESCE((select fob_name from tb_a_efin_prepaid_list ta1 where ta1.memb_cd = a.memb_cd and ta1.org_code = a.org_code and ta1.fob_id = a.pay_id), a.pay_id) as trans_pay_name
+		from tb_a_efin_paid_method a
+		where a.memb_cd = #{memb_cd}
+			and a.org_code = #{org_code}
+			and a.sub_key = #{sub_key}
+	</select>
+	
+	
+	<!-- #tb_a_mydata_orgs 관련 -->
+	<!--권면리스트-기관코드로 권면계정 리스트 조회 05/02 수정-->
+	<select id="findAccountIdByOrgName" resultType="com.bit.checkpayclone.efin.model.EfinVo">
+		select tmo.org_code,tl.sub_key, tl.account_id, tmo.org_name_abb 
+		from tb_a_efin_paid_list as tl
+		left JOIN tb_a_mydata_orgs as tmo using (org_code)
+		where tl.memb_cd =#{id}
+		and tmo.org_name_abb =#{orgname};
+	</select>
+</mapper>

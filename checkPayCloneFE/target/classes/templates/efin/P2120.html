@@ -1,0 +1,255 @@
+﻿<!DOCTYPE html>
+<html lang="ko" class="leaf">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>CheckPay</title>
+<meta http-equiv="Cache-Control" content="No-Cache">
+<meta http-equiv="Pragma" content="No-Cache">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<!--<meta name="title" content="">-->
+<meta name="description" content="">
+<!--<meta name="keywords" content="">-->
+<!-- The Open Graph protocol -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="">
+<meta property="og:description" content="">
+<meta property="og:url" content="">
+<meta property="og:image" content=""><!-- [D]리얼경로로 변경하세요 -->
+<!-- //The Open Graph protocol -->
+<link rel="SHORTCUT ICON" href=""><!-- [D]리얼경로로 변경하세요 -->
+<link rel="stylesheet" type="text/css" href="../../css/jquery-ui.min.css">
+<link rel="stylesheet" type="text/css" href="../../css/reset.css">
+<link rel="stylesheet" type="text/css" href="../../css/content.css">
+<link rel="stylesheet" type="text/css" href="../../css/theme_checkpay.css">
+<script type="text/javascript" src="../../js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="../../js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="../../js/jquery.ui.touch-punch.min.js"></script>
+<script type="text/javascript" src="../../js/slide_slick.js"></script>
+<script type="text/javascript" src="../../js/publishing.ui.library.1.0.0.js"></script>
+<script type="text/javascript" src="../../js/cmd.js"></script>
+</head>
+
+<body>
+
+<!-- wrap -->
+<div class="wrap">
+
+	<!-- header -->
+	<div class="header">
+		<div class="header_inn">
+			<div class="left">
+				<a href="#none" class="btnBack"><span class="blind">Back</span></a>
+			</div>
+			<div class="right">
+                <a href="#none" class="btnClose"><span class="blind">close</span></a>
+			</div>
+		</div>
+	</div>
+	<!-- //header -->
+
+	<!-- container -->
+	<div class="container">
+		<div class="content">
+			<div class="tBalance">
+				<h3 class="tBaltit">Pre-i 선불카드</h3>
+				<p class="tBalAmount"><em class="amount">400,000</em>원</p>
+				<a href="#" class="btnRef"><span class="blind">새로고침</span></a>
+				<!-- 새로고침중 일때 class에 ing 추가 -->
+				<!-- <a href="#" class="btnRef ing"><span class="blind">새로고침</span></a> -->
+			</div>
+			<div class="accHistory">
+				<div class="topCtrl">
+					<div class="rangeCtrl">
+						<button class="btnPrev"><span class="blind">이전</span></button>
+						<span class="range">2021.09</span>
+						<button class="btnNext"><span class="blind">다음</span></button>
+					</div>
+					<a href="#" class="btnFilter" role="button"><span class="blind">필터</span></a>
+				</div>
+				<div class="historyList">
+					<span class="date"><span class="num">09.25</span> 금요일</span>
+					<ul>
+						<li>
+							<a href="#layer_P2120" class="link btn_open_bottom_sheet" role="button"><!-- 2021-12-23 개별 거래내역 버튼, 바텀시트 오픈 추가 -->
+								<div class="left">
+									<span class="category">우리은행</span>
+									<span class="time"><span class="tx">충전</span>15:30</span>
+								</div>
+								<div class="right">
+									<span class="amount"><em class="num">140,000</em>원</span>
+									<span class="balance">잔액 <em class="num">400,000</em>원</span>
+								</div>
+							</a>
+						</li>
+						<li>
+							<a href="#layer_P2120" class="link btn_open_bottom_sheet" role="button"><!-- 2021-12-23 개별 거래내역 버튼, 바텀시트 오픈 추가 -->
+								<div class="left">
+									<span class="category">스타벅스코리아</span>
+									<span class="time"><span class="tx">결제</span>14:10</span>
+								</div>
+								<div class="right">
+									<span class="amount"><em class="num">-400,000</em>원</span><!-- 결제 금액 앞 '-' 부호 추가 -->
+									<span class="balance">잔액 <em class="num">160,000</em>원</span>
+								</div>
+							</a>
+						</li>
+					</ul>
+					<span class="date"><span class="num">09.24</span> 목요일</span>
+					<ul>
+						<li class="cancel"><!-- 2022-09-28 결제취소 영역 클래스 'cancel' 추가 -->
+							<a href="#layer_P2120" class="link btn_open_bottom_sheet" role="button"><!-- 2021-12-23 개별 거래내역 버튼, 바텀시트 오픈 추가 -->
+								<div class="left">
+									<span class="category">(주)우아한형제들</span>
+									<span class="time"><span class="tx">결제취소</span>12:06</span>
+								</div>
+								<div class="right">
+									<span class="amount"><em class="num">50,000</em>원</span>
+									<span class="balance">잔액 <em class="num">200,000</em>원</span>
+								</div>
+							</a>
+						</li>
+						<li>
+							<a href="#layer_P2120" class="link btn_open_bottom_sheet" role="button"><!-- 2021-12-23 개별 거래내역 버튼, 바텀시트 오픈 추가 -->
+								<div class="left">
+									<span class="category">(주)우아한형제들</span>
+									<span class="time"><span class="tx">결제</span>12:06</span>
+								</div>
+								<div class="right">
+									<span class="amount"><em class="num">-50,000</em>원</span><!-- 결제 금액 앞 '-' 부호 추가 -->
+									<span class="balance">잔액 <em class="num">200,000</em>원</span>
+								</div>
+							</a>
+						</li>
+					</ul>
+					<div class="upLoading circleBar">
+						<div class="loader"></div>
+						<p>업데이트 중입니다</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- //container -->
+
+</div>
+<!-- //wrap -->
+
+<!-- [S] layer P2120 내용 -->
+<div id="layer_P2120" class="layer_bottomsheet">
+	<div class="layer_inner">
+		<div class="layer_tit">
+			<strong class="tit"><span>선불카드 거래상세</span></strong>
+			<button type="button" class="js_pop_close btn_close"><span class="blind">닫기</span></button>
+		</div>
+		<div class="layer_cont">
+			<!-- [S] P2120 -->
+			<div class="accSetting type_history">
+				<div class="tAccount">
+					<h3 class="tAccTit">스타벅스코리아</h3>
+					<p class="tAccDetail">결제</p>
+				</div>
+				<h4 class="listTit"><em class="pointColor">요약</em></h4>
+				<ul class="accDetailList">
+					<li>
+						<span class="itemTit">거래유형</span>
+						<span class="itemData">결제</span>
+					</li>
+					<li>
+						<span class="itemTit">금액</span>
+						<span class="itemData"><em class="num">140,000</em>원</span>
+					</li>
+					<li>
+						<span class="itemTit">잔액</span><!-- 2022-09-28 거래 후 잔액 >> 잔액 -->
+						<span class="itemData"><em class="num">400,000</em>원</span>
+					</li>
+					<li>
+						<span class="itemTit">일시</span>
+						<span class="itemData"><em class="num">2021.09.25 15:30</em></span>
+					</li>
+					<li>
+						<span class="itemTit">결제방법</span>
+						<span class="itemData">3개월 할부</span>
+					</li>
+				</ul>
+				<h4 class="listTit"><em class="pointColor">가맹점</em></h4>
+				<ul class="accDetailList">
+					<li>
+						<span class="itemTit">가맹점명</span>
+						<span class="itemData">스타벅스코리아</span>
+					</li>
+					<li>
+						<span class="itemTit">사업자번호</span>
+						<span class="itemData"><em class="num">123-456-789</em></span>
+					</li>
+				</ul>
+			</div>
+			<!-- [E] P2120 -->
+		</div>
+	</div>
+</div>
+<!-- [E] layer P2120 내용 -->
+
+<script>
+$(document).ready(function(){
+	//은행,카드,기타 선택 탭
+	$(".tabInter").tabs({
+		wrapClass:".tabInter",
+		clickClass:".js_tabclickDp1",
+		showClass:".tab_cntDp1",
+		animate:false,
+		contentWidthFull:false,//effect when animate:true
+		animateBorder:["false",".tabs_header"],//show border in class .
+		fade:false,
+		speed:500
+	});
+});
+// [S] 바텀시트
+$(document).on("click", ".btn_open_bottom_sheet", function(e){
+	e.preventDefault();
+	var $href = $(this).attr('href');
+	layer_bottomsheet($href);
+	$('html').addClass('scroll_lock');
+	// [S] multi layer
+	var dimIdx = $('.dim').index();
+	eval('$focusReturn' + [dimIdx] + '= $(this)');
+	// [E] multi layer
+});
+function layer_bottomsheet(el){
+	var $el = $(el);
+	$el.append("<div class=\"dim\"></div>");
+	isDim ? $('.layer_bottomsheet').show() : $el.show().attr({'tabindex':'0','aria-hidden':'false'}).focus();
+	setTimeout(function() {
+		$el.find('.layer_inner').addClass('on');
+	}, 50);
+	// [S] multi layer
+	var isDim;
+	var dimIdx = $('.dim').index();
+	var thisDim = $el.find('.dim');
+	var thisLyZindex = dimIdx + 4000;
+	$('.dim').css('opacity','0');
+	thisDim.css('opacity','.7');
+	thisDim.closest('.layer_bottomsheet, .layer_popup').css('z-index', thisLyZindex);
+	// [E] multi layer
+	$el.find('.js_pop_close').click(function(){
+		$el.find('.layer_inner').removeClass('on');
+		setTimeout(function() {
+			isDim ? $('.layer_bottomsheet').hide() : $el.hide();
+			$('html').removeClass('scroll_lock');
+			$el.attr({'tabindex':'-1','aria-hidden':'true'}).find(".dim").remove();
+			// [S] multi layer
+			if($('.dim').length == '2'){
+				$('.dim:eq(1)').css('opacity','.7');
+			}else if($('.dim').length == '1'){
+				$('.dim').css('opacity','.7');
+			}
+			// [E] multi layer
+		}, 200);
+		eval('$focusReturn'+ [dimIdx]).focus();
+		return false;
+	});
+}
+// [E] 바텀시트
+</script>
+</body>
+</html>

@@ -1,0 +1,149 @@
+﻿<!DOCTYPE html>
+<html lang="ko" class="leaf">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>CheckPay</title>
+<meta http-equiv="Cache-Control" content="No-Cache">
+<meta http-equiv="Pragma" content="No-Cache">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<!--<meta name="title" content="">-->
+<meta name="description" content="">
+<!--<meta name="keywords" content="">-->
+<!-- The Open Graph protocol -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="">
+<meta property="og:description" content="">
+<meta property="og:url" content="">
+<meta property="og:image" content=""><!-- [D]리얼경로로 변경하세요 -->
+<!-- //The Open Graph protocol -->
+<link rel="SHORTCUT ICON" href=""><!-- [D]리얼경로로 변경하세요 -->
+<link rel="stylesheet" type="text/css" href="../css/jquery-ui.min.css">
+<link rel="stylesheet" type="text/css" href="../css/reset.css">
+<link rel="stylesheet" type="text/css" href="../css/content.css">
+<link rel="stylesheet" type="text/css" href="../css/theme_checkpay.css">
+<script type="text/javascript" src="../js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="../js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="../js/jquery.ui.touch-punch.min.js"></script>
+<script type="text/javascript" src="../js/slide_slick.js"></script>
+<script type="text/javascript" src="../js/publishing.ui.library.1.0.0.js"></script>
+<script type="text/javascript" src="../js/cmd.js"></script>
+<script type="text/javascript" src="../js/common.js"></script>
+</head>
+
+<body>
+
+<!-- wrap -->
+<div class="wrap">
+
+	<!-- header -->
+	<div class="header setup"><!-- 2021-10-07 마이페이지 클래스 'setup' 추가 -->
+		<div class="header_inn">
+			<div class="left">
+				<a href="javascript:window.history.go(-1);" class="btnBack"><span class="blind">Back</span></a>
+			</div>
+			<div class="center">
+				<h2 class="tit_h2">공지사항</h2>
+			</div>
+			<div class="right">
+				<!--<a href="#none" class="btnClose"><span class="blind">close</span></a>-->
+			</div>
+		</div>
+	</div>
+	<!-- //header -->
+
+	<!-- container -->
+	<div class="container">
+		<div class="content">
+			<div class="insLink">
+				<ul class="insLinkList">
+					<!-- <li class="new">
+						<a href="#">
+							<p class="tit"><span>공인인증서 연동안내</span></p>
+							<p class="date">2021.09.08</p>
+						</a>
+					</li> -->
+				</ul>
+			</div>
+		</div>
+	</div>
+	<!-- //container -->
+
+</div>
+<!-- //wrap -->
+</body>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+		var listhtml = "";
+		var pagetest = 1;
+		
+		$.ajax({
+			type : "GET",
+			url : "http://192.168.240.208:8081/api/mypage/notice/1?board_tp=000001",
+			datatype : "json",
+			async : false,
+			headers: {
+		           "Authorization" : "Bearer " + getCookie("jwt")
+			        },
+			success : function(data){
+				
+				var arr = data.noticeList;
+				$.each(arr, function(idx, val) {
+					var date = val.nalja;
+					date = date.substr(0,8);					
+					date = date.replace(/(\d{4})(\d{2})(\d{2})/g, '$1-$2-$3'); // 날짜 포맷팅 yyyy-mm-dd
+					dateFormat(date, val.notice_num);
+					
+					listhtml +="<p class='tit'><span>"+val.subject+"</span></p>";
+					listhtml +="<p class='date'>"+date+"</p>";
+					$('.insLinkList').append(listhtml);
+					listhtml = "";
+				});
+			},
+			error: function (jqXHR) {
+		            if (jqXHR.status == 401 && msg == "토큰 기한 만료") {
+						tokenCall2();
+		            }
+		            else if(jqXHR.status == 401 && msg == "jwt claims 비어있음"){
+						console.log("jwt claims 비어있음");
+					}
+					else if(jqXHR.status == 401 && msg == "유효하지 않은 서명"){
+						console.log("유효하지 않은 서명");
+					}
+					else if(jqXHR.status == 401 && msg == "유효하지 않은 토큰"){
+						console.log("유효하지 않은 토큰");
+					}
+					else if(jqXHR.status == 401  && msg == "지원되지 않는 토큰"){
+						console.log("지원되지 않는 토큰");
+					}
+					else{
+						console.log("권한 없음");
+					}
+	            },
+			});
+		
+		// 날짜 포멧팅
+		function dateFormat(date, idx){
+			// 일주일 내에 생긴 글이 아니면 빨간점 없애기
+			var now = new Date();
+			var oneweek = new Date(now.setDate(now.getDate() - 7)); // 7일전 전
+			const date1 = new Date(oneweek);
+			const date2 = new Date(date);
+			
+			if(date1>date2){ // 7일이 경과되었으면 빨간점 지우기
+				listhtml +="<li class='' id='"+idx+"'><a href='./YY1410.html'>";
+			}
+			else listhtml +="<li class='new' id='"+idx+"'><a href='./YY1410.html'>";
+			return date.replaceAll("-",".");
+		}
+		
+		// 게시글을 누르면 로컬스토리지에 클래스 값 담기
+		$(document).on("click", "li", function () {
+			var index = $(this).attr("id");
+			localStorage.setItem("key", index);
+		});
+	});
+
+</script>
+</html>

@@ -1,0 +1,76 @@
+<div class="historyList">
+    <span class="date"><span class="num"></span> </span>
+    <ul>
+        <li>
+            <a href="B1444.html" class="link" role="button">
+                <div class="left">
+                    <span class="category"></span>
+                    <span class="time"></span>
+                </div>
+                <div class="right">
+                    <span class="amount"><em class="num"></em></span>
+                    <span class="balance"></span>
+                </div>
+            </a>
+        </li>
+        <li>
+            <a href="B1444.html" class="link" role="button">
+                <div class="left">
+                    <span class="category"></span>
+                    <span class="time"></span>
+                </div>
+                <div class="right">
+                    <span class="amount"><em class="num"></em></span>
+                    <span class="balance"></span>
+                </div>
+            </a>
+        </li>
+    </ul>
+</div>
+
+<script>
+    var msg = '';
+    function success_ajax3(data){
+        arr='';
+        if (data.length == 0) {
+			arr += '<p class="listNone">불러올 내역이 없습니다.</p>';
+			$('#hal').find('.historyList').html(arr);
+			return;
+		} 
+
+		let today = new Date(data[0].paid_dtime);
+		msg = month_date_dot(today);
+
+		let nowDay = today.getDay();
+		let nowWeek = " " + toKor_dayOfWeek(nowDay);
+
+		arr += '<span class="date">' + msg + nowWeek + '</span>';
+		arr += '<ul>';
+        $(data).each(function(index, item){
+			paybills_ajax_arr(item);
+        });
+        $('#hal').find('.historyList').html(arr);
+
+        $('.link').click(function(){
+            const billsDetail = {
+                paid_amt: $(this).find('.amount').find('.num').text(),
+                paid_dtime: $(this).find('.paid_dtime').text(),
+                card_name: $(this).find('.card_name').text(),
+                total_install_cnt: $(this).find('.total_install_cnt').text(),
+                cur_install_cnt: $(this).find('.cur_install_cnt').text(),
+                balance_amt: $(this).find('.balance_amt').text(),
+                credit_fee_amt: $(this).find('.credit_fee_amt').text(),
+                merchant_name: $(this).find('.category').text(),
+                merchant_regno: $(this).find('.merchant_regno').text(),
+                prod_type: $(this).find('.balance').text()
+            }
+            localStorage.setItem("val", JSON.stringify(billsDetail));
+        });
+    }
+
+    function payBillsHal(){
+        payBillsHal_ajax().done(function(data){
+            success_ajax3(data);
+        });
+    }
+</script>

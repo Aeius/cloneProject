@@ -1,0 +1,102 @@
+﻿<!DOCTYPE html>
+<html lang="ko" class="leaf">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>CheckPay</title>
+<meta http-equiv="Cache-Control" content="No-Cache">
+<meta http-equiv="Pragma" content="No-Cache">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<!--<meta name="title" content="">-->
+<meta name="description" content="">
+<!--<meta name="keywords" content="">-->
+<!-- The Open Graph protocol -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="">
+<meta property="og:description" content="">
+<meta property="og:url" content="">
+<meta property="og:image" content=""><!-- [D]리얼경로로 변경하세요 -->
+<!-- //The Open Graph protocol -->
+<link rel="SHORTCUT ICON" href=""><!-- [D]리얼경로로 변경하세요 -->
+<link rel="stylesheet" type="text/css" href="../../css/jquery-ui.min.css">
+<link rel="stylesheet" type="text/css" href="../../css/reset.css">
+<link rel="stylesheet" type="text/css" href="../../css/content.css">
+<link rel="stylesheet" type="text/css" href="../../css/theme_waiker.css">
+<script type="text/javascript" src="../../js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="../../js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="../../js/jquery.ui.touch-punch.min.js"></script>
+<script type="text/javascript" src="../../js/slide_slick.js"></script>
+<script type="text/javascript" src="../../js/publishing.ui.library.1.0.0.js"></script>
+<script type="text/javascript" src="../../js/cmd.js"></script>
+</head>
+
+<body>
+
+<!-- wrap -->
+<div class="wrap">
+	<!-- header -->
+	<div class="header setup">
+		<div class="header_inn">
+			<div class="left">
+				<!-- <a href="#none" class="btnBack"><span class="blind">Back</span></a> -->
+			</div>
+			<div class="center">
+				<h2 class="tit_h2"></h2>
+			</div>
+			<div class="right">
+				<!-- <a href="#none" class="btnBack"><span class="blind">Back</span></a> -->
+			</div>
+		</div>
+	</div>
+	<!-- //header -->
+
+	<!-- container -->
+	<div class="container">
+		<div class="content">
+
+
+		</div>
+	</div>
+	<!-- //container -->
+</div>
+<!-- //wrap -->
+
+<th:block  th:fragment="popup">
+<!-- [S] 팝업 인증실패 -->
+<div id="open_layer_finFailLimitOver" class="layer_popup type2 js_only_pop_shown"><!-- id 팝업 호출 예시, 'js_only_pop_shown' 클래스 추가 -->
+	<div class="layer_position">
+		<div class="layer_inner">
+			<div class="layer_cont">
+				<div class="msg_box">
+					<p class="msg_alert">
+						5번 이상 번호 입력에 실패 하였습니다 이메일 인증 완료 후 간편비밀번호를 재설정 해주세요
+					</p>
+				</div>
+				<div class="btn_layer_wrap">
+					<button type="button" class="js_pop_close btn_confirm"><span>확인</span></button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="dim"></div>
+</div>
+<!-- [E] 팝업 인증실패 -->
+</th:block>
+<script>
+	$(document).ready(function(){
+		popModalShow_finFailLimitOver(); /* 팝업 호출 예시 */
+	});
+
+	/* 팝업 호출 예시 */
+	function popModalShow_finFailLimitOver(){
+		$('#open_layer_emailFailPopup').show().attr({'tabindex':'0','aria-hidden':'false'}).focus()
+		 .find('button').on('click',function(){
+			 let url = /*[[ @{./} ]]*/'';
+			  location.replace(url);
+		  });
+		$('html').addClass('scroll_lock');
+	}
+
+</script>
+</body>
+</html>

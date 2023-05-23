@@ -1,0 +1,128 @@
+﻿<!DOCTYPE html>
+<html lang="ko" class="leaf">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>CheckPay</title>
+<meta http-equiv="Cache-Control" content="No-Cache">
+<meta http-equiv="Pragma" content="No-Cache">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<!--<meta name="title" content="">-->
+<meta name="description" content="">
+<!--<meta name="keywords" content="">-->
+<!-- The Open Graph protocol -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="">
+<meta property="og:description" content="">
+<meta property="og:url" content="">
+<meta property="og:image" content=""><!-- [D]리얼경로로 변경하세요 -->
+<!-- //The Open Graph protocol -->
+<link rel="SHORTCUT ICON" href=""><!-- [D]리얼경로로 변경하세요 -->
+<link rel="stylesheet" type="text/css" href="../css/jquery-ui.min.css">
+<link rel="stylesheet" type="text/css" href="../css/reset.css">
+<link rel="stylesheet" type="text/css" href="../css/content.css">
+<link rel="stylesheet" type="text/css" href="../css/theme_checkpay.css">
+<script type="text/javascript" src="../js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="../js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="../js/jquery.ui.touch-punch.min.js"></script>
+<script type="text/javascript" src="../js/slide_slick.js"></script>
+<script type="text/javascript" src="../js/publishing.ui.library.1.0.0.js"></script>
+<script type="text/javascript" src="../js/cmd.js"></script>
+<script type="text/javascript" src="../js/common.js"></script>
+</head>
+<body>
+<th:block th:with="capitalSize=${capitalList.size}">
+<!-- wrap -->
+<div class="wrap">
+
+	<!-- header -->
+	<div class="header">
+		<div class="header_inn">
+			<div class="left">
+				<a href="javascript:history.back();" class="btnBack"><span class="blind">Back</span></a>
+			</div>
+			<div class="right">
+<!--                <a href="#none" class="btnClose"><span class="blind">close</span></a>-->
+			</div>
+		</div>
+	</div>
+	<!-- //header -->
+
+	<!-- container -->
+	<div class="container">
+		<div class="content">
+
+			<div class="tBalance">
+				<h3 class="tBaltit">
+					할부금융 상환 예정액<a href="#layer1_short" class="btn_open_layer_pop btn_more_ask" role="button"><span class="ico_ask type_gray"><em class="blind">더보기</em></span></a>
+				</h3>
+				<p class="tBalAmount"><em class="amount" th:utext="${#numbers.formatInteger(capitalKrwSum, 0, 'COMMA')}">81,153,000</em>원</p>
+				<p class="tBalDetail">
+					외화대출 <span th:each="capitalCurrencySum,cnt : ${foreignMoney}"
+					th:utext="${#numbers.formatInteger(capitalCurrencySum.value,0,'COMMA')}+${capitalCurrencySum.key}+(${cnt.last}?'':' + ')">
+				</span>
+					미합산</p>
+			</div>
+			<div class="asGroup">
+				<div class="listTit" th:if="${krwCnt}!=0">
+					<em th:utext="'할부금융 <em class=pointColor>'+${krwCnt}+'</em>'">할부금융<em class="pointColor">2</em></h3>
+				</div>
+				<div class="asList" th:if="${krwCnt}!=0">
+					<div class="accItem" th:each="capitalEach : ${capitalList}" th:if="${capitalEach.currency_code}=='KRW'">
+						<a th:onclick="javascript:detailmove('/capital/loandetail','org_code',/*[[${capitalEach.org_code}]]*/null,'account_num',/*[[${capitalEach.account_num}]]*/null)" href="#none">
+							<div class="im">
+								<img th:src="'../img/bank/'+${capitalEach.org_code}+'.png'" src="../../img/bank/D1AAAH0000.png" th:alt="${capitalEach.org_name}" alt="이런회사는 존재하지 않습니다(철진)">
+							</div>
+							<div class="tx">
+                                <p class="prdName"><span class="ellipsis" th:text="${capitalEach.prod_name}">다이렉트론</span></p>
+								<p class="amount" th:utext="'<em>'+${#numbers.formatInteger(capitalEach.balance_amt, 0, 'COMMA')}+'</em>원'"><em>359,153,000</em>원</p>
+								<p class="deposit" th:utext="'금리<em>'+${#numbers.formatDecimal(capitalEach.last_offered_rate,0,2)}+'%</em>'">금리<em class="num">9.88%</em></p>
+							</div>
+						</a>
+					</div>
+					
+				</div>
+				<div class="listTit" th:if="${capitalSize-krwCnt}!=0">
+					<h3 th:utext="'외화 <em class=pointColor>'+${capitalSize-krwCnt}+'</em>'">외화 <em class="pointColor">1</em></h3>
+				</div>
+				<div class="asList" th:if="${capitalSize-krwCnt}!=0">
+					<div class="accItem" th:each="capitalEach : ${capitalList}" th:unless="${capitalEach.currency_code}=='KRW'">
+						<a th:onclick="javascript:detailmove('/capital/loandetail','org_code',/*[[${capitalEach.org_code}]]*/null,'account_num',/*[[${capitalEach.account_num}]]*/null)" href="#none">
+							<div class="im">
+								<img th:src="'../img/bank/'+${capitalEach.org_code}+'.png'" src="../../img/bank/D1AAAH0000.png" th:alt="${capitalEach.org_name}" alt="이런회사는 존재하지 않습니다(철진)">
+							</div>
+							<div class="tx">
+                                <p class="prdName"><span class="ellipsis" th:text="${capitalEach.prod_name}">다이렉트론</span></p>
+								<p class="amount" th:utext="'<em>'+${#numbers.formatInteger(capitalEach.balance_amt, 0, 'COMMA')}+ '</em> '+${capitalEach.currency_code}"><em>359,153,000</em>원</p>
+								<p class="deposit" th:utext="'금리<em>'+${#numbers.formatDecimal(capitalEach.last_offered_rate,0,2)}+'%</em>'">금리<em class="num">9.88%</em></p>
+							</div>
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- //container -->
+
+</div>
+<!-- //wrap -->
+<!-- [S] layer_popup type1 A타입 짧은문구, 할부금융 상환 예정액 -->
+<div id="layer1_short" class="layer_popup type1 short"><!-- 2021-09-08 A타입 짧은문구, 클래스 'short' 추가 -->
+	<div class="layer_position">
+		<div class="layer_inner">
+			<div class="layer_tit">
+				<strong class="tit">할부금융 상환 예정액</strong>
+				<button type="button" class="js_pop_close btn_close"><span class="blind">닫기</span></button>
+			</div>
+			<div class="layer_cont">
+				<div class="msg_box">
+					대출 + 할부금융 + 금융리스<br>(외화대출 미합산)
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- [E] layer_popup type1 A타입 짧은문구, 할부금융 상환 예정액 -->
+</th:block>
+</body>
+</html>

@@ -1,0 +1,257 @@
+﻿<!DOCTYPE html>
+<html lang="ko" class="leaf">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>CheckPay</title>
+<meta http-equiv="Cache-Control" content="No-Cache">
+<meta http-equiv="Pragma" content="No-Cache">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<!--<meta name="title" content="">-->
+<meta name="description" content="">
+<!--<meta name="keywords" content="">-->
+<!-- The Open Graph protocol -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="">
+<meta property="og:description" content="">
+<meta property="og:url" content="">
+<meta property="og:image" content=""><!-- [D]리얼경로로 변경하세요 -->
+<!-- //The Open Graph protocol -->
+<link rel="SHORTCUT ICON" href=""><!-- [D]리얼경로로 변경하세요 -->
+<link rel="stylesheet" type="text/css" href="../../css/jquery-ui.min.css">
+<link rel="stylesheet" type="text/css" href="../../css/reset.css">
+<link rel="stylesheet" type="text/css" href="../../css/content.css">
+<link rel="stylesheet" type="text/css" href="../../css/theme_checkpay.css">
+<script type="text/javascript" src="../../js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="../../js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="../../js/jquery.ui.touch-punch.min.js"></script>
+<script type="text/javascript" src="../../js/slide_slick.js"></script>
+<script type="text/javascript" src="../../js/publishing.ui.library.1.0.0.js"></script>
+<script type="text/javascript" src="../../js/cmd.js"></script>
+</head>
+
+<body>
+
+<!-- wrap -->
+<div class="wrap">
+
+	<!-- header -->
+	<div class="header">
+		<div class="header_inn">
+			<div class="left">
+				<a href="#none" class="btnBack"><span class="blind">Back</span></a>
+			</div>
+			<div class="right">
+                <a href="#none" class="btnClose"><span class="blind">close</span></a>
+			</div>
+		</div>
+	</div>
+	<!-- //header -->
+
+	<!-- container -->
+	<div class="container">
+		<div class="content">
+
+			<div class="tBalance">
+				<h3 class="tBaltit">선불·페이 잔액</h3>
+				<p class="tBalAmount"><em class="amount">4,000,000</em>원</p>
+				<p class="tBalDetail">해외 통화 결제 내역 186USD + 896HKD 미합산</p>
+			</div>
+			<div class="asGroup payList">
+
+				<!-- [S] 선불카드 -->
+				<div class="prepaid_card">
+					<div class="tabItem">
+						<div class="listTit">
+							<h3>선불카드 <em class="pointColor">3</em></h3>
+						</div>
+						<div class="asList">
+							<div class="accItem">
+								<a href="#none">
+									<div class="im">
+										<img src="../../img/bank/A1AAIP0000.png" alt="신한">
+									</div>
+									<div class="tx">
+										<p class="prdName"><span class="ellipsis">Pre-i 선불카드</span></p>
+										<p class="amount"><em>1,000,000</em>원</p>
+									</div>
+								</a>
+							</div>
+							<div class="accItem">
+								<a href="#none">
+									<div class="im">
+										<img src="../../img/bank/A1AAES0000.png" alt="하나">
+									</div>
+									<div class="tx">
+										<p class="prdName"><span class="ellipsis">티머니</span></p>
+										<p class="amount"><em>1,000,000</em>원</p>
+									</div>
+								</a>
+							</div>
+							<div class="accItem">
+								<a href="#none">
+									<div class="im">
+										<img src="../../img/bank/A1AAES0000.png" alt="하나">
+									</div>
+									<div class="tx">
+										<p class="prdName"><span class="ellipsis">하나카드</span></p>
+										<p class="amount"><em>100,000,000</em>원</p>
+									</div>
+								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- [E] 선불카드 -->
+
+				<div class="listContWrap">
+					<!-- [S] Pay -->
+					<div class="listCont">
+						<div class="listTabWrap">
+							<div class="tabItem">
+								<div class="listTit">
+									<h3>카카오페이 <em class="pointColor">3</em></h3>
+								</div>
+								<div class="asList">
+									<div class="accItem">
+										<a href="#none">
+											<div class="im">
+												<img src="../../img/bank/E1AAIA0000.png" alt="카카오페이">
+											</div>
+											<div class="tx">
+												<p class="prdName"><span class="ellipsis">페이 포인트</span></p>
+												<p class="amount"><em>1,000,000</em>원</p>
+											</div>
+										</a>
+									</div>
+									<div class="accItem">
+										<a href="#none">
+											<div class="im">
+												<img src="../../img/bank/E1AAIA0000.png" alt="카카오페이">
+											</div>
+											<div class="tx">
+												<p class="prdName"><span class="ellipsis">카카오 페이머니</span></p>
+												<p class="amount"><em>1,000,000</em>원</p>
+											</div>
+										</a>
+									</div>
+									<div class="accItem">
+										<a href="#none">
+											<div class="im">
+												<img src="../../img/bank/E1AAIA0000.png" alt="카카오페이">
+											</div>
+											<div class="tx">
+												<!-- [S] 2021-11-01 pay 금액제외 -->
+												<p class="prdName payId">
+													<span class="ellipsis">moon****@naver.com</span>
+												</p>
+												<!-- [E] 2021-11-01 pay 금액제외 -->
+											</div>
+										</a>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="listTabWrap">
+							<div class="tabitem">
+								<div class="listTit">
+									<h3>네이버페이 <em class="pointColor">2</em></h3>
+								</div>
+								<div class="asList">
+									<div class="accItem">
+										<a href="#none">
+											<div class="im">
+												<img src="../../img/bank/E1AAHY0000.png" alt="네이버페이">
+											</div>
+											<div class="tx">
+												<p class="prdName"><span class="ellipsis">네이버페이 포인트1</span></p>
+												<p class="amount"><em>359,153,000</em>원</p>
+											</div>
+										</a>
+									</div>
+									<div class="accItem">
+										<a href="#none">
+											<div class="im">
+												<img src="../../img/bank/E1AAHY0000.png" alt="네이버페이">
+											</div>
+											<div class="tx">
+												<p class="prdName"><span class="ellipsis">네이버페이 포인트2</span></p>
+												<p class="amount"><em>359,153,000</em>원</p>
+											</div>
+										</a>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="listTabWrap">
+							<div class="tabitem">
+								<div class="listTit">
+									<h3>쿠팡페이 <em class="pointColor">2</em></h3>
+								</div>
+								<div class="asList">
+									<div class="accItem">
+										<a href="#none">
+											<div class="im">
+												<img src="../../img/bank/E1AAPN0000.png" alt="쿠팡페이">
+											</div>
+											<div class="tx">
+												<p class="prdName"><span class="ellipsis">쿠페이 머니</span></p>
+												<p class="amount"><em>359,153,000</em>원</p>
+											</div>
+										</a>
+									</div>
+									<div class="accItem">
+										<a href="#none">
+											<div class="im">
+												<img src="../../img/bank/E1AAPN0000.png" alt="쿠팡페이">
+											</div>
+											<div class="tx">
+												<p class="prdName"><span class="ellipsis">쿠팡캐시</span></p>
+												<p class="amount"><em>359,153,000</em>원</p>
+											</div>
+										</a>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="listTabWrap">
+							<div class="tabitem">
+								<div class="listTit">
+									<h3>쿠콘 <em class="pointColor">1</em></h3>
+								</div>
+								<div class="asList">
+									<div class="accItem">
+										<a href="#none">
+											<div class="im">
+												<img src="../../img/bank/E1AAKF0000.png" alt="쿠콘">
+											</div>
+											<div class="tx">
+												<p class="prdName"><span class="ellipsis">체크머니</span></p>
+												<p class="amount"><em>359,153,000</em>원</p>
+											</div>
+										</a>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- [E] Pay -->
+				</div>
+			</div>
+
+			<div class="btn_wrap">
+				<div class="btnGroup type2">
+					<p><a href="#none" class="btnBl1">선불·페이 추가</a></p>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- //container -->
+
+</div>
+<!-- //wrap -->
+
+</body>
+</html>

@@ -1,0 +1,322 @@
+﻿<!DOCTYPE html>
+<html lang="ko" class="leaf">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>CheckPay</title>
+<meta http-equiv="Cache-Control" content="No-Cache">
+<meta http-equiv="Pragma" content="No-Cache">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<!--<meta name="title" content="">-->
+<meta name="description" content="">
+<!--<meta name="keywords" content="">-->
+<!-- The Open Graph protocol -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="">
+<meta property="og:description" content="">
+<meta property="og:url" content="">
+<meta property="og:image" content=""><!-- [D]리얼경로로 변경하세요 -->
+<!-- //The Open Graph protocol -->
+<link rel="SHORTCUT ICON" href=""><!-- [D]리얼경로로 변경하세요 -->
+<link rel="stylesheet" type="text/css" href="../css/jquery-ui.min.css">
+<link rel="stylesheet" type="text/css" href="../css/reset.css">
+<link rel="stylesheet" type="text/css" href="../css/content.css">
+<link rel="stylesheet" type="text/css" href="../css/theme_checkpay.css">
+</head>
+
+<body>
+
+<!-- wrap -->
+<div class="wrap">
+
+	<!-- header -->
+	<div class="header setup"><!-- 2021-10-07 마이페이지 클래스 'setup' 추가 -->
+		<div class="header_inn">
+			<div class="left">
+				<a href="/mypage/" class="btnBack"><span class="blind">Back</span></a>
+			</div>
+			<div class="center">
+				<h2 class="tit_h2">고객센터</h2>
+			</div>
+			<div class="right">
+				<!--<a href="#none" class="btnClose"><span class="blind">close</span></a>-->
+			</div>
+		</div>
+	</div>
+	<!-- //header -->
+
+	<!-- container -->
+	<div class="container">
+		<div class="content">
+			<div class="servTerm">
+				<h3 class="termTit">자산관리 서비스 사용 문의</h3>
+				<p>자산관리 서비스(체크페이)</p>
+				<p>고객센터 : 1522-1904</p>
+				<p class="description">평일 09:00 ~ 18:00 토요일, 공휴일 제외</p>
+			</div>
+			<hr class="hr_div"></hr>
+
+			<!-- [S] FAQ -->
+			<div class="wrap_faq">
+				<h3 class="tit_h3">FAQ</h3>
+
+				<!-- [S] 검색 -->
+				<div class="wrap_search">
+					<input type="text" id="search" class="inp_search js_tx_val" placeholder="궁금한 점을 검색해보세요."/>
+					<button type="button" class="btn_val_reset js_bt_val_reset"><span class="blind">검색어 삭제</span></button>
+					<button type="button" class="btn_search"><span class="blind">검색</span></button>
+				</div>
+				<!-- [E] 검색 -->
+
+				<!-- [S] 탭 메뉴 FAQ -->
+				<div class="tab_certi js_tab_wrap">
+					<div class="tabs_header type2">
+						<ul class="cboth js_tab_menu">
+							<li class="js_item on"><a href="#" class="js_bt" role="button" data-target="#faq_cont_01"><span class="tx">자주묻는 질문</span></a></li>
+							<li class="js_item"><a href="#" class="js_bt" role="button" data-target="#faq_cont_02"><span class="tx">자산연동</span></a></li>
+							<li class="js_item"><a href="#" class="js_bt" role="button" data-target="#faq_cont_03"><span class="tx">자산조회</span></a></li>
+							<li class="js_item"><a href="#" class="js_bt" role="button" data-target="#faq_cont_04"><span class="tx">계정/보안</span></a></li><!--
+							<li class="js_item"><a href="#none" class="js_bt" role="button" data-target="#faq_cont_05"><span class="tx">계정/보안</span></a></li>-->
+						</ul>
+					</div>
+				</div>
+				<!-- [E] 탭 메뉴 FAQ -->
+
+				<!-- [S] 탭 내용 FAQ -->
+				<div class="faq_section">
+
+					<!-- [S] default 자주묻는 질문 -->
+					<div id="faq_cont_01" class="faq_cont js_tab_cont show">
+					</div>
+					<!-- [E] default 자주묻는 질문 -->
+
+					<!-- [S] 자산연동 -->
+					<div id="faq_cont_02" class="faq_cont js_tab_cont">
+					</div>
+					<!-- [E] 자산연동 -->
+
+					<!-- [S] 자산조회 -->
+					<div id="faq_cont_03" class="faq_cont js_tab_cont">
+					</div>
+					<!-- [E] 자산조회 -->
+
+					<!-- [S] 캘린더 -->
+					<div id="faq_cont_04" class="faq_cont js_tab_cont">
+					</div>
+					<!-- [E] 캘린더 -->
+
+					<!-- [S] 계정/보안 -->
+					<!--<div id="faq_cont_05" class="faq_cont js_tab_cont">
+					</div>-->
+					<!-- [E] 계정/보안 -->
+				</div>
+				<!-- [E] 탭 내용 FAQ -->
+
+				<!-- 더보기 FAQ -->
+				<div class="btn_wrap type_faq">
+					<div class="btnGroup">
+						<p><a href="#" class="btnBl4" role="button"><span class="tx">더보기 <span class="num"></span></span><span class="ico_sel_down mgl5"></span></a></p>
+					</div>
+				</div>
+			</div>
+			<!-- [E] FAQ -->
+
+		</div>
+	</div>
+	<!-- //container -->
+</div>
+<!-- //wrap -->
+</body>
+<script type="text/javascript" src="../js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="../js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="../js/jquery.ui.touch-punch.min.js"></script>
+<script type="text/javascript" src="../js/slide_slick.js"></script>
+<script type="text/javascript" src="../js/publishing.ui.library.1.0.0.js"></script>
+<script type="text/javascript" src="../js/cmd.js"></script>
+<script type="text/javascript" src="../js/common.js"></script>
+<script type="text/javascript">
+
+	$(document).ready(function(){
+
+		// 엔터키로 검색 가능하도록
+		$("#search").keydown(function(keyNum){
+			if(keyNum.keyCode == 13){ 
+				var word = $('#search').val();
+				checkSearchedWord(word);
+			}
+		});
+
+		$('.btn_search').click(function () {
+			// 검색 값이 없을 시 return
+			if($('#search').val().length === 0) {
+				return;
+			// 검색 값이 있으면 값 받아서 url로 넘기기
+			}else{
+				var word = $('#search').val();
+				checkSearchedWord(word);
+			}
+		});
+		
+		// 검색 시 특수문자 체크
+		function checkSearchedWord(word) {
+		  var word = $('#search').val();
+          var expText = /[`~!@#$%^&*|\\\'\";:\/<>?]/gi;
+          if(expText.test(word) == true){
+            return false;
+            }
+          else{
+          	var param = "search="+word;
+		 	location.href = "YY1720.html?"+param;
+			}
+		 }
+
+		var listhtml = "";
+		var lidx = 0;
+		var page = 10;
+
+		// tab별 총 개수 
+		var cnttoal = [0, 0, 0, 0];
+		// 현재 페이지
+		var currentpage = [10, 10, 10, 10];
+
+		
+		$.ajax({
+                type : "GET",
+                url : "http://192.168.240.208:8081/api/mypage/faq",
+                headers: {
+				           "Authorization" : "Bearer " + getCookie("jwt")
+				        },
+				success : function(data){
+			
+					var division = "";
+					
+					$.each(data, function(idx, val) {
+						
+						division = val.catg_cd;
+						
+						listhtml +="<div class='faq_list'>";
+						listhtml +="<div class='tit_wrap'>";
+						listhtml +="<button class='tab1_list_item btnFolding faq' data-target='#faq_000"+(idx+1)+"' aria-expanded='false'>";
+						listhtml +="<span class='tx'>"+val.title+"</span></button></div>";
+						listhtml +='<div class="folding_cont" id="faq_000'+(idx+1)+'">'+val.cntns+'</div>';
+						listhtml +='</div>';
+							
+						idx++;
+						checkdiv(division);
+					});
+
+					//처음 로딩 시 자주묻는 질문의 총 카운트 개수가 버튼에 들어가도록
+					if(cnttoal[0]<=10) $('.btnGroup').hide();
+					else $('.num').html('10/'+cnttoal[0]);
+					
+					// 모두 로딩 된 다음에 list의 개수가 10개가 넘으면 숨기기
+					for(var i=1; i<5; i++){
+						$('#faq_cont_0'+i+ ' .faq_list').not(':lt(10)').hide();
+					} 
+
+					// 리스트 애니메이션
+					$('.btnFolding').each(function(){
+						var $self = $(this);
+						var target = $($self.attr('data-target'));
+						if($self.hasClass('show')){
+							$self.children('.blind').html('닫힘');
+							$self.attr('aria-expanded','true');
+						}else {
+							$self.children('.blind').html('펼침');
+							$self.attr('aria-expanded','false');
+						}
+						$self.on('click', function(){
+							if($self.hasClass('faq')){
+								$self.closest('.faq_list').siblings('.faq_list').find('.folding_cont').slideUp(0);
+								$self.closest('.faq_list').siblings('.faq_list').find('.faq').removeClass('show').attr('aria-expanded','false');
+								var clickBtnOffsetTop = $self.offset().top;
+								$('html, body').animate({scrollTop: clickBtnOffsetTop}, 500);
+							}
+							if($self.hasClass('show')){
+								target.slideUp(200);
+								$self.removeClass('show');
+								$self.attr('aria-expanded','false');
+								$self.children('.blind').html('펼침');
+								$self.closest('.asList').removeClass('expanded');
+							}else{
+								$self.addClass('show');
+								$self.attr('aria-expanded','true');
+								target.slideDown(200);
+								$self.children('.blind').html('닫힘');
+								$self.closest('.asList').addClass('expanded');
+							}
+						})
+					})
+				},
+                error: function (jqXHR) {
+		            if (jqXHR.status == 401 && msg == "토큰 기한 만료") {
+						tokenCall2();
+		            }
+		            else if(jqXHR.status == 401 && msg == "jwt claims 비어있음"){
+						console.log("jwt claims 비어있음");
+					}
+					else if(jqXHR.status == 401 && msg == "유효하지 않은 서명"){
+						console.log("유효하지 않은 서명");
+					}
+					else if(jqXHR.status == 401 && msg == "유효하지 않은 토큰"){
+						console.log("유효하지 않은 토큰");
+					}
+					else if(jqXHR.status == 401  && msg == "지원되지 않는 토큰"){
+						console.log("지원되지 않는 토큰");
+					}
+					else{
+						console.log("권한 없음");
+					}
+	            }
+            });
+
+			// 탭별로 눌렀을 때 탭별 내용이 조회되도록 각각의 리스트에 저장
+			function checkdiv(division){
+				$('#faq_cont_'+division).append(listhtml);
+				listhtml="";
+
+				if(division==01){
+					cnttoal[0]++;
+				}
+				else if(division==02){
+					cnttoal[1]++;
+				}
+				else if(division==03){
+					cnttoal[2]++;
+				}
+				else if(division==04){
+					cnttoal[3]++;
+				}
+				//else if(division==05){
+				//	cnttoal[4]++;
+				//}-->
+			}
+
+			// 탭별 (현재페이지/총 개수) 출력
+			$("li").click(function(){
+				lidx = ($(this).index()); // 클릭한 메뉴(li) 받아와서
+				lidx2 = lidx + 1; // faq_cont_01부터 시작하는 id값을 가져오기 위해 lidx에 1더함
+				if(currentpage[lidx]<cnttoal[lidx]){ // 현재 페이지 <= 총 개수면
+					$('.btnGroup').show(); // 버튼 보이기
+					$('.num').html(currentpage[lidx]+'/'+cnttoal[lidx]); // 버튼에 (현재페이지/총 개수) 출력
+				}else $('.btnGroup').hide();
+			});
+			
+			// 더보기 버튼 클릭 시 10개씩 추가로 보이게
+			$(document).on('click','.btnGroup',function(e){
+				currentpage[lidx] = page+currentpage[lidx];
+				chkbtn(currentpage[lidx], cnttoal[lidx]);
+				$('#faq_cont_0'+lidx2+ ' .faq_list').show().not(':lt('+currentpage[lidx]+')').hide();
+				$('.num').html(currentpage[lidx]+'/'+cnttoal[lidx]);
+			});
+
+			// 잔여 글이 없으면 버튼 없애기
+			function chkbtn(currentpage, total){
+				if(currentpage>=total){
+					$('.btnGroup').hide();
+				}
+			}
+		});
+			
+</script>
+</html>

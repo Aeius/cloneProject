@@ -1,0 +1,200 @@
+﻿<!DOCTYPE html>
+<html lang="ko" class="leaf">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>CheckPay</title>
+<meta http-equiv="Cache-Control" content="No-Cache">
+<meta http-equiv="Pragma" content="No-Cache">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<!--<meta name="title" content="">-->
+<meta name="description" content="">
+<!--<meta name="keywords" content="">-->
+<!-- The Open Graph protocol -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="">
+<meta property="og:description" content="">
+<meta property="og:url" content="">
+<meta property="og:image" content=""><!-- [D]리얼경로로 변경하세요 -->
+<!-- //The Open Graph protocol -->
+<link rel="SHORTCUT ICON" href=""><!-- [D]리얼경로로 변경하세요 -->
+<link rel="stylesheet" type="text/css" href="../css/jquery-ui.min.css">
+<link rel="stylesheet" type="text/css" href="../css/reset.css">
+<link rel="stylesheet" type="text/css" href="../css/content.css">
+<link rel="stylesheet" type="text/css" href="../css/theme_checkpay.css">
+
+</head>
+
+<body>
+
+<!-- wrap -->
+<div class="wrap">
+
+	<!-- header -->
+	<div class="header">
+		<div class="header_inn">
+			<div class="left">
+				<a onclick="window.history.back()" class="btnBack"><span class="blind">Back</span></a>
+			</div>
+		</div>
+	</div>
+	<!-- //header -->
+
+	<!-- container -->
+	<div class="container">
+		<div class="content">
+
+			<div class="tBalance">
+				<h3 class="tBaltit">이번 달 청구 금액</h3>
+				<p class="tBalAmount"><em class="amount"></em>원</p>
+			</div>
+            <div class="wrap_assets">
+                <div class="asGroup type_chart">
+                    <div class="listTit">
+                        <a class="asset_link" href="/telecom/details">
+                            <h3>최근 3개월 청구내역</h3>
+                            <p class="assets"><span class="tx"><em class="blind">더보기</em></span></p>
+                        </a>
+                    </div>
+                    <div class="asList">
+						<div class="wrap_tel_graph">
+							<div class="tel_graph">
+								<p class="g_bar_box average">
+									<span class="g_bar"></span><!-- 그래프 height, 하단 js '최근 3개월 청구내역' -->
+									<span class="g_tx">평균<span class="blind"><em class="num"></em>원</span></span>
+								</p>
+								<p class="g_bar_box latest1">
+									<span class="g_bar"></span>
+									<span class="g_tx" id="g_tx1"><span class="blind"><em class="num"></em>원</span></span>
+								</p>
+								<p class="g_bar_box latest2">
+									<span class="g_bar"></span>
+									<span class="g_tx" id="g_tx2"><span class="blind"><em class="num"></em>원</span></span>
+								</p>
+								<p class="g_bar_box latest3">
+									<span class="g_bar"></span>
+									<span class="g_tx" id="g_tx3"><span class="blind"><em class="num"></em>원</span></span>
+								</p>
+							</div>
+							<ul class="asset_my_list line_dash">
+								<li class="asset_li">
+									<a href="/telecom/details" class="link latest1">
+										<span>이번 달</span>
+										<span class="price"><span class="num" id="num1"></span>원</span>
+									</a>
+									<a href="/telecom/details" class="link latest3">
+										<span>4월</span>
+										<span class="price"><span class="num" id="num2"></span>원</span>
+									</a>
+									<a href="/telecom/details" class="link latest2">
+										<span>3월</span>
+										<span class="price"><span class="num" id="num3"></span>원</span>
+									</a>
+								</li>
+							</ul>
+						</div>
+                    </div>
+                </div>
+            </div>
+
+		</div>
+	</div>
+	<!-- //container -->
+
+</div>
+<!-- //wrap -->
+
+<script type="text/javascript" src="../js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="../js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="../js/jquery.ui.touch-punch.min.js"></script>
+<script type="text/javascript" src="../js/slide_slick.js"></script>
+<script type="text/javascript" src="../js/publishing.ui.library.1.0.0.js"></script>
+<script type="text/javascript" src="../js/cmd.js"></script>
+<script type="text/javascript" src="../js/common.js"></script>
+<script>
+	
+	
+	
+	
+$(document).ready(function(){
+	
+	var sum = 0;
+	var avg = 0;
+	let id = parseJwt(getCookie("jwt")).sub;
+	telmain_ajax(id);
+	
+	    function telmain_ajax(id) {
+		$.ajax({
+                type : "GET",
+                url : "http://192.168.240.208:8081/api/telecom/main/"+ id + "/",
+                headers: {
+				           "Authorization" : "Bearer " + getCookie("jwt")
+				        },
+				error: function (jqXHR) {
+			            userErrorHandler(jqXHR);
+		            },      
+				success : function(data){
+					
+					// 이번 달 청구 금액
+					$(".amount").html(addComma(data[0].current));
+					
+					// 이번달, m-1월, m-2월
+					$("#num1").html(addComma(data[0].current));
+					$("#num2").html(addComma(data[0].pre1));
+					$("#num3").html(addComma(data[0].pre2));
+					
+					// 그래프 yy.mm
+					$("#g_tx1").html(data[0].n_month);
+					$("#g_tx2").html(data[0].month_1);
+					$("#g_tx3").html(data[0].month_2);
+				
+					sum = parseInt(data[0].current) + parseInt(data[0].pre1) + parseInt(data[0].pre2);
+					avg = sum/3;
+					
+					var current = parseInt(data[0].current)
+					var pre1 = parseInt(data[0].pre1)
+					var pre2 = parseInt(data[0].pre2);
+					var max = Math.max(current,pre1,pre2);
+			
+					/* [S] 최근 3개월 청구내역 */
+					if($('.tel_graph').length){
+						$('.tel_graph').css('height','110px');//초기 높이값 (100% = 110px)
+				        
+						//높이 비율 percent 예시
+						$('.tel_graph .average .g_bar').animate({'height': avg/max*100+'%'});
+						$('.tel_graph .latest1 .g_bar').animate({'height':current/max*100+'%'});
+						$('.tel_graph .latest2 .g_bar').animate({'height':pre1/max*100+'%'});
+						$('.tel_graph .latest3 .g_bar').animate({'height':pre2/max*100+'%'});
+				
+						//접근성
+						var regex = /[^0-9]/g;
+						var stFeeLatest1 = $('.wrap_tel_graph .asset_my_list .latest1 .num').text();
+						var stFeeLatest2 = $('.wrap_tel_graph .asset_my_list .latest2 .num').text();
+						var stFeeLatest3 = $('.wrap_tel_graph .asset_my_list .latest3 .num').text();
+						var feeLatest1 = parseInt(stFeeLatest1.replace(regex, ''));
+						var feeLatest2 = parseInt(stFeeLatest2.replace(regex, ''));
+						var feeLatest3 = parseInt(stFeeLatest3.replace(regex, ''));
+						var feeAverage = (feeLatest1 + feeLatest2 + feeLatest3)/3;
+				
+						$('.tel_graph .g_bar_box.average').find('.num').text(feeAverage);//평균
+						$('.tel_graph .g_bar_box.latest1').find('.num').text(feeLatest1);//이번달
+						$('.tel_graph .g_bar_box.latest2').find('.num').text(feeLatest2);//지난달
+						$('.tel_graph .g_bar_box.latest3').find('.num').text(feeLatest3);//지지난달
+					}
+					/* [E] 최근 3개월 청구내역 */
+				}
+			});
+		}
+		
+		function addComma(value){
+	        value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+	        return value; 
+	    }
+	    
+});
+
+</script>
+</body>
+
+
+</html>

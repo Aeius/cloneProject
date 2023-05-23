@@ -1,0 +1,354 @@
+﻿<!DOCTYPE html>
+<html lang="ko" class="leaf">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>CheckPay</title>
+<meta http-equiv="Cache-Control" content="No-Cache">
+<meta http-equiv="Pragma" content="No-Cache">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<!--<meta name="title" content="">-->
+<meta name="description" content="">
+<!--<meta name="keywords" content="">-->
+<!-- The Open Graph protocol -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="">
+<meta property="og:description" content="">
+<meta property="og:url" content="">
+<meta property="og:image" content=""><!-- [D]리얼경로로 변경하세요 -->
+<!-- //The Open Graph protocol -->
+<link rel="SHORTCUT ICON" href=""><!-- [D]리얼경로로 변경하세요 -->
+<link rel="stylesheet" type="text/css" href="../../css/jquery-ui.min.css">
+<link rel="stylesheet" type="text/css" href="../../css/reset.css">
+<link rel="stylesheet" type="text/css" href="../../css/content.css">
+<link rel="stylesheet" type="text/css" href="../../css/theme_waiker.css">
+<script type="text/javascript" src="../../js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="../../js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="../../js/jquery.ui.touch-punch.min.js"></script>
+<script type="text/javascript" src="../../js/slide_slick.js"></script>
+<script type="text/javascript" src="../../js/publishing.ui.library.1.0.0.js"></script>
+<script type="text/javascript" src="../../js/cmd.js"></script>
+</head>
+
+<body th:fragment="content">
+
+<!-- wrap -->
+<div class="wrap" th:id="YY1530">
+
+	<!-- header -->
+	<div class="header setup"><!-- 2021-10-07 마이페이지 클래스 'setup' 추가 -->
+		<div class="header_inn">
+			<div class="left">
+				<a href="#none" th:href="'javascript:window.history.go(-1);'" class="btnBack"><span class="blind">Back</span></a>
+			</div>
+			<div class="center">
+				<h2 class="tit_h2">신용정보 이용 및 제공사실 조회</h2>
+			</div>
+			<div class="right">
+				<!--<a href="#none" class="btnBack"><span class="blind">Back</span></a>-->
+			</div>
+		</div>
+	</div>
+	<!-- //header -->
+
+	<!-- container -->
+	<div class="container">
+		<div class="content">
+
+			<div class="mgt20">
+				<p class="tx xg">신용정보 이용 및 제공사실 조회</p>
+			</div>
+			<div class="box_unorder_list">
+				<ul class="unorder_list type_star">
+					<li class="list"><span class="tx sm">신용정보의 이용 및 보호에 관한 법률 제 35조에 따라 최근 3년 동안의 개인신용정보를 이용·제공한 내역입니다.</span></li>
+					<li class="list"><span class="tx sm">신용정보 이용 및 제공 현황 조회 후 정기통지를 신청하신다면, 연 1회 정기적인 통지를 받을 수 있습니다.</span></li>
+					<li class="list"><span class="tx sm">정기적인 통지를 받고자 할 경우, 아래 전송받을 이메일을 확인 후 체크를 클릭해주세요.</span></li>
+				</ul>
+			</div>
+			<div class="box_inp_ck">
+				<p class="name tx md">김지수</p>
+				<p class="email tx md">kjisu@coocon.net</p>
+				<div class="boxChkItem">
+					<label>
+						<input type="checkbox"><i></i><!-- 체크 시 하단 버튼 "이메일 전송받기" 버튼 활성화 -->
+					</label>
+				</div>
+			</div>
+
+			<!-- [S] 이용내역 -->
+			<div class="wrap_faq type_line_box">
+				<div class="faq_section">
+					<div class="faq_cont">
+						<p class="faq_cate_tit"><span class="tx">이용내역</span></p>
+						<div class="faq_list">
+							<div class="tit_wrap">
+								<button class="btnFolding" data-target="#acc_0101" aria-expanded="false">
+									<div class="day">2022.03.10</div>
+									<div class="tx">통합 자산관리서비스 제공</div>
+								</button>
+							</div>
+							<div class="folding_cont" id="acc_0101">
+								<div class="info_li">
+									<div class="left">이용주체</div>
+									<div class="right">쿠콘</div>
+								</div>
+								<div class="info_li">
+									<div class="left">이용내용</div>
+									<div class="right">고객이 전송요구한 개인신용정보(수신계좌 정보, 투자상품 정보, 대출상품 정보, 개인형irp 계좌</div>
+								</div>
+								<div class="info_li">
+									<div class="left">이용목적</div>
+									<div class="right">통합 자산관리서비스 제공</div>
+								</div>
+								<div class="info_li">
+									<div class="left">보유 및 이용기간</div>
+									<div class="right">서비스 이용종료시 또는삭제요구시까지</div>
+								</div>
+							</div>
+						</div>
+						<div class="faq_list">
+							<div class="tit_wrap">
+								<button class="btnFolding" data-target="#acc_0102" aria-expanded="false">
+									<div class="day">2022.03.10</div>
+									<div class="tx">통합 자산관리서비스 제공</div>
+								</button>
+							</div>
+							<div class="folding_cont" id="acc_0102">
+								<div class="info_li">
+									<div class="left">이용주체</div>
+									<div class="right">쿠콘</div>
+								</div>
+								<div class="info_li">
+									<div class="left">이용내용</div>
+									<div class="right">고객이 전송요구한 개인신용정보(수신계좌 정보, 투자상품 정보, 대출상품 정보, 개인형irp 계좌</div>
+								</div>
+								<div class="info_li">
+									<div class="left">이용목적</div>
+									<div class="right">통합 자산관리서비스 제공</div>
+								</div>
+								<div class="info_li">
+									<div class="left">보유 및 이용기간</div>
+									<div class="right">서비스 이용종료시 또는삭제요구시까지</div>
+								</div>
+							</div>
+						</div>
+						<div class="faq_list">
+							<div class="tit_wrap">
+								<button class="btnFolding" data-target="#acc_0103" aria-expanded="false">
+									<div class="day">2022.03.10</div>
+									<div class="tx">통합 자산관리서비스 제공</div>
+								</button>
+							</div>
+							<div class="folding_cont" id="acc_0103">
+								<div class="info_li">
+									<div class="left">이용주체</div>
+									<div class="right">쿠콘</div>
+								</div>
+								<div class="info_li">
+									<div class="left">이용내용</div>
+									<div class="right">고객이 전송요구한 개인신용정보(수신계좌 정보, 투자상품 정보, 대출상품 정보, 개인형irp 계좌</div>
+								</div>
+								<div class="info_li">
+									<div class="left">이용목적</div>
+									<div class="right">통합 자산관리서비스 제공</div>
+								</div>
+								<div class="info_li">
+									<div class="left">보유 및 이용기간</div>
+									<div class="right">서비스 이용종료시 또는삭제요구시까지</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- [E] 이용내역 -->
+
+			<!-- [S] 제공내역 -->
+			<div class="wrap_faq type_line_box">
+				<div class="faq_section">
+					<div class="faq_cont">
+						<p class="faq_cate_tit"><span class="tx">제공내역</span></p>
+						<div class="faq_list">
+							<div class="tit_wrap">
+								<button class="btnFolding" data-target="#acc_0201" aria-expanded="false">
+									<div class="day">2022.03.10</div>
+									<div class="tx">네이버인증을 통한 통합 자산관리서비스 본인인증</div>
+								</button>
+							</div>
+							<div class="folding_cont" id="acc_0201">
+								<div class="info_li">
+									<div class="left">이용주체</div>
+									<div class="right">쿠콘</div>
+								</div>
+								<div class="info_li">
+									<div class="left">제공받은 자</div>
+									<div class="right">네이버</div>
+								</div>
+								<div class="info_li">
+									<div class="left">제공내용</div>
+									<div class="right">전자서명 요청값(인증 동의, 전송요구내역)</div>
+								</div>
+								<div class="info_li">
+									<div class="left">제공목적</div>
+									<div class="right">네이버인증을 통한 통합 자산관리서비스 본인인증</div>
+								</div>
+								<div class="info_li">
+									<div class="left">보유 및 이용기간</div>
+									<div class="right">제공에 관한 동의일로부터 서비스 이용 종료 또는 동의 철회 시까지</div>
+								</div>
+							</div>
+						</div>
+						<div class="faq_list">
+							<div class="tit_wrap">
+								<button class="btnFolding" data-target="#acc_0202" aria-expanded="false">
+									<div class="day">2022.03.10</div>
+									<div class="tx">금융분야 마이데이터 통합인증(인증서 본인확인) 서비스 제공</div>
+								</button>
+							</div>
+							<div class="folding_cont" id="acc_0202">
+								<div class="info_li">
+									<div class="left">이용주체</div>
+									<div class="right">쿠콘</div>
+								</div>
+								<div class="info_li">
+									<div class="left">제공받은 자</div>
+									<div class="right">고객이 전송요구한 기관</div>
+								</div>
+								<div class="info_li">
+									<div class="left">제공내용</div>
+									<div class="right">고객이 전송요구한 개인신용정보</div>
+								</div>
+								<div class="info_li">
+									<div class="left">제공목적</div>
+									<div class="right">금융분야 마이데이터 통합인증(인증서 본인확인) 서비스 제공</div>
+								</div>
+								<div class="info_li">
+									<div class="left">보유 및 이용기간</div>
+									<div class="right">제공에 관한 동의일로부터 서비스 이용 종료 또는 동의 철회 시까지</div>
+								</div>
+							</div>
+						</div>
+						<div class="faq_list">
+							<div class="tit_wrap">
+								<button class="btnFolding" data-target="#acc_0203" aria-expanded="false">
+									<div class="day">2022.03.10</div>
+									<div class="tx">부산은행 제3자 정보제공</div>
+								</button>
+							</div>
+							<div class="folding_cont" id="acc_0203">
+								<div class="info_li">
+									<div class="left">이용주체</div>
+									<div class="right">쿠콘</div>
+								</div>
+								<div class="info_li">
+									<div class="left">제공받은 자</div>
+									<div class="right">부산은행</div>
+								</div>
+								<div class="info_li">
+									<div class="left">제공내용</div>
+									<div class="right">
+										일반개인정보<br>
+										- CI<br>
+										- 개인(신용)정보 제3자 제공동의(선택) 변경일자, 동의여부<br>
+										- 회원가입 상태 변경일자, 회원/비회원 여부<br><br>
+										신용거래정보<br>
+										- 금융분야 마이데이터 서비스 가이드라인>에 따른 정보 중 귀하께서 ㈜쿠콘의 마이데이터 서비스(나의 자산)에 전송을 요구한 정보<br>
+										- 계좌기본정보, 계좌 잔액정보, 계좌 거래내역, 금융투자정보, 대출상품 기본정보, 대출상품 잔액정보, 대출상품 거래내역, 개인형 IRP정보, 카드정보, 선불카드정보, 카드포인트정보, 월별 카드이용정보, 일별 카드이용정보, 보험정보, 보험대출정보, 선불전자지급수단정보, 전자결제정보, 할부/리스정보, 보증보험정보, 통신업정보<br><br>
+										부산은행 제3자 정보제공<br>
+										- 전송요구내역을 활용한 통계 분석<br>
+										- 상품 추천 알고리즘 개발<br>
+										- 상품 서비스 안내 및 이용 권유<br>
+										- 이벤트 실시 및 경품 지급
+									</div>
+								</div>
+								<div class="info_li">
+									<div class="left">제공목적</div>
+									<div class="right">금융분야 마이데이터 통합인증(인증서 본인확인) 서비스 제공</div>
+								</div>
+								<div class="info_li">
+									<div class="left">보유 및 이용기간</div>
+									<div class="right">제공에 관한 동의일로부터 서비스 이용 종료 또는 동의 철회 시까지</div>
+								</div>
+							</div>
+						</div>
+						<div class="faq_list">
+							<div class="tit_wrap">
+								<button class="btnFolding" data-target="#acc_0204" aria-expanded="false">
+									<div class="day">2022.03.02</div>
+									<div class="tx">경남은행 제3자 정보제공</div>
+								</button>
+							</div>
+							<div class="folding_cont" id="acc_0204">
+								<div class="info_li">
+									<div class="left">이용주체</div>
+									<div class="right">쿠콘</div>
+								</div>
+							</div>
+						</div>
+						<div class="faq_list">
+							<div class="tit_wrap">
+								<button class="btnFolding" data-target="#acc_0205" aria-expanded="false">
+									<div class="day">2022.02.28</div>
+									<div class="tx">BNK캐피탈 제3자 정보제공</div>
+								</button>
+							</div>
+							<div class="folding_cont" id="acc_0205">
+								<div class="info_li">
+									<div class="left">이용주체</div>
+									<div class="right">쿠콘</div>
+								</div>
+							</div>
+						</div>
+						<div class="faq_list">
+							<div class="tit_wrap">
+								<button class="btnFolding" data-target="#acc_0206" aria-expanded="false">
+									<div class="day">2022.02.23</div>
+									<div class="tx">삼성카드 상품·서비스 이용 제3자 정보제공</div>
+								</button>
+							</div>
+							<div class="folding_cont" id="acc_0206">
+								<div class="info_li">
+									<div class="left">이용주체</div>
+									<div class="right">쿠콘</div>
+								</div>
+							</div>
+						</div>
+						<div class="faq_list">
+							<div class="tit_wrap">
+								<button class="btnFolding" data-target="#acc_0207" aria-expanded="false">
+									<div class="day">2022.02.28</div>
+									<div class="tx">삼성카드 부수상품·서비스 이용 제3자 정보제공</div>
+								</button>
+							</div>
+							<div class="folding_cont" id="acc_0207">
+								<div class="info_li">
+									<div class="left">이용주체</div>
+									<div class="right">쿠콘</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- [E] 제공내역 -->
+
+			<!-- [S] 하단 고정 영역 -->
+			<div class="fix_bottom">
+				<!-- btn_wrap -->
+				<div class="btn_wrap">
+					<div class="btnGroup">
+						<p><a href="#none" class="btnBl1 disable" role="button">이메일 전송받기</a></p><!-- 비활성시 'disable' 추가 -->
+					</div>
+				</div>
+			</div>
+			<!-- [E] 하단 고정 영역 -->
+
+		</div>
+	</div>
+	<!-- //container -->
+
+</div>
+<!-- //wrap -->
+
+</body>
+</html>

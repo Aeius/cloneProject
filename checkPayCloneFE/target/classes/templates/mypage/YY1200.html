@@ -1,0 +1,120 @@
+﻿<!DOCTYPE html>
+<html lang="ko" class="leaf">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>CheckPay</title>
+<meta http-equiv="Cache-Control" content="No-Cache">
+<meta http-equiv="Pragma" content="No-Cache">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<!--<meta name="title" content="">-->
+<meta name="description" content="">
+<!--<meta name="keywords" content="">-->
+<!-- The Open Graph protocol -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="">
+<meta property="og:description" content="">
+<meta property="og:url" content="">
+<meta property="og:image" content=""><!-- [D]리얼경로로 변경하세요 -->
+<!-- //The Open Graph protocol -->
+<link rel="SHORTCUT ICON" href=""><!-- [D]리얼경로로 변경하세요 -->
+<link rel="stylesheet" type="text/css" href="../css/jquery-ui.min.css">
+<link rel="stylesheet" type="text/css" href="../css/reset.css">
+<link rel="stylesheet" type="text/css" href="../css/content.css">
+<link rel="stylesheet" type="text/css" href="../css/theme_checkpay.css">
+<script type="text/javascript" src="../js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="../js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="../js/jquery.ui.touch-punch.min.js"></script>
+<script type="text/javascript" src="../js/slide_slick.js"></script>
+<script type="text/javascript" src="../js/publishing.ui.library.1.0.0.js"></script>
+<script type="text/javascript" src="../js/cmd.js"></script>
+</head>
+
+<body>
+
+<!-- wrap -->
+<div class="wrap">
+
+	<!-- header -->
+	<div class="header setup"><!-- 2021-10-07 마이페이지 클래스 'setup' 추가 -->
+		<div class="header_inn">
+			<div class="left">
+				<a href="javascript:window.history.go(-1);" class="btnBack"><span class="blind">Back</span></a>
+			</div>
+			<div class="center">
+				<h2 class="tit_h2">연결관리</h2>
+			</div>
+			<div class="right">
+				<!--<a href="#" class="btnClose"><span class="blind">close</span></a>-->
+			</div>
+		</div>
+	</div>
+	<!-- //header -->
+
+	<!-- container -->
+	<div class="container">
+		<div class="content">
+			<div class="insLink">
+				<h3 class="insTit">은행</h3>
+				<ul class="insLinkList">
+					<li>
+						<a href="#" class="error">신한은행</a>
+					</li>
+					<li>
+						<a href="#" class="error type2">BNK 경남은행</a><!-- 2022-07-13 class="error type2" 클래스추가  -->
+					</li>
+				</ul>
+			</div>
+			<div class="insLink">
+				<h3 class="insTit">카드</h3>
+				<ul class="insLinkList">
+					<li>
+						<a href="#" class="inspection">카카오뱅크카드</a> <!-- [이은숙#20220602] 클래스 추가 -->
+					</li>
+					<li>
+						<a href="#">삼성카드
+							<span class="state expire">만료</span>
+						</a>
+					</li>
+				</ul>
+			</div>
+			<div class="insLink last">
+				<h3 class="insTit">캐피탈</h3>
+				<ul class="insLinkList">
+					<li>
+						<a href="#">BNK 캐피탈
+							<span class="state soon">만료예정</span>
+						</a>
+					</li>
+				</ul>
+			</div>
+			<!-- [S] 하단 고정 영역 -->
+			<div class="fix_bottom">
+				<!-- btn_wrap -->
+				<!-- [S] 2022-08-03 하단 고정버튼 tooltip 영역 html 수정 -->
+				<div class="btn_wrap">
+					<div class="btnGroup btnSeWrap">
+						<p class="btnSe">
+							<a href="#none" class="btnBl4" role="button">한 번에 정보 수정</a><!-- btnBl4 클래스명 수정 -->
+							<span class="tooltip top" style="display:block; width: 266px;">
+								<span>수집 · 이용 동의 약관에 동의하면<br>지금보다 상세한 나의 자산 정보를 알 수 있어요!</span>
+							</span>
+						</p><!-- 하단고정 복수 버튼일때 btnSe 추가 -->
+						<p class="btnSe"><a href="#none" class="btnBl4" role="button">한 번에 기간 연장</a></p><!-- 하단고정 복수 버튼일때 btnSe 추가 --><!-- btnBl4 클래스명 수정 -->
+					</div>
+					<div class="btnGroup btnSeWrap"><!-- 1행 1버튼 클래스 'type_col' 추가 -->
+						<p class="btnSe"><a href="#none" class="btnBl1" role="button">기관 추가하기 +</a></p><!-- 하단고정 복수 버튼일때 btnSe 추가 --><!-- btnBl1 클래스명 수정 -->
+					</div>
+				</div>
+				<!-- [E] 2022-08-03 하단 고정버튼 tooltip 영역 html 수정 -->
+			</div>
+			<!-- [E] 하단 고정 영역 -->
+		</div>
+	</div>
+	<!-- //container -->
+
+</div>
+<!-- //wrap -->
+
+</body>
+</html>

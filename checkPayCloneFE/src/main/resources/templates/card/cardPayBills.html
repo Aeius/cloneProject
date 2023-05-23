@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="ko" class="leaf">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>CheckPay</title>
+<meta http-equiv="Cache-Control" content="No-Cache">
+<meta http-equiv="Pragma" content="No-Cache">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<!--<meta name="title" content="">-->
+<meta name="description" content="">
+<!--<meta name="keywords" content="">-->
+<!-- The Open Graph protocol -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="">
+<meta property="og:description" content="">
+<meta property="og:url" content="">
+<meta property="og:image" content=""><!-- [D]리얼경로로 변경하세요 -->
+<!-- //The Open Graph protocol -->
+<link rel="SHORTCUT ICON" href=""><!-- [D]리얼경로로 변경하세요 -->
+<link rel="stylesheet" type="text/css" href="../../css/jquery-ui.min.css">
+<link rel="stylesheet" type="text/css" href="../../css/reset.css">
+<link rel="stylesheet" type="text/css" href="../../css/content.css">
+<link rel="stylesheet" type="text/css" href="../../css/theme_checkpay.css">
+<script type="text/javascript" src="../../js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="../../js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="../../js/jquery.ui.touch-punch.min.js"></script>
+<script type="text/javascript" src="../../js/slide_slick.js"></script>
+<script type="text/javascript" src="../../js/publishing.ui.library.1.0.0.js"></script>
+<script type="text/javascript" src="../../js/cmd.js"></script>
+<script type="text/javascript" src="../../js/common.js"></script>
+<!-- thymeleaf -->
+<html xmlns:th="http://www.thymeleaf.org">
+</head>
+
+<body>
+
+<!-- wrap -->
+<div class="wrap">
+
+	<!-- header -->
+	<div class="header">
+		<div class="header_inn">
+			<div class="left">
+				<a href="javascript:history.back();" class="btnBack"><span class="blind">Back</span></a>
+			</div>
+			<!-- <div class="right">
+                <a href="../" class="btnClose"><span class="blind">close</span></a>
+			</div> -->
+		</div>
+	</div>
+	<!-- //header -->
+
+	<!-- container -->
+	<div class="container">
+		<div class="content">
+			<div class="tBalance">
+				<h3 class="tBaltit"></h3>
+				<p class="tBalAmount"><em class="amount"></em>원</p>
+				<p class="tBalDetail"><br></p>
+				<a class="btnRef"><span class="blind">새로고침</span></a>
+				<!-- 새로고침중 일때 class에 ing 추가 -->
+				<!-- <a href="#" class="btnRef ing"><span class="blind">새로고침</span></a> -->
+			</div>
+			<div class="accHistory">
+				<div class="topCtrl">
+					<div class="rangeCtrl">
+						<span class="range"></span>
+					</div>
+					<!-- <a href="#layerFilter" class="btnFilter  btn_open_bottom_sheet" role="button"><span class="blind">필터</span></a> -->
+				</div>
+				<div class="tabs_wrap tabInter">
+					<div class="tabs_header type2">
+						<ul class="cboth">
+							<li class="js_tabclickDp1 on"><a  title="선택됨"><span>전체</span></a></li><!-- 선택시 title="선택됨" 추가 -->
+							<li class="js_tabclickDp1"><a><span>일시불</span></a></li>
+							<li class="js_tabclickDp1"><a><span>할부</span></a></li>
+						</ul>
+					</div>
+					<div class="tabs_body_wrap">
+						<div class="tabs_body cboth">
+							<!-- 전체 -->
+							<div class="tab_cntDp1" id="all" style="display: block;"></div>
+							<!-- //전체 -->
+
+							<!-- 일시불 -->
+							<div class="tab_cntDp1" id="il" style="display: none;"></div>
+							<!-- //일시불 -->
+
+							<!-- 할부 -->
+							<div class="tab_cntDp1" id="hal" style="display: none;"></div>
+							<!-- //할부 -->
+						</div>
+					</div>
+				</div>
+                <div class="toastMsg" id="update_ing">
+                    <p class="tx">이전 업데이트가 진행 중입니다</p>
+                </div>
+                <div class="toastMsg" id="update_complete">
+                    <p class="tx">업데이트가 완료되었습니다</p>
+                </div>
+			</div>
+		</div>
+	</div>
+	<!-- //container -->
+
+</div>
+
+<!-- //wrap -->
+<div id="layerFilter" class="layer_bottomsheet" >
+	<div class="layer_inner">
+		<div class="layer_tit">
+			<strong class="tit"><span class="blind">조회조건선택팝업</span></strong>
+			<button type="button" class="js_pop_close btn_close"><span class="blind">닫기</span></button>
+		</div>
+		<div class="layer_cont">
+           <div class="filterItem">
+			   <p class="filterTit">조회기간</p>
+			   <div class="rangeCtrl">
+					<button class="btnYPrev"><span class="blind">이전년도</span></button>
+					<button class="btnPrev"><span class="blind">이전달</span></button>
+					<span class="range"></span>
+					<button class="btnNext"><span class="blind">다음달</span></button>
+					<button class="btnYNext"><span class="blind">다음년도</span></button>
+				</div>
+		   </div>
+		   <div class="filterItem">
+				<p class="filterTit">조회내용</p>
+				<ul class="radioTab">
+					<li>
+						<input type="radio" id="radio5" name="radioTab2" class="blind">
+						<label for="radio5">전체</label>
+					</li>
+					<li>
+						<input type="radio" id="radio6" name="radioTab2" class="blind">
+						<label for="radio6">일시불</label>
+					</li>
+					<li>
+						<input type="radio" id="radio7" name="radioTab2" class="blind">
+						<label for="radio7">할부</label>
+					</li>
+				</ul>
+			</div>
+			<div class="filterItem">
+				<p class="filterTit"><label for="search">검색내용</label></p>
+				<input type="text" id="search" class="schTxt" placeholder="검색내용을 입력하세요" />
+
+			</div>
+			<div class="filterItem">
+				<p class="filterTit">정렬순</p>
+				<ul class="radioTab">
+					<li>
+						<input type="radio" id="radio8" name="radioTab3" class="blind">
+						<label for="radio8">최신순</label>
+					</li>
+					<li>
+						<input type="radio" id="radio9" name="radioTab3" class="blind">
+						<label for="radio9">과거순</label>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<div class="layer_footer">
+			<button type="button" class="js_pop_close btn_confirm"><span>확인</span></button>
+		</div>
+	</div>
+</div>
+
+<script>
+    // [S] 업데이트 페이지 로딩전 문구 보여주기 - 박진호 03.31	
+	$('.upLoading').show();
+	$('#update_ing').show();
+
+	function toastMsgShow(){	
+		$('#update_complete').show();
+		$('#update_ing').hide();
+        $('.btnRef').addClass("ing");
+		setTimeout(function(){
+			$('#update_complete').hide();
+            $('.btnRef').removeClass("ing");
+		},1500);
+	}
+	// [E] 업데이트 페이지 로딩전 문구 보여주기
+
+	let year_month='[[${cardbills.paid_out_date}]]';
+	let org_code='[[${cardbills.org_code}]]';
+	let charge_amt='[[${cardbills.charge_amt}]]';	
+	let member_id = parseJwt(getCookie("jwt")).sub;
+	var arr = "";
+		
+	function pageLoad(){
+		$('#all').load("/cardpaybills/B1440_1.html", function () {
+			payBillsAll();
+		});
+		$('#il').load("/cardpaybills/B1440_2.html", function () {
+			payBillsIl();
+		});
+		$('#hal').load("/cardpaybills/B1440_3.html", function () {
+			payBillsHal();
+		});
+	}
+
+	$(document).ready(function(){
+        localStorage.removeItem("val");	
+        $('#update_complete').hide();
+
+		$('.tBalAmount').find('.amount').text(charge_amt);
+		cardName();
+		pageLoad();
+        
+        setTimeout(function () {
+			$('.upLoading').hide();
+			$('.toastMsg').hide();
+		}, 1500);
+
+        $(document).on("click", ".btnRef", function(e){
+			toastMsgShow();
+			pageLoad();
+		});
+
+		//은행,카드,기타 선택 탭
+		$(".tabInter").tabs({
+			wrapClass:".tabInter",
+			clickClass:".js_tabclickDp1",
+			showClass:".tab_cntDp1",
+			animate:false,
+			contentWidthFull:false,//effect when animate:true
+			animateBorder:["false",".tabs_header"],//show border in class .
+			fade:false,
+			speed:500
+		});
+	});
+
+	// [S] 디폴트(직접입력, 전체, 최신순) 작업 04-04 : 박진호
+	$('#radio5').trigger("click");
+	$('#radio8').trigger("click");
+	// [N] 디폴트 작업
+
+	// [S] 바텀시트
+	$(document).on("click", ".btn_open_bottom_sheet", function(e){
+		e.preventDefault();
+		var $href = $(this).attr('href');
+		layer_bottomsheet($href);
+		$('html').addClass('scroll_lock');//2021-10-28 html 스크롤 잠금 수정
+		$focusReturn = $(this);
+	});
+	function layer_bottomsheet(el){
+		var $el = $(el);
+		$el.append("<div class=\"dim\"></div>");
+		isDim ? $('.layer_bottomsheet').show() : $el.show().attr({'tabindex':'0','aria-hidden':'false'}).focus();
+		setTimeout(function() {
+			$el.find('.layer_inner').addClass('on');
+		}, 50);
+
+		var isDim = $el.siblings().hasClass('dim');
+
+		$el.find('.js_pop_close').click(function(){
+			$el.find('.layer_inner').removeClass('on');
+			setTimeout(function() {
+				isDim ? $('.layer_bottomsheet').hide() : $el.hide();
+				$('html').removeClass('scroll_lock');//2021-10-28 html 스크롤 잠금 수정
+				$el.attr({'tabindex':'-1','aria-hidden':'true'}).find(".dim").remove();
+			}, 200);
+			$focusReturn.focus();
+			return false;
+		});
+	}
+	// [E] 바텀시트
+
+	function paybills_ajax_arr(item) {
+		let result = new Date(item.paid_dtime);
+		let dateString = month_date_dot(result); // 월.일
+		let day = result.getDay();
+		let weekday = " " + toKor_dayOfWeek(day); // 요일
+
+		if (msg != dateString) {
+			msg = dateString;
+			arr += '</ul>'
+			arr += '<span class="date">' + dateString + weekday + '</span>';
+			arr += '<ul>'
+		}
+
+		if (item.prod_type == '01') {
+			item.prod_type = '일시불'
+		} else if (item.prod_type > '01') {
+			item.prod_type = '할부'
+		}
+
+		arr += '<li>'
+		arr += '<a href="payBillsDetail" class="link" role="button">';
+		arr += '<div class="left">'
+		arr += '<span class="category">' + item.merchant_name + '</span>';
+		arr += '<span class="time">' + hours_minute_col(result) + '</span>';
+		arr += '</div>';
+		arr += '<div class="right">';
+		arr += '<span class="amount"><em class="num">' + numberWithCommas(item.paid_amt) + '</em>원</span>';
+		arr += '<span class="balance">' + item.prod_type + '</span>';
+		arr += '</div>';
+
+		arr += '<div style="display: none" class="paid_dtime">' + item.paid_dtime + '</div>'
+		arr += '<div style="display: none" class="card_name">' + item.card_name + '</div>'
+		arr += '<div style="display: none" class="total_install_cnt">' + item.total_install_cnt + '</div>'
+		arr += '<div style="display: none" class="cur_install_cnt">' + item.cur_install_cnt + '</div>'
+		arr += '<div style="display: none" class="balance_amt">' + item.balance_amt + '</div>'
+		arr += '<div style="display: none" class="credit_fee_amt">' + item.credit_fee_amt + '</div>'
+		arr += '<div style="display: none" class="merchant_regno">' + item.merchant_regno + '</div>'
+
+		arr += '</a>';
+		arr += '</li>';
+	}
+
+	function cardName(){
+		return $.ajax({
+			url: 'http://192.168.240.208:8081/api/bills/'+ member_id + '/' + org_code +'/' + year_month,
+			// url: 'http://localhost:8081/api/bills/'+ member_id + '/' + org_code +'/' +year_month,
+			type: 'GET',
+			dataType: 'json',
+			headers: {
+				"Authorization" : "Bearer " + getCookie("jwt")
+			},
+			error: function(jqXHR) {
+				if(jqXHR.status == 401) {
+					userErrorHandler(jqXHR);
+				}
+			},
+		})
+		.done(function(data){
+			$('.tBaltit').text(data[0].org_name);
+			$(".range").eq(0).text(year_month_date_dot(new Date(data[0].paid_out_date)));
+			let card_name_list = new Array();
+			let card_name_list_set;
+			
+			for(val of data){
+				card_name_list.push(val.card_name);
+				card_name_list_set = new Set(card_name_list);
+				card_name_list = [...card_name_list_set];
+			}
+
+			$(data).each(function(index, item){
+				$('.tBalDetail').text(card_name_list);
+				let card_name = $('.tBalDetail').text().replaceAll(',', '<br>');
+				$('.tBalDetail').html(card_name);
+			});
+		});
+	}
+
+	function payBillsAll_ajax(){
+		return $.ajax({
+			url: 'http://192.168.240.208:8081/api/bills/'+ member_id + '/' + org_code +'/' + year_month,
+			// url: 'http://localhost:8081/api/bills/'+ member_id + '/' + org_code +'/' +year_month,
+			type: 'GET',
+			dataType: 'json',
+			headers: {
+				"Authorization" : "Bearer " + getCookie("jwt")
+			},
+			error: function(jqXHR) {
+				if(jqXHR.status == 401) {
+					userErrorHandler(jqXHR);
+				}
+			},
+			beforeSend: function(){
+				$('.btnRef').addClass("ing");
+			},
+			complete: function() {
+				$('.upLoading').hide();
+				$('.btnRef').removeClass("ing");
+			}
+		});
+	}
+
+	function payBillsIl_ajax(){
+		return $.ajax({
+            url: 'http://192.168.240.208:8081/api/bills/'+ member_id + '/' + org_code +'/01/'+ year_month,
+			// url: 'http://localhost:8081/api/bills/'+ member_id + '/' + org_code +'/01/'+ year_month,
+			type: 'GET',
+			dataType: 'json',
+			headers: {
+				"Authorization" : "Bearer " + getCookie("jwt")
+			},
+			error: function(jqXHR) {
+				if(jqXHR.status == 401) {
+					userErrorHandler(jqXHR);
+				}
+			},
+			beforeSend: function(){
+				$('.btnRef').addClass("ing");
+			},
+			complete: function() {
+				$('.upLoading').hide();
+				$('.btnRef').removeClass("ing");
+			}
+		});
+	}
+
+	function payBillsHal_ajax(){
+		return $.ajax({
+            url: 'http://192.168.240.208:8081/api/bills/'+ member_id + '/' + org_code +'/02/'+ year_month,
+			// url: 'http://localhost:8081/api/bills/'+ member_id + '/' + org_code +'/02/'+ year_month,
+			type: 'GET',
+			dataType: 'json',
+			headers: {
+				"Authorization" : "Bearer " + getCookie("jwt")
+			},
+			error: function(jqXHR) {
+				if(jqXHR.status == 401) {
+					userErrorHandler(jqXHR);
+				}
+			},
+			beforeSend: function(){
+				$('.btnRef').addClass("ing");
+			},
+			complete: function() {
+				$('.upLoading').hide();
+				$('.btnRef').removeClass("ing");
+			}
+		});
+	}
+
+</script>
+</body>
+</html>

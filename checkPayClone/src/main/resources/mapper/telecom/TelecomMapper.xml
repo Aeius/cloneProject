@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bit.checkpayclone.telecom.model.TelecomMapper">
+
+	<select id="findUserBill" resultType="com.bit.checkpayclone.telecom.model.TelecomVo">
+	
+		   select memb_cd,
+	              to_char(now(),'YY.MM') as n_month,
+	              to_char(now() - interval '1 MONTH', 'YY.MM') as month_1,
+	              to_char(now() - interval '2 MONTH', 'YY.MM') as month_2,
+	        (
+	         select coalesce(sum(CHARGE_AMT),0) + (
+	         select  coalesce(sum(trans_amt),0)
+	        from tb_a_telecom_paid_trans
+	         where memb_cd = #{id} and substr(trans_date,1,6) = to_char(now(),'YYYYMM')
+	        )
+	        from TB_A_TELECOM_BILLS
+	        where memb_cd = #{id}
+	        and charge_month = to_char(now()- interval '0 MONTH' ,'YYYYMM')
+	       ) as "current",
+	       (
+	        select coalesce(sum(CHARGE_AMT),0) + (
+	       select  coalesce(sum(trans_amt),0)
+	        from tb_a_telecom_paid_trans
+	         where memb_cd = #{id} and substr(trans_date,1,6) = to_char(now()- interval '1 MONTH' ,'YYYYMM')
+	        )
+	        from TB_A_TELECOM_BILLS
+	        where memb_cd = #{id}
+	        and charge_month = to_char(now()- interval '1 MONTH' ,'YYYYMM')
+	       ) as "pre1",
+	       (
+	         select coalesce(sum(CHARGE_AMT),0) + (
+	         select  coalesce(sum(trans_amt),0)
+	        from tb_a_telecom_paid_trans
+	         where memb_cd = #{id} and substr(trans_date,1,6) = to_char(now()- interval '2 MONTH' ,'YYYYMM')
+	        )
+	        from TB_A_TELECOM_BILLS
+	        where memb_cd = #{id}
+	        and charge_month = to_char(now()- interval '2 MONTH' ,'YYYYMM')
+	       ) as "pre2"
+	         from TB_A_TELECOM_BILLS        
+	      where memb_cd = #{id}
+	      group by memb_cd;
+	
+	</select>
+
+	<select id="findBillList" resultType="com.bit.checkpayclone.telecom.model.TelecomBillVo">
+		
+				
+			select
+		         a.org_code,
+		         (
+		          select coalesce(sum(CHARGE_AMT),0) + (
+		          select coalesce(sum(trans_amt),0)
+		          from tb_a_telecom_paid_trans
+		          where memb_cd = #{id} and substr(trans_date,1,6) = to_char(now(),'YYYYMM')
+		         )
+		           from TB_A_TELECOM_BILLS
+		           where memb_cd = #{id}
+		           and charge_month = to_char(now()- interval '0 MONTH' ,'YYYYMM')
+		        ) as "current_total",
+		          b.org_name_abb,
+		          sum(c.trans_amt) as payment ,
+		          a.CHARGE_AMT,
+		          to_timestamp(a.charge_date, 'YYYYMMDD') as charge_date,
+		          a.charge_month
+		          from TB_A_TELECOM_BILLS a
+		               left join tb_a_mydata_orgs b            on a.org_code = b.org_code
+		               left join tb_a_telecom_paid_trans c     on a.org_code = c.org_code
+		                                                      and a.memb_cd = c.memb_cd 
+		                                                      and a.mgmt_id = c.mgmt_id 
+		                                                      and a.charge_month = substr(c.trans_date,1,6)
+		   where a.memb_cd = #{id}
+		   and charge_month between to_char(now() - interval '2 MONTH' ,'YYYYMM') and to_char(now(),'YYYYMM')
+		   group by a.org_code, a.charge_date, b.org_name_abb, a.charge_month, a.CHARGE_AMT
+		   order by a.charge_date desc, b.org_name_abb
+		
+			
+				
+	</select>
+	
+	<select id="findDetailCount" resultType="com.bit.checkpayclone.telecom.model.TelecomDetailtopVo">
+	
+		   select 
+				   b.org_name_abb,
+				   case when a.type = '01' then '휴대폰'
+			       		when a.type = '02' then '집전화'
+			       		when a.type = '03' then '인터넷' end as type,
+				 
+			       count(case when a.type = '01' then '휴대폰'
+			       		when a.type = '02' then '집전화'
+			       		when a.type = '03' then '인터넷' end) as count,		
+			       		
+			       case when a.status = '01' then '정상'
+			       		when a.status = '02' then '고객정지'
+			       		when a.status = '03' then '연체정지' end as status,
+			       a.telecom_num
+			       		
+				   from TB_A_TELECOM a -- 멤버
+				   join tb_a_mydata_orgs b 		on a.org_code = b.org_code -- 기관코드
+				   
+			where a.memb_cd = #{id}
+			group by a.status, a.type, b.org_name_abb, a.telecom_num
+			
+</select>
+
+			<select id="findDetailFirst" resultType="com.bit.checkpayclone.telecom.model.TelecomDetailBillVo">
+			
+				select 
+		      b.org_name_abb,
+		      to_timestamp(c.charge_date, 'YYYYMMDDHH24MIss') as charge_date,
+		      case when a.type = '01' then '휴대폰'
+		             when a.type = '02' then '집전화'
+		             when a.type = '03' then '인터넷' end as type,
+		      a.telecom_num,
+		      c.charge_amt,
+		      (SELECT 
+		       SUM(trans_amt) as total_amount
+		   FROM tb_a_telecom_paid_trans
+		   WHERE memb_cd = #{id} and trans_dt like concat(to_char(now()- interval '2 MONTH' ,'YYYYMM'),'%')
+		   )as pre2_month,
+		   (SELECT 
+		       SUM(trans_amt) as total_amount
+		   FROM tb_a_telecom_paid_trans
+		   WHERE memb_cd = #{id} and trans_dt like concat(to_char(now()- interval '1 MONTH' ,'YYYYMM'),'%')
+		   )as pre_month,
+		   (SELECT 
+		       SUM(trans_amt) as total_amount
+		   FROM tb_a_telecom_paid_trans
+		   WHERE memb_cd = #{id} and trans_dt like concat(to_char(now()- interval '0 MONTH' ,'YYYYMM'),'%')
+		   )as crnt_month,
+		      d.paid_amt,
+			  case when coalesce(d.paid_amt, '0') = 0 then '납부정보없음' 
+	       		else
+	       		<![CDATA[ case when d.paid_amt < c.charge_amt then '부분납부'	]]>
+		       	when d.pay_method = '01' then '자동납부'
+	     		when d.pay_method = '02' then '지로'
+	       		when d.pay_method = '99' then '기타'
+	       		END
+	      		end as paid
+		      from TB_A_TELECOM a -- 멤버
+		      join tb_a_mydata_orgs b       on a.org_code = b.org_code -- 기관코드
+		      join TB_A_TELECOM_BILLS c    on a.org_code = c.org_code -- 청구내역
+		                                  and a.memb_cd = c.memb_cd
+		                                  and a.mgmt_id = c.mgmt_id
+		      left join TB_A_TELECOM_TRANS d  on c.org_code = d.org_code
+		                                     and c.memb_cd = d.memb_cd
+		                                     and c.mgmt_id = d.mgmt_id
+		                                     and d.trans_month = c.charge_month
+		where a.memb_cd = #{id}
+		AND to_date(c.charge_date, 'YYYYMMDDHH24MIss') between #{start_date} and #{end_date}
+					<if test='sort != null and sort.equals("desc")'>
+						order by c.charge_date desc
+					</if>
+					<if test='sort != null and sort.equals("asc")'>
+						order by c.charge_date asc
+					</if>
+					LIMIT 50 offset #{offset};
+			
+	</select>
+	
+	<select id="findMicropayment" resultType="com.bit.checkpayclone.telecom.model.MicropaymentVo">
+		      
+		SELECT 
+			    b.org_name_abb, 
+			    a.merchant_name, 
+			    <![CDATA[ case when count(*) > 1 then concat(a.trans_title, ' 외 ',count(a.trans_date),'건')
+			    else a.trans_title end as summary,
+			    to_timestamp(SUBSTR(a.trans_date,0,13),'YYYYMMDDHH24MIss') as trans_date, 
+			    CASE WHEN a.trans_amt < 0 THEN 1 ELSE 0 END as trans_type, 
+			    SUM(a.trans_amt) as trans_amt
+			    
+			FROM tb_a_telecom_paid_trans a 
+			LEFT JOIN tb_a_mydata_orgs b ON a.org_code = b.org_code 
+			WHERE memb_cd = #{id}
+			]]>
+			AND to_date(trans_date, 'YYYYMMDDHH24MIss') between #{start_date} and #{end_date}
+			GROUP BY a.merchant_name, to_timestamp(SUBSTR(a.trans_date,0,13),'YYYYMMDDHH24MIss'), a.trans_title, trans_type, b.org_name_abb 
+			
+			      <if test='sort != null and sort.equals("desc")'>
+			         order by trans_date desc
+			      </if>
+			      <if test='sort != null and sort.equals("asc")'>
+			         order by trans_date asc
+			      </if>
+			      LIMIT 50 offset #{offset}
+
+	</select>
+</mapper>

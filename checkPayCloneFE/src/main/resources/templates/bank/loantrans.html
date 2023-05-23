@@ -1,0 +1,667 @@
+
+<!DOCTYPE html>
+<html lang="ko" class="leaf">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>CheckPay</title>
+<meta http-equiv="Cache-Control" content="No-Cache">
+<meta http-equiv="Pragma" content="No-Cache">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<!--<meta name="title" content="">-->
+<meta name="description" content="">
+<!--<meta name="keywords" content="">-->
+<!-- The Open Graph protocol -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="">
+<meta property="og:description" content="">
+<meta property="og:url" content="">
+<meta property="og:image" content=""><!-- [D]리얼경로로 변경하세요 -->
+<!-- //The Open Graph protocol -->
+<link rel="SHORTCUT ICON" href=""><!-- [D]리얼경로로 변경하세요 -->
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui.min.css">
+<link rel="stylesheet" type="text/css" href="/css/reset.css">
+<link rel="stylesheet" type="text/css" href="/css/content.css">
+<link rel="stylesheet" type="text/css" href="/css/theme_checkpay.css">
+<script type="text/javascript" src="/js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="/js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="/js/jquery.ui.touch-punch.min.js"></script>
+<script type="text/javascript" src="/js/slide_slick.js"></script>
+<script type="text/javascript" src="/js/publishing.ui.library.1.0.0.js"></script>
+<script type="text/javascript" src="/js/cmd.js"></script>
+<script type="text/javascript" src="../js/common.js"></script>
+</head>
+
+<body>
+
+<!-- wrap -->
+<div class="wrap">
+
+	<!-- header -->
+	<div class="header">
+		<div class="header_inn">
+			<div class="left">
+				<a onclick="window.history.back()" class="btnBack"><span class="blind">Back</span></a>
+			</div>
+			<div class="right">
+                <!-- <a href="#none" class="btnClose"><span class="blind">close</span></a> -->
+			</div>
+		</div>
+	</div>
+	<!-- //header -->
+
+	<!-- container -->
+	<div class="container">
+		<div class="content">
+			<!-- <div class="topErrPop">
+				<p class="tx">부산은행 업데이트 오류입니다. <br>
+					잠시 후 다시 업데이트해 주세요.</p>
+			</div> -->
+			<div class="tBalance">
+				<h3 class="tBaltit">BNK전세금안심대출</h3>
+				<p class="tBalDetail">부산 123456789012</p>
+				<p class="tBalDetail"><em class="pointColor">상환 자동이체</em> 경남 123456789012</p>
+				<a href="#" class="btnRef"><span class="blind">새로고침</span></a>
+				<!-- 새로고침중 일때 class에 ing 추가 -->
+				<!-- <a href="#" class="btnRef ing"><span class="blind">새로고침</span></a> -->
+			</div>
+			<div class="accHistory">
+				<div class="topCtrl">
+					<div class="rangeCtrl">
+						<button class="btnPrev"><span class="blind">이전</span></button>
+						<span class="range">2021년</span>
+						<button class="btnNext"><span class="blind">다음</span></button>
+					</div>
+					<a href="#" class="btnFilter" role="button"><span class="blind">필터</span></a>
+				</div>
+				<div class="historyList">
+					<span class="date"><span class="num">10.23</span> 수요일</span>
+					<ul>
+						<li>
+							<a href="#layer_A1620" class="link btn_open_bottom_sheet" role="button"><!-- 2021-12-23 개별 거래내역 버튼, 바텀시트 오픈 추가 -->
+								<div class="left">
+									<span class="category">상환</span>
+									<span class="time">20:28</span>
+								</div>
+								<div class="right">
+									<span class="amount"><em class="num">56,654,000</em>원</span>
+									<span class="balance">잔액 <em class="num">1,900,000</em>원</span>
+									<span class="balance">이자 <em class="num">10,000</em>원</span>
+								</div>
+							</a>
+						</li>
+						<li>
+							<a href="#layer_A1620" class="link btn_open_bottom_sheet" role="button"><!-- 2021-12-23 개별 거래내역 버튼, 바텀시트 오픈 추가 -->
+								<div class="left">
+									<span class="category">상환</span>
+									<span class="time">20:28</span>
+								</div>
+								<div class="right">
+									<span class="amount"><em class="num">56,654,000</em>원</span>
+									<span class="balance">잔액 <em class="num">1,900,000</em>원</span>
+									<span class="balance">이자 <em class="num">10,000</em>원</span>
+								</div>
+							</a>
+						</li>
+					</ul>
+					<span class="date">09.02 금요일</span>
+					<ul>
+						<li>
+							<a href="#layer_A1620" class="link btn_open_bottom_sheet" role="button"><!-- 2021-12-23 개별 거래내역 버튼, 바텀시트 오픈 추가 -->
+								<div class="left">
+									<span class="category">상환</span>
+									<span class="time">20:28</span>
+								</div>
+								<div class="right">
+									<span class="amount"><em class="num">56,654,000</em>원</span>
+									<span class="balance">잔액 <em class="num">1,900,000</em>원</span>
+									<span class="balance">이자 <em class="num">10,000</em>원</span>
+								</div>
+							</a>
+						</li>
+						<li>
+							<a href="#layer_A1620" class="link btn_open_bottom_sheet" role="button"><!-- 2021-12-23 개별 거래내역 버튼, 바텀시트 오픈 추가 -->
+								<div class="left">
+									<span class="category">상환</span>
+									<span class="time">20:28</span>
+								</div>
+								<div class="right">
+									<span class="amount"><em class="num">56,654,000</em>원</span>
+									<span class="balance">잔액 <em class="num">1,900,000</em>원</span>
+									<span class="balance">이자 <em class="num">10,000</em>원</span>
+								</div>
+							</a>
+						</li>
+					</ul>
+					<div class="upLoading circleBar">
+						<div class="loader"></div>
+						<p>업데이트 중입니다</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- //container -->
+
+</div>
+<!-- //wrap -->
+
+<!-- [S] layer A1620 내용 -->
+<div id="layer_A1620" class="layer_bottomsheet">
+	<div class="layer_inner">
+		<div class="layer_tit">
+			<strong class="tit"><span>대출 거래 상세</span></strong>
+			<button type="button" class="js_pop_close btn_close"><span class="blind">닫기</span></button>
+		</div>
+		<div class="layer_cont">
+			<!-- [S] A1620 -->
+			<div class="accSetting type_history">
+				<div class="tAccount">
+					<h3 class="tAccTit">상환</h3>
+					<p class="tAccDetail">20:28</p>
+				</div>
+				<h4 class="listTit"><em class="pointColor">요약</em></h4>
+				<ul class="accDetailList">
+					<li>
+						<span class="itemTit">일시</span>
+						<span class="itemData"><span class="num">21.11.11 21:45</span></span>
+					</li>
+					<li>
+						<span class="itemTit">금액</span>
+						<span class="itemData"><span class="num">1,910,000,000</span>원</span>
+					</li>
+					<li>
+						<span class="itemTit">금액 중 원금</span>
+						<span class="itemData"><span class="num">1,910,000,000</span>원</span>
+					</li>
+				</ul>
+				<ul class="accDetailList">
+					<li>
+						<span class="itemTit"><em class="pointColor">금액 중 이자</em></span>
+						<span class="itemData"><span class="num">5,000,000</span>원</span>
+					</li>
+					<li>
+						<span class="itemTit">환출이자</span>
+						<span class="itemData"><span class="num">5,000,000</span>원</span>
+					</li>
+					<li>
+						<span class="itemTit">정상이자</span>
+						<span class="itemData">
+							<span class="num">1,000,000</span>원
+						</span>
+						<span class="dataSubTxt">이자율 8%</span>
+						<span class="dataSubTxt">이자 적용 기간 (21.02.05~21.09.05)</span>
+					</li>
+					
+				</ul>
+			</div>
+			<!-- [E] A1620 -->
+		</div>
+	</div>
+</div>
+<!-- [E] layer A1620 내용 -->
+
+<script>
+    // 업데이트 페이지 보여주기
+	$(function(){
+		$('.upLoading').hide();	// 업데이트 애니메이션
+		$('.toastMsg').hide();	// 업데이트 완료 modal
+		$(window).scroll(function(){	// 스크롤 마지막일 경우 데이터 가져오기
+			// let $window = $(this);
+			let scrollTop = $(this).scrollTop();
+			let windowHeight = $(this).height();
+			let documentHeight = $(document).height();
+			// scrollbar의 thumb가 바닥 전 30px까지 도달 하면 리스트를 가져온다.
+			if( scrollTop + windowHeight + 30 > documentHeight ){
+				bankinvesttranlist_next(now_start, now_end,sort);
+			}
+		});
+	});
+	var msg='';		// 같은 날인지 확인하기 위해 전역변수선언
+	var isEnd=false; // 스크롤 내렸을 때 업데이트할 데이터가 있는지 유무 판단
+	var offset=0;	// 업데이트할 데이터 페이지 구분
+	var sort ='desc';	// 최신순, 과거순
+
+	var token = getCookie("jwt");
+	var memb_cd=parseJwt(getCookie("jwt")).sub;
+	var account_num='[[${bankReqVo.account_num}]]';
+	var org_code='[[${bankReqVo.org_code}]]';
+
+	// 날짜 디폴트값 현재 날 1일부터 마지막날까지
+	var date = new Date();
+	var now_start = new Date(date.getFullYear(), date.getMonth(), 1);
+	var now_end = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+	
+	// 새로고침 클릭 시 데이터 새로 받아오기
+	$(document).on("click", ".btnRef", function(e){
+		bankinvesttranlist(true ,now_start,now_end,sort);
+        // api 불러오는 함수 적기
+	});
+    // [S] 바텀시트
+    $(document).on("click", ".btn_open_bottom_sheet", function(e){
+        e.preventDefault();
+        var $href = $(this).attr('href');
+        layer_bottomsheet($href);
+        $('html').addClass('scroll_lock');//2021-10-28 html 스크롤 잠금 수정
+        $focusReturn = $(this);
+    });
+    function layer_bottomsheet(el){
+        var $el = $(el);
+        $el.append("<div class=\"dim\"></div>");
+        isDim ? $('.layer_bottomsheet').show() : $el.show().attr({'tabindex':'0','aria-hidden':'false'}).focus();
+        setTimeout(function() {
+            $el.find('.layer_inner').addClass('on');
+        }, 50);
+
+        var isDim = $el.siblings().hasClass('dim');
+
+        $el.find('.js_pop_close').click(function(){
+            $el.find('.layer_inner').removeClass('on');
+            setTimeout(function() {
+                isDim ? $('.layer_bottomsheet').hide() : $el.hide();
+                $('html').removeClass('scroll_lock');//2021-10-28 html 스크롤 잠금 수정
+                $el.attr({'tabindex':'-1','aria-hidden':'true'}).find(".dim").remove();
+            }, 200);
+            $focusReturn.focus();
+            return false;
+        });
+    }
+    // [E] 바텀시트
+
+    // [S]	modal창 값 넘겨주기
+	function layer_A1620(trans_type_memo, currency_code, trans_type, trans_amt, balance_amt, base_amt, trans_fund_num){
+		// 해당 span이 있다면 삭제
+		if($('.accSetting>.accDetailList>li').eq(0).find('.itemData')) $('.accDetailList>li').eq(0).find('.itemData').remove();
+		if($('.accSetting>').eq(2).find('li').eq(0).find('.itemData')) $('.accSetting>').eq(2).find('li').eq(0).find('.itemData').remove();
+		if($('.accSetting>').eq(2).find('li').eq(1).find('.itemData')) $('.accSetting>').eq(2).find('li').eq(1).find('.itemData').remove();
+		if($('.accSetting>').eq(2).find('li').eq(2).find('.itemData')) $('.accSetting>').eq(2).find('li').eq(2).find('.itemData').remove();
+        if($('.accDetailList>li').eq(1).find('.itemData')) $('.accDetailList>li').eq(1).find('.itemData').remove();
+		if($('.accDetailList>li').eq(2).find('.itemData')) $('.accDetailList>li').eq(2).find('.itemData').remove();
+		if($('.accDetailList>li').eq(3).find('.itemData')) $('.accDetailList>li').eq(3).find('.itemData').remove();
+		if($('.accDetailList>li').eq(4).find('.itemData')) $('.accDetailList>li').eq(4).find('.itemData').remove();
+		/*
+			일시 2023.05.01 12:15
+            금액 896,000원
+            금액중 원금 800,000원
+            금액중 이자 96,000원
+            환출이자 0원
+            정상이자 96,000원
+            이자율 4.8%
+            이자 적용 기간 (23-04-01~23-04-30)
+		*/
+		$('.tAccount>.tAccTit').text(trans_type_memo);
+        $('.accSetting>').eq(2).
+        $('.accSetting>').eq(2).find('li').eq(0).append('<span class="itemData"><span class="num">'+time+'</span></span>');
+        $('.accSetting>').eq(2).find('li').eq(1).append('<span class="itemData"><span class="num">'+numberWithCommas(base_amt)+'</span>'+currency_code+'</span>');
+        $('.accSetting>').eq(2).find('li').eq(2).append();
+		$('.accDetailList>li').eq(0).append('<span class="itemData"><span class="num">'+time+'</span></span>');
+		$('.accDetailList>li').eq(1).append('<span class="itemData"><span class="num">'+numberWithCommas(principal_amt)+'</span>'+currency_code+'</span>');
+		$('.accDetailList>li').eq(2).append('<span class="itemData"><span class="num">'+numberWithCommas(trans_fund_num)+'</span></span>');	// 거래좌수
+		$('.accDetailList>li').eq(3).append('<span class="itemData"><span class="num">'+numberWithCommas(trans_amt)+'</span>'+currency_code+'</span>');
+		$('.accDetailList>li').eq(4).append('<span class="itemData"><span class="num">'+numberWithCommas(balance_amt)+'</span>'+currency_code+'</span>');
+		
+	}	
+	// [E]	modal창 값 넘겨주기
+
+	// api 호출 및 해당 거래내역들 보기
+	function bankinvesttranlist(isBtnRef,start_day, end_day, sort){
+		offset=0;
+		isEnd=false;
+		var request_data={
+			"memb_cd" : memb_cd,
+			"org_code": org_code,
+			"start_date": start_day,
+			"end_date": end_day,
+			"account_num": account_num,
+			"sort": sort,
+			"offset": offset
+		};
+		$.ajax({
+			url:'http://192.168.240.208:8081/api/bank/investTrans',
+			type:'POST',
+			dataType: 'json',
+			contentType : 'application/json',
+			data: JSON.stringify(request_data),
+			beforeSend:function(xhr){	// ajax 요청하기전에 실행
+				$('.upLoading').show();
+				if(isBtnRef==true){		// 새로고침인지 확인
+					$('.btnRef').addClass("ing");
+				}
+	        	xhr.setRequestHeader("Authorization", "Bearer "+token);
+			},
+			success: function(data){
+				let arrUl = '';
+				let isData=false;
+				if(data.length == 0 ){	// 데이터가 없는 경우
+					arrUl += '<p class="listNone">불러올 내역이 없습니다.</p>';
+					$('.historyList').html(arrUl);
+					return;
+				}
+				let today = new Date(data[0].trans_dtime);
+				msg = month_date_dot(today);
+				let nowDay = " "+toKor_dayOfWeek(today.getDay());
+				arrUl += '<span class="date"><span class="num">'+msg+'</span> '+nowDay+'</span>';
+				arrUl += '<ul calss= info>'
+				$(data).each(function(index, item){
+					let result = new Date(item.trans_dtime);
+					let arrLi='';
+					// 날짜 포맷팅
+					let dateString = month_date_dot(result); // 월.일
+					let weekday = " "+toKor_dayOfWeek(result.getDay()); // 요일
+					let time = hours_minute_col(result); // 시간 : 분
+					let amt_html='';		// 돈 마이너스인지 구분
+                    let money=item.currency_code=='KRW'?'원':item.currency_code;	// 화폐단위 구분
+					let trans_type_memo='입금';	// 출금, 입금 구분
+                    let trans_typelist = {'01':'신규', '02':'입금','03':'출금','04':'신규예약', '05':'입금예약','06':'출금예약'
+                                ,'07':'해지예약','08':'재투자','09':'정정(입금)','10':'정정(출금)','98':'기타(입금)','99':'기타(출금)'};
+					if(msg != dateString){	// 날짜가 같은지 확인
+						msg = dateString;
+						arrUl += '</ul>'
+						arrUl += '<span class="date"><span class="num">'+dateString+'</span> '+weekday+'</span>';
+						arrUl += '<ul>'
+					}if(item.trans_type=='03'||item.trans_type=='06'||item.trans_type=='07'||item.trans_type=='08'||item.trans_type=='10'||item.trans_type=='99'){	// 출금인지
+						arrLi += '<li class="withdrawal">'
+                        amt_html+='<span class="amount"><em class="num">-'+numberWithCommas(item.trans_amt)+'</em>'+money+'</span>';
+						trans_type_memo = '출금';
+					}else {
+                        arrLi += '<li>'
+                        amt_html+='<span class="amount"><em class="num">'+numberWithCommas(item.trans_amt)+'</em>'+money+'</span>';
+                    }
+                    //trans_type_memo, currency_code, trans_type, trans_amt, balance_amt, base_amt, trans_fund_num
+                    arrLi	+=		'<a href="#layer_A1511" class="link btn_open_bottom_sheet" role="button" '
+							+		' onclick="javascript:layer_A1511(\''+trans_type_memo+'\',\''+money+'\',\''+trans_typelist[item.trans_type]+'\','
+							+		item.trans_amt+','+item.balance_amt+','+item.base_amt+','+item.trans_fund_num+');">';
+					arrLi	+=		'<div class="left">';
+					arrLi	+=			'<span class="category">'+trans_typelist[item.trans_type]+'</span>';
+					arrLi	+=			'<span class="time">'+time+'</span>';
+					arrLi	+=		'</div>';
+					arrLi	+=		'<div class="right">';
+					arrLi	+=	        amt_html;
+					arrLi	+=			'<span class="balance">잔고평가금 <em class="num">'+numberWithCommas(item.balance_amt)+'</em>'+money+'</span>';
+					arrLi	+=		'</div>';
+					arrLi	+=		'</a>';
+					arrLi	+=		'</li>';
+					arrUl 	+=arrLi;
+				});
+				if(isData==true){	// 데이터가 있었다면 ul 닫아주기
+					arrUl +='</ul>';
+				}
+				$('.historyList').html(arrUl);
+			},
+			error: function (jqXHR) {
+				userErrorHandler(jqXHR);
+	    	},
+			complete : function(xhr, status) {	// ajax 응답 완료시 오류,성공 상관없이 호출됨
+		    // success와 error 콜백이 호출된 후에 반드시 호출, try - catch - finally의 finally 구문과 동일
+				$('.upLoading').hide();
+				$('.btnRef').removeClass("ing");
+				toastMsgShow();
+			}
+		});
+	}
+
+// [S] 5개씩 비동기 통신으로 업데이트
+function bankinvesttranlist_next(start_day, end_day, sort){
+	if(isEnd == true){// 데이터 없으면 함수 종료
+           return;
+    }
+	offset+=10;
+	var request_data={
+		"memb_cd" : memb_cd,
+		"org_code": org_code,
+		"start_date": start_day,
+		"end_date": end_day,
+		"account_num": account_num,
+		"sort": sort,
+		"offset": offset
+	};
+	$.ajax({
+		url:'http://192.168.240.208:8081/api/bank/investTrans',
+		type:'POST',
+		dataType: 'json',
+		contentType : 'application/json',
+		data: JSON.stringify(request_data),
+		beforeSend:function(xhr){	// ajax 요청하기전에 실행
+			$('.upLoading').show();
+			xhr.setRequestHeader("Authorization", "Bearer "+token);
+		},
+		success: function(data){
+			let arrUl ='';
+			if(data.length <5 ){	// 데이터가 없는 경우
+				isEnd=true;
+			}
+			if(data.length == 0 ){	// 데이터가 없는 경우
+				return;
+			}
+			let today = new Date(data[0].trans_dtime);
+			let isData=false;
+			$(data).each(function(index, item){
+				let result = new Date(item.trans_dtime);
+				let arrLi = '';
+				isData=true;
+				// 날짜 포맷팅
+				let dateString = month_date_dot(result); // 월.일
+				let weekday = " "+toKor_dayOfWeek(result.getDay()); // 요일
+				let time = hours_minute_col(result) // 시간 : 분
+				let amt_html='';
+                let money=item.currency_code=='KRW'?'원':item.currency_code;
+				let trans_type_memo='입금';	// 출금, 입금 구분
+                let trans_typelist = {'01':'신규', '02':'입금','03':'출금','04':'신규예약', '05':'입금예약','06':'출금예약'
+                                ,'07':'해지예약','08':'재투자','09':'정정(입금)','10':'정정(출금)','98':'기타(입금)','99':'기타(출금)'};
+				if(msg != dateString && index==0){
+					msg = dateString;
+					arrUl += '<span class="date"><span class="num">'+dateString+'</span> '+weekday+'</span>';
+					arrUl += '<ul>'
+				}
+				else if(msg != dateString ){
+					msg = dateString;
+					arrUl += '</ul>'
+					arrUl += '<span class="date"><span class="num">'+dateString+'</span> '+weekday+'</span>';
+					arrUl += '<ul>'
+				}
+				if(item.trans_type=='03'||item.trans_type=='06'||item.trans_type=='07'||item.trans_type=='08'||item.trans_type=='10'||item.trans_type=='99'){	// 출금인지
+					arrLi += '<li class="withdrawal">'
+                    amt_html+='<span class="amount"><em class="num">-'+numberWithCommas(item.trans_amt)+'</em>'+money+'</span>';
+					trans_type_memo = '출금';
+				}else {
+                    arrLi += '<li>'
+                    amt_html+='<span class="amount"><em class="num">'+numberWithCommas(item.trans_amt)+'</em>'+money+'</span>';
+                }
+				arrLi	+=		'<a href="#layer_A1511" class="link btn_open_bottom_sheet" role="button" '
+							+		' onclick="javascript:layer_A1511(\''+trans_type_memo+'\',\''+money+'\',\''+trans_typelist[item.trans_type]+'\','
+							+		item.trans_amt+','+item.balance_amt+','+item.base_amt+','+item.trans_fund_num+');">';
+                arrLi	+=		'<div class="left">';
+                arrLi	+=			'<span class="category">'+trans_typelist[item.trans_type]+'</span>';
+                arrLi	+=			'<span class="time">'+time+'</span>';
+                arrLi	+=		'</div>';
+                arrLi	+=		'<div class="right">';
+                arrLi	+=	        amt_html;
+                arrLi	+=			'<span class="balance">잔고평가금 <em class="num">'+numberWithCommas(item.balance_amt)+'</em>'+money+'</span>';
+                arrLi	+=		'</div>';
+                arrLi	+=		'</a>';
+                arrLi	+=		'</li>';
+				arrUl	+=	arrLi;
+			});
+			if(isData==true){
+				arrUl+='</ul>';
+			}
+			$('.historyList').append(arrUl);
+		},
+		error: function (jqXHR) {
+            userErrorHandler(jqXHR);
+	    },
+		
+		complete:function(){	// ajax 응답 완료시 오류,성공 상관없이 호출됨
+			$('.upLoading').hide();
+		}
+	});
+}
+// [E] 5개씩 비동기 통신으로 업데이트
+
+// 업데이트중 문구 안보이게하고 업데이트완료 문구 2초동안 띄우기
+function toastMsgShow(){	
+	$('.toastMsg').show();
+	setTimeout(function(){
+		$('.toastMsg').hide();
+	},2000);
+}
+$(document).ready(function(){
+
+	// [S] 날짜 이벤트 코드
+	let today = new Date();
+	let dateString =  year_month_dot(today);
+
+	$(".range").eq(0).text(dateString);	// 오늘 날짜 텍스트 셋팅
+
+	let nextMonthFirstDate ;
+	let nextMonthLastDate ;
+	let count = 1;
+	$(".btnPrev").click(function(){ // 이전 버튼
+		today = new Date(); 	//현재날짜
+		count = count +1;		//현재 카운트 에서 +1
+		nextMonthFirstDate = new Date(today.getFullYear(), today.getMonth()+1, 1);// 현재 날짜
+		nextMonthFirstDate.setMonth(nextMonthFirstDate.getMonth()-count);	// 누른만큼 차감한 날짜
+		nextMonthLastDate = new Date(nextMonthFirstDate.getFullYear(), nextMonthFirstDate.getMonth()+1, 0);// 누른만큼의 날짜를 다시 뉴데이트로 생성?
+		dateString =  year_month_dot(nextMonthLastDate);
+		$(".range").eq(0).text(dateString);
+		// api 불러서 거래내역 보여주는 함수
+		now_start= year_month_date_dash(new Date(nextMonthFirstDate.getFullYear(), nextMonthFirstDate.getMonth(), 1));
+		now_end=year_month_date_dash(nextMonthLastDate);
+		bankinvesttranlist(false, now_start, now_end, sort);
+	});
+	$(".btnNext").click(function(e){ // 다음 버튼
+		today = new Date();
+		count = count -1;
+		nextMonthFirstDate = new Date(today.getFullYear(), today.getMonth()+1, 1);
+		nextMonthFirstDate.setMonth(nextMonthFirstDate.getMonth()-count);
+		nextMonthLastDate = new Date(nextMonthFirstDate.getFullYear(), nextMonthFirstDate.getMonth()+1, 0);
+		year = nextMonthLastDate.getFullYear();
+		month = ('0' + (nextMonthLastDate.getMonth()+1)).slice(-2);
+		day=('0' + (nextMonthLastDate.getDay())).slice(-2);		// 새로생성한 날
+		if(Number(today.getFullYear())==nextMonthLastDate.getFullYear()		
+		&&Number(today.getMonth()+1)<Number(('0' + (nextMonthLastDate.getMonth()+1)).slice(-2))){// 현재날짜보다 앞선다면 초기화 및 이동 금지
+			count=1;
+			return false;
+		}
+		dateString = year_month_dot(nextMonthLastDate);	// 계산한 날짜를 포맷에 맞춰서 입력
+		$(".range").eq(0).text(dateString);
+		// api 불러서 거래내역 보여주는 함수
+		now_start= year_month_date_dash(new Date(nextMonthFirstDate.getFullYear(), nextMonthFirstDate.getMonth(), 1));
+		now_end=year_month_date_dash(nextMonthLastDate);
+		bankinvesttranlist(false, now_start, now_end, sort);
+	});
+	// [E] 날짜 이벤트 코드
+
+	// [S] 개월 수 (윤년 포함) 계산 함수
+	function minusMonth(date, month) {
+		// month달 후의 1일
+		let addMonthFirstDate = new Date(date.getFullYear(),date.getMonth() - month, 1);
+		// month달 후의 말일
+		let addMonthLastDate = new Date(addMonthFirstDate.getFullYear(),addMonthFirstDate.getMonth() + 1, 0);
+		let result = addMonthFirstDate;
+		if(date.getDate() > addMonthLastDate.getDate()) {
+			result.setDate(addMonthLastDate.getDate());
+		} else {
+			result.setDate(date.getDate());
+		}
+		return result;
+	}
+	// [E] 개월 수 계산 함수
+
+	// [S] 1,3,6 개월 조회기간 값 변환
+	$('input:radio[id="radio1"]').change(function(){
+		dateString =  year_month_date_dot(minusMonth(today,1));
+		$('#startDate').val(dateString);
+	});
+	$('input:radio[id="radio2"]').change(function(){
+		dateString =  year_month_date_dot(minusMonth(today,3));
+		$('#startDate').val(dateString);
+	});
+	$('input:radio[id="radio3"]').change(function(){
+		dateString =  year_month_date_dot(minusMonth(today,6));
+		$('#startDate').val(dateString);
+	});
+	// [E] 개월 수 별로 이벤트 구현 코드
+
+	// [S] 디폴트(직접입력, 전체, 최신순)
+	$('#radio4').trigger("click");
+	$('#radio5').trigger("click");
+	// [N] 디폴트 작업
+
+	// [S] 달력을 클릭시 '직접입력'으로 전환
+	$(".ui-datepicker-trigger").click(function(){
+		$('#radio4').trigger("click");
+	}); 
+	// [N] 달력을 클릭시 '직접입력'으로 전환
+
+	// [S] 최신순, 과거순 클릭시 정렬순서값 설정
+	$('#radio8').click(function(){
+		sort = "desc";
+	});
+	$('#radio9').click(function(){
+		sort = "asc";
+	});
+	$('#radio8').trigger("click");
+	// [E] 최신순, 과거순 클릭시 정렬순서값 설정
+
+	// [S] 필터 이벤트 코드 : (필터 이벤트 영역)
+	$(".btn_confirm").click(function(){
+		$('.btnPrev').hide(); // 날짜 왼쪽 화살표 숨기기
+		$('.btnNext').hide(); // 날짜 오른쪽 화살표 숨기기
+		$('.btnFilter').hide(); // 필터 색없는거 숨기기
+		// 필터 색 있는거 생성
+		$('.topCtrl').append("<a href='#layerFilter' class='btnFilter on btn_open_bottom_sheet' role='button'><span class='blind'>"+"필터"+"</span></a>");
+		// 시작일, 종료일 값 불러오기
+		var startDate = $('#startDate').val().slice(2); 
+		var endDate = $('#endDate').val().slice(2);
+		var dateString =  startDate + '~' + endDate;
+		$(".range").html(dateString);
+		let startDate2 = $('#startDate').val();
+		let endDate2 = $('#endDate').val();
+		now_start = startDate2.replaceAll('.', '-');
+		now_end = endDate2.replaceAll('.', '-');
+		// api 처리하기
+		bankinvesttranlist(false, now_start, now_end,sort);
+	});
+	// [E] 필터 이벤트 코드
+
+	//위에 상품명, 금액, 은행, 계좌번호 나오게하기
+	function bankinfo(){
+		$.ajax({
+		url:'http://192.168.240.208:8081/api/bank/memberact/'+memb_cd,
+		type:'get',
+		beforeSend:function(xhr){
+	        xhr.setRequestHeader("Authorization", "Bearer "+token);
+		},
+		success:function(result){
+			for(list of result){
+				if(list.account_num==account_num&&list.org_code==org_code){ // 계좌번호와 기관코드가 같다면 (계좌번호가 PK가 아니기때문에)
+					// 기관명에서 주식회사, 주 분리 
+					if(list.org_name.includes('주식회사')){
+						list.org_name=list.org_name.replace('주식회사', '');
+					}else if(list.org_name.includes('(주)')){
+						list.org_name=list.org_name.replace('(주)', '');
+					}
+					let money=list.currency_code=='KRW'?'원':list.currency_code;
+					$('.tBaltit').text(list.prod_name);
+					$('.tBalAmount').html('<em class="amount">'+numberWithCommas(list.balance_amt)+'</em>'+money);
+					$('.tBalDetail').text(list.org_name+" "+list.account_num);
+					return;
+				}
+			}
+		},error: function (jqXHR) {
+            userErrorHandler(jqXHR);
+	    },complete : function(xhr, status) {
+		    // success와 error 콜백이 호출된 후에 반드시 호출, try - catch - finally의 finally 구문과 동일
+		}
+	});
+	}
+	bankinfo();
+	bankinvesttranlist(false, now_start,now_end,sort);
+
+})
+
+
+</script>
+</body>
+</html>

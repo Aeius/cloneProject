@@ -1,0 +1,241 @@
+﻿<!DOCTYPE html>
+<html lang="ko" class="leaf">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>CheckPay</title>
+<meta http-equiv="Cache-Control" content="No-Cache">
+<meta http-equiv="Pragma" content="No-Cache">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<!--<meta name="title" content="">-->
+<meta name="description" content="">
+<!--<meta name="keywords" content="">-->
+<!-- The Open Graph protocol -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="">
+<meta property="og:description" content="">
+<meta property="og:url" content="">
+<meta property="og:image" content=""><!-- [D]리얼경로로 변경하세요 -->
+<!-- //The Open Graph protocol -->
+<link rel="SHORTCUT ICON" href=""><!-- [D]리얼경로로 변경하세요 -->
+<link rel="stylesheet" type="text/css" href="../css/jquery-ui.min.css">
+<link rel="stylesheet" type="text/css" href="../css/reset.css">
+<link rel="stylesheet" type="text/css" href="../css/content.css">
+<link rel="stylesheet" type="text/css" href="../css/theme_checkpay.css">
+
+</head>
+
+<body>
+
+<!-- wrap -->
+<div class="wrap">
+
+	<!-- header -->
+	<div class="header">
+		<div class="header_inn">
+			<div class="left">
+				<a onclick="window.history.back()" class="btnBack"><span class="blind">Back</span></a>
+			</div>
+			
+		</div>
+	</div>
+	<!-- //header -->
+
+	<!-- container -->
+	<div class="container">
+		<div class="content">
+
+			<div class="tBalance">
+				<h3 class="tBaltit">이번 달 청구 금액</h3>
+				<p class="tBalAmount"><em class="amount" id="first_amonut"></em>원</p>
+				<!--<a href="#" class="btnRef"><span class="blind">새로고침</span></a>-->
+				<!-- 새로고침중 일때 class에 ing 추가 -->
+				<!-- <a href="#" class="btnRef ing"><span class="blind">새로고침</span></a> -->
+			</div>
+           
+            <div class="asGroup">
+				
+
+		</div>
+	</div>
+	<!-- //container -->
+
+</div>
+<!-- //wrap -->
+<script type="text/javascript" src="../js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="../js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="../js/jquery.ui.touch-punch.min.js"></script>
+<script type="text/javascript" src="../js/slide_slick.js"></script>
+<script type="text/javascript" src="../js/publishing.ui.library.1.0.0.js"></script>
+<script type="text/javascript" src="../js/cmd.js"></script>
+<script type="text/javascript" src="../js/common.js"></script>
+<script>
+	
+	function detailmove(org_name_abb, charge_date){
+		let form = document.createElement('form');
+		let obj1, obj2;
+		
+		obj1=document.createElement('input');
+		obj1.setAttribute('type','hidden');
+		obj1.setAttribute('name','org_name_abb');
+		obj1.setAttribute('value',org_name_abb);
+		
+		obj2=document.createElement('input');
+		obj2.setAttribute('type','hidden');
+		obj2.setAttribute('name','charge_date');
+		obj2.setAttribute('value',charge_date);
+
+		form.appendChild(obj1);
+		form.appendChild(obj2);
+		form.setAttribute('method', 'post');
+		form.setAttribute('action', 'bill');
+		document.body.appendChild(form);
+		form.submit();
+	}
+		
+	$(document).ready(function(){
+		
+		let today = new Date();
+		let year = today.getFullYear();
+		let month = ('0' + (today.getMonth() + 1)).slice(-2);
+		let month3 = ('0' + (today.getMonth() + 1)).slice(-2);
+		let year_month = year + month;
+		let id = parseJwt(getCookie("jwt")).sub;
+		
+		billList_ajax();
+		    function billList_ajax() {
+			$.ajax({
+	                type : "GET",
+	                url : "http://192.168.240.208:8081/api/telecom/bill/"+ id + "/",
+	                headers: {
+					           "Authorization" : "Bearer " + getCookie("jwt")
+					        },
+					error: function (jqXHR) {
+			            userErrorHandler(jqXHR);
+		            },    
+					success : function(data){
+						
+						if (data.length == 0) {
+							arr += '<div class="listTit">';
+							arr += '<h3>'+month3+'월 </h3>';
+							arr += '</div>';
+							arr += '<div class="asList">'
+							arr += '<p class="listNone">불러올 내역이 없습니다.</p>'
+							arr += '</div>'
+							$('.asGroup').append(arr);
+							return;
+						}
+						 			
+						let arr='';
+						let today = new Date(data[0].charge_date);
+						let nowMonth = today.getMonth() + 1;
+						let nowDate = ('0' + (today.getDate())).slice(-2);
+						msg = nowMonth + '월 ' + nowDate+'일';
+						let countp = 0;
+						
+						$('#first_amonut').html(numberWithCommas(data[0].current_total));
+						
+						arr += '<div class="listTit">';
+						arr += '<h3>'+msg+'</h3>';
+						arr += '</div>';
+						arr += '<div class="asList">';
+							
+						var one = data[0].org_code;
+						var two = data[0].charge_date;
+						var pay = 0; // 총액
+						var forcnt = [0,0,0,0,0];
+						var total_pay;
+						
+						// 첫번째 값으로 초기화
+						var j = 0; // 기관코드와 청구일자가 다르면 다른 배열값에 넣기 위해 선언
+						var one = data[0].org_code; // 첫번째 값을 one에 선언
+					    var two = data[0].charge_date; // 두번째 값을 two에 선언
+						
+						    // data안의 개수만큼 반복
+							for (var i = 0; i < data.length; i++) {
+								
+								// 이전값과 현재값을 비교해서 같을 때 청구액을 forcnt에 넣기
+								if(data[i].org_code == one && data[i].charge_date == two){
+							 			forcnt[j] += Number(data[i].charge_amt);
+							 				
+							 			//다음 for문 진행을 위해 현재값 초기화
+							 			one = data[i].org_code;  
+							    		two = data[i].charge_date;
+							    		
+							    }else{
+									
+									 // 실행되지 않더라도 다음 for문 진행을 위해 현재값 초기화
+									  one = data[i].org_code;  
+							    	  two = data[i].charge_date;
+							    	  
+									  j++; // 일치하지않으면 다음 배열값에 넣기 위해 j증가
+							    	  forcnt[j] += Number(data[i].charge_amt);
+							    	  
+									  continue;
+							         }
+							    
+ 							};
+						
+
+						$(data).each(function(index, item){
+							let paycnt = 0;
+							
+								// 소액결제
+								if(item.payment == null){
+									total_pay = forcnt[1];
+							
+								}else{
+									total_pay = Number(item.payment)+forcnt[paycnt];
+								}
+								
+								// 한번이상 무조건 실행
+								if(countp>0){
+									// 이전값과 비교해서 기관코드와 청구일자가 동일하면 return
+									if(one == data[index].org_code && two == data[index].charge_date){
+										paycnt++;
+										return true;
+									}
+								}
+							
+							let result = new Date(item.charge_date);
+							// 날짜 포맷팅
+							let month = result.getMonth() + 1;
+							let date = ('0' + (result.getDate())).slice(-2);
+							let dateString = month + '월 ' + date +'일'; // 월.일
+			
+							if (msg != dateString) {
+								msg = dateString;
+								arr += '</div>';
+								arr += '<div class="listTit">';
+								arr += '<h3>'+msg+'</h3>';
+								arr += '</div>';
+								arr += '<div class="asList">';
+							} 
+							
+								arr += '<div class="accItem">'
+								arr +="<a href = \"javascript:detailmove('"+ item.org_name_abb+ "','"+item.charge_date+ "');\">";
+								arr += '<div class="im">';
+								arr += '<img src="../img/bank/'+item.org_code+'.png">';
+								arr += '</div>';
+								arr += '<div class="tx">';
+								arr += '<p class="prdName">'+item.org_name_abb+'</p>';
+								arr += '<p class="amount"><em>'+numberWithCommas(total_pay)+'</em>원</p>';
+								arr += '</div>';
+								arr += '</a>';
+								arr += '</div>';
+								
+								countp++;
+								
+							one = data[index].org_code;
+							two = data[index].charge_date;
+							
+						});
+						$('.asGroup').append(arr);
+					}
+				});
+			}	
+		});
+
+</script>
+</body>
+</html>

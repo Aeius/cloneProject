@@ -1,0 +1,325 @@
+﻿<!DOCTYPE html>
+<html lang="ko" class="leaf">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>CheckPay</title>
+<meta http-equiv="Cache-Control" content="No-Cache">
+<meta http-equiv="Pragma" content="No-Cache">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<!--<meta name="title" content="">-->
+<meta name="description" content="">
+<!--<meta name="keywords" content="">-->
+<!-- The Open Graph protocol -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="">
+<meta property="og:description" content="">
+<meta property="og:url" content="">
+<meta property="og:image" content=""><!-- [D]리얼경로로 변경하세요 -->
+<!-- //The Open Graph protocol -->
+<link rel="SHORTCUT ICON" href=""><!-- [D]리얼경로로 변경하세요 -->
+<link rel="stylesheet" type="text/css" href="../../css/jquery-ui.min.css">
+<link rel="stylesheet" type="text/css" href="../../css/reset.css">
+<link rel="stylesheet" type="text/css" href="../../css/content.css">
+<link rel="stylesheet" type="text/css" href="../../css/theme_checkpay.css">
+<script type="text/javascript" src="../../js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="../../js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="../../js/jquery.ui.touch-punch.min.js"></script>
+<script type="text/javascript" src="../../js/slide_slick.js"></script>
+<script type="text/javascript" src="../../js/publishing.ui.library.1.0.0.js"></script>
+<script type="text/javascript" src="../../js/cmd.js"></script>
+</head>
+
+<body>
+
+<!-- wrap -->
+<div class="wrap">
+
+	<!-- header -->
+	<div class="header">
+		<div class="header_inn">
+			<div class="left">
+				<a href="#none" class="btnBack"><span class="blind">Back</span></a>
+			</div>
+			<div class="center">
+				<!--<h2 class="tit_h2">결제 내역</h2>--><!-- 2022-09-28 화면명 삭제 -->
+			</div>
+			<div class="right">
+                <a href="#none" class="btnClose"><span class="blind">close</span></a>
+			</div>
+		</div>
+	</div>
+	<!-- //header -->
+
+	<!-- container -->
+	<div class="container">
+		<div class="content">
+			<div class="tBalance">
+				<h3 class="tBalAmount">moon****@naver.com</h3>
+				<a href="#" class="btnRef"><span class="blind">새로고침</span></a>
+				<!-- 새로고침중 일때 class에 ing 추가 -->
+				<!-- <a href="#" class="btnRef ing"><span class="blind">새로고침</span></a> -->
+			</div>
+			<div class="topTotal">
+				<!-- [S] 2021-11-30 topTotal 영역 수정 -->
+				<a href="#layer_P1220" class="link btn_open_bottom_sheet" role="button"><!-- 2021-12-23 연결된 결제수단, 바텀시트 오픈 수정 -->
+					<span class="itemTit">연결된 결제수단</span>
+					<span class="itemData">
+						<span class="detail"></span>
+					</span>
+				</a>
+				<!-- [E] 2021-11-30 topTotal 영역 수정 -->
+			</div>
+			<div class="accHistory">
+				<div class="topCtrl">
+					<div class="rangeCtrl">
+						<button class="btnPrev"><span class="blind">이전</span></button>
+						<span class="range">2021.09</span><!-- 필터영역, 조회 날짜 형식 변경 -->
+						<button class="btnNext"><span class="blind">다음</span></button>
+					</div>
+					<a href="#" class="btnFilter" role="button"><span class="blind">필터</span></a>
+				</div>
+				<div class="historyList">
+					<span class="date"><span class="num">09.23</span> 금요일</span>
+					<ul>
+						<li>
+							<a href="#layer_P1210_1" class="link btn_open_bottom_sheet" role="button"><!-- 2021-12-23 개별 거래내역 버튼, 바텀시트 오픈 추가 -->
+								<div class="left">
+									<span class="category">결제</span>
+									<span class="time">20:28</span>
+								</div>
+								<div class="right">
+									<span class="amount"><em class="num">-56,654,000</em>원</span><!-- 결제 금액 앞 '-' 부호 추가 -->
+									<span class="balance">온라인</span>
+								</div>
+							</a>
+						</li>
+						<li class="cancel"><!-- 2022-09-28 결제취소 영역 클래스 'cancel' 추가 -->
+							<a href="#layer_P1210_1" class="link btn_open_bottom_sheet" role="button"><!-- 2021-12-23 개별 거래내역 버튼, 바텀시트 오픈 추가 -->
+								<div class="left">
+									<span class="category">결제취소</span>
+									<span class="time">20:28</span>
+								</div>
+								<div class="right">
+									<span class="amount"><em class="num">56,654,000</em>원</span>
+									<span class="balance">온라인</span>
+								</div>
+							</a>
+						</li>
+						<li>
+							<a href="#layer_P1210_1" class="link btn_open_bottom_sheet" role="button"><!-- 2021-12-23 개별 거래내역 버튼, 바텀시트 오픈 추가 -->
+								<div class="left">
+									<span class="category">결제</span>
+									<span class="time">20:28</span>
+								</div>
+								<div class="right">
+									<span class="amount"><em class="num">-90,000</em>원</span><!-- 결제 금액 앞 '-' 부호 추가 -->
+									<span class="balance">오프라인</span>
+								</div>
+							</a>
+						</li>
+					</ul>
+					<span class="date">09.22 금요일</span>
+					<ul>
+						<li>
+							<a href="#layer_P1210_1" class="link btn_open_bottom_sheet" role="button"><!-- 2021-12-23 개별 거래내역 버튼, 바텀시트 오픈 추가 -->
+								<div class="left">
+									<span class="category">결제</span>
+									<span class="time">20:28</span>
+								</div>
+								<div class="right">
+									<span class="amount"><em class="num">-56,654,000</em>원</span><!-- 결제 금액 앞 '-' 부호 추가 -->
+									<span class="balance">온라인</span>
+								</div>
+							</a>
+						</li>
+						<li>
+							<a href="#layer_P1210_1" class="link btn_open_bottom_sheet" role="button"><!-- 2021-12-23 개별 거래내역 버튼, 바텀시트 오픈 추가 -->
+								<div class="left">
+									<span class="category">송금수취 (송금)</span>
+									<span class="time">20:28</span>
+								</div>
+								<div class="right">
+									<span class="amount"><em class="num">-56,654,000</em>원</span><!-- 결제 금액 앞 '-' 부호 추가 -->
+									<span class="balance">온라인</span>
+								</div>
+							</a>
+						</li>
+					</ul>
+					<div class="upLoading circleBar">
+						<div class="loader"></div>
+						<p>업데이트 중입니다</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- //container -->
+
+</div>
+<!-- //wrap -->
+<!-- [S] layer P1210_1 내용 -->
+<div id="layer_P1210_1" class="layer_bottomsheet">
+	<div class="layer_inner">
+		<div class="layer_tit">
+			<strong class="tit"><span>계정 거래상세</span></strong><!-- 2022-09-28 바텀시트 화면명 변경 -->
+			<button type="button" class="js_pop_close btn_close"><span class="blind">닫기</span></button>
+		</div>
+		<div class="layer_cont">
+			<!-- [S] P1210_1 -->
+			<div class="accSetting type_history">
+				<div class="tAccount">
+					<h3 class="tAccTit">쿠팡_와우 멤버쉽 월회비</h3>
+					<p class="tAccDetail">윤지원(부산9012)</p>
+				</div>
+				<h4 class="listTit"><em class="pointColor">요약</em></h4>
+				<ul class="accDetailList">
+					<li>
+						<span class="itemTit">금액</span>
+						<span class="itemData"><em class="num">50,000</em>원</span>
+					</li>
+					<li>
+						<span class="itemTit">일시</span>
+						<span class="itemData"><em class="num">21.01.23 06:04</em></span>
+					</li>
+					<li>
+						<span class="itemTit">상품명</span>
+						<span class="itemData">와우 멤버쉽 월회비_9월</span>
+					</li>
+					<li>
+						<span class="itemTit">결제방법</span>
+						<span class="itemData">온라인 3개월 할부</span>
+					</li>
+					<li>
+						<span class="itemTit">수수료</span>
+						<span class="itemData"><em class="num">0</em>원</span>
+					</li>
+					<li>
+						<span class="itemTit">결제수단</span>
+						<span class="itemData">계좌이체<br>부산 123456789</span>
+					</li>
+				</ul>
+			</div>
+			<!-- [E] P1210_1 -->
+		</div>
+	</div>
+</div>
+<!-- [E] layer P1210_1 내용 -->
+
+<!-- [S] layer P1220_1 내용 -->
+<div id="layer_P1220" class="layer_bottomsheet">
+	<div class="layer_inner">
+		<div class="layer_tit">
+			<strong class="tit"><span>연결된 결제수단</span></strong><!-- 2022-09-28 바텀시트 화면명 변경 -->
+			<button type="button" class="js_pop_close btn_close"><span class="blind">닫기</span></button>
+		</div>
+		<div class="layer_cont">
+			<!-- [S] P1220_1 -->
+			<div class="tBalance type_history">
+				<h3 class="tBaltit">쿠팡페이 결제수단<br>총 <em class="num">4</em>건</h3>
+			</div>
+			<div class="asGroup">
+				<div class="asList linkNone">
+					<div class="accItem">
+						<div class="im">
+							<img src="../../img/bank/D1AAAH0000.png" alt="bnk">
+						</div>
+						<div class="tx">
+							<p class="prdName">
+								<span class="ellipsis">종합(평생혜택 비대면)</span>
+							</p>
+							<p class="amount"><em>359,153,000</em>원</p>
+						</div>
+					</div>
+					<div class="accItem">
+						<div class="im">
+							<img src="../../img/bank/D1AAAH0000.png" alt="bnk">
+						</div>
+						<div class="tx">
+							<p class="prdName">
+								<span class="ellipsis">일임형ISA</span></p>
+							<p class="amount"><em>359,153,000</em>원</p>
+						</div>
+					</div>
+					<div class="accItem">
+						<div class="im">
+							<img src="../../img/bank/D1AAAH0000.png" alt="bnk">
+						</div>
+						<div class="tx">
+							<p class="prdName">
+								<span class="ellipsis">투신(N) CMA</span>
+							</p>
+							<p class="amount"><em>359,153,000</em>원</p>
+						</div>
+					</div>
+					<div class="accItem">
+						<div class="im card"><!-- 카드 ci 일경우 클래스 'card' 추가 -->
+							<img src="../../img/card/card_logo_003.png" alt="신용카드">
+						</div>
+						<div class="tx">
+							<p class="prdName">
+								<span class="ellipsis">삼성카드</span>
+							</p>
+							<p class="amount"><em>359,153,000</em>원</p>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- [E] P1220_1 -->
+		</div>
+	</div>
+</div>
+<!-- [E] layer P1220_1 내용 -->
+
+<script>
+$(document).ready(function(){
+	// [S] 바텀시트
+	$(document).on("click", ".btn_open_bottom_sheet", function(e){
+		e.preventDefault();
+		var $href = $(this).attr('href');
+		layer_bottomsheet($href);
+		$('html').addClass('scroll_lock');
+		// [S] multi layer
+		var dimIdx = $('.dim').index();
+		eval('$focusReturn' + [dimIdx] + '= $(this)');
+		// [E] multi layer
+	});
+	function layer_bottomsheet(el){
+		var $el = $(el);
+		$el.append("<div class=\"dim\"></div>");
+		isDim ? $('.layer_bottomsheet').show() : $el.show().attr({'tabindex':'0','aria-hidden':'false'}).focus();
+		setTimeout(function() {
+			$el.find('.layer_inner').addClass('on');
+		}, 50);
+		// [S] multi layer
+		var isDim;
+		var dimIdx = $('.dim').index();
+		var thisDim = $el.find('.dim');
+		var thisLyZindex = dimIdx + 4000;
+		$('.dim').css('opacity','0');
+		thisDim.css('opacity','.7');
+		thisDim.closest('.layer_bottomsheet, .layer_popup').css('z-index', thisLyZindex);
+		// [E] multi layer
+		$el.find('.js_pop_close').click(function(){
+			$el.find('.layer_inner').removeClass('on');
+			setTimeout(function() {
+				isDim ? $('.layer_bottomsheet').hide() : $el.hide();
+				$('html').removeClass('scroll_lock');
+				$el.attr({'tabindex':'-1','aria-hidden':'true'}).find(".dim").remove();
+				// [S] multi layer
+				if($('.dim').length == '2'){
+					$('.dim:eq(1)').css('opacity','.7');
+				}else if($('.dim').length == '1'){
+					$('.dim').css('opacity','.7');
+				}
+				// [E] multi layer
+			}, 200);
+			eval('$focusReturn'+ [dimIdx]).focus();
+			return false;
+		});
+	}
+	// [E] 바텀시트
+});
+</script>
+</body>
+</html>

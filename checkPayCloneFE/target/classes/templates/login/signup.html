@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>CheckPay</title>
+	<link rel="stylesheet" type="text/css" href="../css/jquery-ui.min.css">
+	<link rel="stylesheet" type="text/css" href="../css/reset.css">
+	<link rel="stylesheet" type="text/css" href="../css/content.css">
+	<link rel="stylesheet" type="text/css" href="../css/theme_checkpay.css">
+	<script src="https://code.jquery.com/jquery-3.6.4.min.js"
+		integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+	<script type="text/javascript" src="../js/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="../js/publishing.ui.library.1.0.0.js"></script>
+	<script type="text/javascript" src="../js/cmd.js"></script>
+	<!-- font-awesome -->
+	<script src="https://kit.fontawesome.com/ff113c8133.js" crossorigin="anonymous"></script>
+	<!-- Bootstrap -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css"
+		integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js"
+		integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd"
+		crossorigin="anonymous"></script>
+</head>
+<style>
+	.form-group {
+		margin-bottom: 0px;
+		margin-top: 10px;
+	}
+
+	.form-signin-heading {
+		color: black;
+	}
+
+	* {
+		margin-top: 5px;
+	}
+
+	.container {
+		margin-top: 50px;
+	}
+
+
+	.logoimg {
+		margin-bottom: 45px;
+		width: 100%;
+	}
+
+	.form-group+.checkbox {
+		margin-bottom: 30px;
+	}
+
+	.btn+.btn {
+		margin-bottom: 15px;
+	}
+
+	.checkPW {
+		color: red;
+	}
+</style>
+
+<body>
+	<div class="bg">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-3 bg"></div>
+				<div class="col-md-6">
+					<form class="form-horizontal">
+						<img src="../img/logo/logo.png" class="logoimg">
+						<div class="form-group">
+							<label for="inputEmail" class="col-sm-3 control-label">이메일 <span class="email_check"
+									style="display: none;"></span></label>
+							<div class="col-sm-7">
+								<input type="email" class="form-control" id="inputEmail" placeholder="Enter Email">
+							</div>
+							<div class="col-sm-2">
+								<a href="#layerEmailCert" class="btn btn-default btn_open_bottom_sheet" role="button">이메일 인증</a>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="inputName" class="col-sm-3 control-label">이름 <span class="name_check"
+									style="display: none;"></span></label>
+							<div class="col-sm-7">
+								<input type="text" class="form-control" id="inputName" placeholder="Name">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="inputPassword1" class="col-sm-3 control-label">비밀번호 <span class="pwd_check"
+									style="display: none;"></span></label>
+							<div class="col-sm-7">
+								<input type="password" class="form-control pwd" id="inputPassword1"
+									placeholder="Enter Password">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="inputPassword2" class="col-sm-3 control-label">비밀번호 확인 <span class="pwd2_check"
+									style="display: none;"></span></label>
+							<div class="col-sm-7">
+								<input type="password" class="form-control" id="inputPassword2"
+									placeholder="Re-Enter Password">
+							</div>
+						</div>
+						<div>
+							<div class="col-sm-3"></div>
+							<label for="checkPW" class="checkPW"></label>
+
+						</div>
+						<div class="form-group">
+							<label for="phoneNum" class="col-sm-3 control-label">전화번호 <span class="tel_check"
+									style="display: none;"></span></label>
+							<div class="col-sm-7">
+								<input type="tel" class="form-control" id="phoneNum" placeholder="010-1234-5678">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="inputName" class="col-sm-3 control-label">성별</label>
+							<div class="btn-group col-sm-7" data-toggle="buttons">
+								<label class="btn btn-default active">
+									<input type="radio" name="gender" value="M" checked> 남성
+								</label>
+								<label class="btn btn-default">
+									<input type="radio" name="gender" value="F"> 여성
+								</label>
+
+							</div>
+						</div>
+
+						<div class="form-group">
+							<div class="col-sm-3"></div>
+							<div class="col-sm-7">
+								<button class="btn btn-default btn-block" type="button" id="signup-btn">Sign up</button>
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="col-md-3 bg"></div>
+			</div>
+		</div>
+	</div>
+
+	<div id="layerEmailCert" class="layer_bottomsheet">
+		<div class="layer_inner">
+			<div class="layer_cont">
+				<!-- 내용 -->
+				<div class="tit2_wrap">
+					<div class="left">
+						<h2 class="tit_h2">
+							이메일을 통해 전송 받은<br>
+							인증번호를 입력해주세요
+						</h2>
+					</div>
+				</div>
+
+				<div class="confirm_mail">
+					<div class="certi_num">
+						<p class="inp_line">
+							<input type="tel" class="certi_num_inp" maxlength="8" placeholder="8자리 인증번호를 입력해주세요"
+								title="8자리 인증번호를 입력해주세요">
+						</p>
+						<p class="inp_time"><span class="time pointColor">10:00</span></p>
+						<p class="inp_err_msg"></p>
+					</div>
+				</div>
+				<!-- //내용 -->
+			</div>
+			<div class="layer_footer">
+				<button type="button" class="js_pop_close btn_cancel"><span>취소</span></button>
+				<button type="button" class="js_pop_close btn_confirm"><span>확인</span></button>
+			</div>
+		</div>
+
+	</div>
+
+	<script type="text/javascript">
+		if(getCookie('jwt')!=0 && getCookie('rtk')!=0){
+	    	location.href = "/main";
+		}
+		var isCerti=false;
+		$('#signup-btn').click(function () {
+			// 입력값 확인
+			for (i = 0; i < validate_arr.length; i++) {
+				if (!validate_arr[i]) {
+					alert('입력값을 확인해주세요')
+					return
+				}
+			}
+
+			if (isCerti) {
+				$.ajax({
+					url: "http://192.168.240.208:8081/api/member/join",
+					type: "post",
+					data: {
+						member_email: $("#inputEmail").val(),
+						member_name: $("#inputName").val(),
+						member_password: $("#inputPassword1").val(),
+						member_gender: $('input[name=gender]:checked').val(),
+						member_tel: $("#phoneNum").val()
+					},
+					datatype: "json",
+					success: function (data) {
+						if (data.status == 'fail') {
+							alert(data.msg);
+						}
+						if (data.status == 'success') {
+							alert('회원가입 완료');
+							location.href = "/login";
+
+						}
+
+					},
+					error: function (jqXHR) {  //아이디가 틀렸을경우
+						if (jqXHR.status == 500 || jqXHR.status == 400) {
+							alert('회원가입 실패');
+							location.reload();
+						}
+					}
+				});
+			} else {
+				alert('이메일 인증을 진행해주세요');
+			}
+
+		});
+
+		// [S] 입력값 비동기 검증 이벤트
+		const Validate = {
+			EMAIL: 0, NAME: 1, PWD: 2, PWD2: 3, TEL: 4
+		};
+		let validate_arr = new Array(5).fill(false)
+		// 1. 이메일 검증
+		$('#inputEmail').on('keyup', function () {
+			let regExp = /^[a-zA-Z0-9+-\_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
+			if ($(this).val().match(regExp) != null) {
+				$('.email_check').html('<i class="fa-solid fa-circle-check fa-lg" style="color: #08d41f;"></i>');
+				validate_arr[Validate.EMAIL] = true;
+			} else {
+				$('.email_check').text('올바른 이메일 형식이 아닙니다.');
+				$('.email_check').attr('style', 'display: inline; color: red;');
+				validate_arr[Validate.EMAIL] = false;
+			};
+
+		});
+		// 2. 이름 - 2자 이상
+		$('#inputName').on('keyup', function () {
+			let regExp = /^[a-zA-Z가-힣]{2,}$/
+			if ($(this).val().match(regExp) != null) {
+				$('.name_check').html('<i class="fa-solid fa-circle-check fa-lg" style="color: #08d41f;"></i>');
+				validate_arr[Validate.NAME] = true;
+			} else {
+				$('.name_check').text('이름은 2자 이상입니다.');
+				$('.name_check').attr('style', 'display: inline; color: red;');
+				validate_arr[Validate.NAME] = false;
+			}
+		});
+		// 3. 비밀번호 - 4자 이상
+		$('#inputPassword1').on('keyup', function () {
+			let regExp = /^[a-zA-Z0-9가-힣!@#$%^&+]{4,}$/
+			if ($(this).val().match(regExp) != null) {
+				$('.pwd_check').html('<i class="fa-solid fa-circle-check fa-lg" style="color: #08d41f;"></i>');
+				validate_arr[Validate.PWD] = true;
+			} else {
+				$('.pwd_check').text('패스워드는 4자 이상입니다.');
+				$('.pwd_check').attr('style', 'display: inline; color: red;');
+				validate_arr[Validate.PWD] = false;
+			}
+		});
+		// 4. 비밀번호 확인
+		$('#inputPassword2').on('keyup', function () {
+			let regExp = /^[a-zA-Z0-9가-힣!@#$%^&+]{4,}$/
+			if ($(this).val() === $('#inputPassword1').val() && $(this).val().match(regExp)) {
+				$('.pwd2_check').html('<i class="fa-solid fa-circle-check fa-lg" style="color: #08d41f;"></i>');
+				validate_arr[Validate.PWD2] = true;
+			} else {
+				$('.pwd2_check').text('패스워드를 확인해주세요');
+				$('.pwd2_check').attr('style', 'display: inline; color: red;');
+				validate_arr[Validate.PWD2] = false;
+			}
+		});
+		// 5. 전화번호 확인
+		$('#phoneNum').on('keyup', function () {
+			let regExp = /^[0-9]{3}-[0-9]{3,4}-[0-9]{4}$/
+			if ($(this).val().match(regExp) != null) {
+				$('.tel_check').html('<i class="fa-solid fa-circle-check fa-lg" style="color: #08d41f;"></i>');
+				validate_arr[Validate.TEL] = true;
+			} else {
+				$('.tel_check').text('전화번호를 확인해주세요');
+				$('.tel_check').attr('style', 'display: inline; color: red;');
+				validate_arr[Validate.TEL] = false;
+			}
+		});
+		// [E] 입력값 비동기 검증 이벤트
+
+		// [S] 바텀시트
+		$(document).on("click", ".btn_open_bottom_sheet", function (e){ 
+		if(isCerti){
+			alert('인증완료 이메일입니다.');			
+		}
+		else{
+			e.preventDefault();
+
+			// 이메일 미입력 시 모달창 열리지 않고 경고창 알림
+			if (!validate_arr[Validate.EMAIL]) {
+				alert('이메일을 입력해주세요!');
+				return;
+			}
+
+			//10분 타이머
+			let timeOver; //제한시간 만료 여부
+			function tenMinuteTimer(startTime, target, timerInterval) {
+				let endTime = new Date().getTime();
+				let resultTime = parseInt((1000 * 60 * 10 + startTime - endTime) / 1000);
+				let minute = parseInt(resultTime / 60);
+				let second = resultTime % 60;
+				if (resultTime <= 0)
+					clearInterval(timerInterval);
+				if (second < 10) second = '0' + second;
+				if (second < 0) second = '00';
+				target.text(minute + ":" + second);
+
+				timeOver = function () {
+					if (minute == 0 && second == '00') return true;
+					return false;
+				}();
+			}
+
+			//변수 설정
+			let delay = 1000; //1초
+			let startTime = new Date().getTime(); //타이머 시작시간
+			let target = $('.confirm_mail .inp_time>span');
+
+			let timerInterval = setInterval(function () {
+				tenMinuteTimer(startTime, target, timerInterval);
+			}, delay);
+
+			var email = $('#inputEmail').val();
+
+
+			$('.btn_confirm').click(function (e) {
+				
+				e.preventDefault();
+				
+				if (timeOver) {
+					alert("인증 시간 초과");
+					return;
+				}
+				$.ajax({
+					type: 'POST',
+					url: 'http://192.168.240.208:8081/api/mypage/email-authentication',
+					dataType: 'json',
+					data: {
+						email: email,
+						inputCode: $('.confirm_mail .certi_num_inp').val(),
+						useType: "SIGN"
+					},
+					success: function (data) {
+						if (data.result) {
+							clearInterval(timerInterval);
+							alert("인증 성공");
+
+						} else {
+							if (data.num_trials == -1) {
+								alert("인증 실패 횟수 초과");
+								return;
+							}
+							$('.confirm_mail .inp_err_msg').text('인증번호가 일치하지 않습니다 (' + (data.num_trials) + '/5)').show();
+						}
+					},
+					error: function (jqXHR, textStatus, errorThrown) {
+						alert('인증번호 검증 실패: ' + textStatus + "||" + errorThrown);
+					}
+				});
+			});
+
+			$.ajax({
+				type: 'GET',
+				url: 'http://192.168.240.208:8081/api/mypage/email-authentication' //192.168.240.208:8081/checkpay
+					+ '?email=' + email
+					+ '&sendType=' + 'NOR',
+				dataType: 'json',
+				success: function (data) {
+					if (data.result) {
+						isCerti=true;
+					} else {
+						if (data.num_trials == -1) {
+							$('.btn_cancel').click();
+							alert("일일 인증횟수를 초과했습니다.");
+						} else {
+							alert("API 내부 에러 관리자에게 문의하세요");
+						}
+					}
+				},
+				error: function (jqXHR, textStatus, errorThrown) {
+					alert('이메일 전송실패: ' + textStatus + "||" + errorThrown);
+				}
+			})
+
+
+
+			var $href = $(this).attr('href');
+			layer_bottomsheet($href);
+			$('html').addClass('scroll_lock');//2021-10-28 html 스크롤 잠금 수정
+
+			// [S] multi layer 2021-08-02 추가
+			var dimIdx = $('.dim').index();
+			eval('$focusReturn' + [dimIdx] + '= $(this)');
+			//$focusReturn = $(this); // multi layer 2021-08-02 삭제
+			// [E] multi layer 2021-08-02 추가
+
+			$(".btn_cancel").on("click", function (e) {
+				clearInterval(timerInterval);
+			});
+		}
+		});
+		function layer_bottomsheet(el) {
+			var $el = $(el);
+			$el.append("<div class=\"dim\"></div>");
+			isDim ? $('.layer_bottomsheet').show() : $el.show().attr({'tabindex': '0', 'aria-hidden': 'false'}).focus();
+			setTimeout(function () {
+				$el.find('.layer_inner').addClass('on');
+			}, 50);
+
+			// [S] multi layer 2021-08-02 추가
+			//var isDim = $el.siblings().hasClass('dim');
+			var isDim;
+			var dimIdx = $('.dim').index();
+			var thisDim = $el.find('.dim');
+			var thisLyZindex = dimIdx + 4000;
+			$('.dim').css('opacity', '0');
+			thisDim.css('opacity', '.7');
+			thisDim.closest('.layer_bottomsheet, .layer_popup').css('z-index', thisLyZindex);
+			// [E] multi layer 2021-08-02 추가
+
+			$el.find('.js_pop_close').click(function () {
+
+				$el.find('.layer_inner').removeClass('on');
+				setTimeout(function () {
+					isDim ? $('.layer_bottomsheet').hide() : $el.hide();
+					$('html').removeClass('scroll_lock');//2021-10-28 html 스크롤 잠금 수정
+					$el.attr({'tabindex': '-1', 'aria-hidden': 'true'}).find(".dim").remove();
+					// [S] multi layer 2021-08-02 추가
+					if ($('.dim').length == '2') {
+						$('.dim:eq(1)').css('opacity', '.7');
+					} else if ($('.dim').length == '1') {
+						$('.dim').css('opacity', '.7');
+					}
+					// [E] multi layer 2021-08-02 추가
+				}, 200);
+
+				// [S] multi layer 2021-08-02 추가
+				eval('$focusReturn' + [dimIdx]).focus();
+				//$focusReturn.focus(); // multi layer 2021-08-02 삭제
+				// [E] multi layer 2021-08-02 추가
+
+				return false;
+			});
+		}
+// [E] 바텀시트
+
+	</script>
+</body>
+
+</html>

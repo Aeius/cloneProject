@@ -1,0 +1,124 @@
+﻿<!DOCTYPE html>
+<html lang="ko" class="leaf">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>CheckPay</title>
+<meta http-equiv="Cache-Control" content="No-Cache">
+<meta http-equiv="Pragma" content="No-Cache">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<!--<meta name="title" content="">-->
+<meta name="description" content="">
+<!--<meta name="keywords" content="">-->
+<!-- The Open Graph protocol -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="">
+<meta property="og:description" content="">
+<meta property="og:url" content="">
+<meta property="og:image" content=""><!-- [D]리얼경로로 변경하세요 -->
+<!-- //The Open Graph protocol -->
+<link rel="SHORTCUT ICON" href=""><!-- [D]리얼경로로 변경하세요 -->
+<link rel="stylesheet" type="text/css" href="../css/jquery-ui.min.css">
+<link rel="stylesheet" type="text/css" href="../css/reset.css">
+<link rel="stylesheet" type="text/css" href="../css/content.css">
+<link rel="stylesheet" type="text/css" href="../css/theme_checkpay.css">
+<script type="text/javascript" src="../js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="../js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="../js/jquery.ui.touch-punch.min.js"></script>
+<script type="text/javascript" src="../js/slide_slick.js"></script>
+<script type="text/javascript" src="../js/publishing.ui.library.1.0.0.js"></script>
+<script type="text/javascript" src="../js/cmd.js"></script>
+<script type="text/javascript" src="../js/common.js"></script>
+<!-- thymeleaf -->
+<html xmlns:th="http://www.thymeleaf.org">
+</head>
+
+<body>
+<!-- wrap -->
+<div class="wrap">
+
+	<!-- header -->
+	<div class="header">
+		<div class="header_inn">
+			<div class="left">
+				<a href="javascript:history.back();" class="btnBack"><span class="blind">Back</span></a>
+			</div>
+			<div class="right">
+<!--                <a href="#none" class="btnClose"><span class="blind">close</span></a>-->
+			</div>
+		</div>
+	</div>
+	<!-- //header -->
+
+	<!-- container -->
+	<div class="container">
+		<div class="content">
+			<div class="accSetting">
+				<div class="tAccount">
+					<h3 class="tAccTit" th:utext="${capitalDetail.prod_name}">전세금안심대출</h3>
+					<p class="tAccDetail" th:utext="${capitalDetail.org_name}+' '+${capitalDetail.account_num}">부산 123456789012</p>
+				</div>
+				<div class="topTotal">
+					<!-- [S] 2021-11-30 topTotal 영역 수정 -->
+					<a th:onclick="javascript:detailmove('/capital/transhistory','org_code',/*[[${capitalDetail.org_code}]]*/null,'account_num',/*[[${capitalDetail.account_num}]]*/null,'prod_name',/*[[${capitalDetail.prod_name}]]*/null,'org_name',/*[[${capitalDetail.org_name}]]*/null)" class="link" title="더보기">
+						<span class="itemTit">대출잔액</span>
+						<span class="itemData">
+							<span class="detail" th:if="${capitalDetail.currency_code=='KRW'}" ><span class="num" th:utext="${#numbers.formatInteger(capitalDetail.balance_amt, 0, 'COMMA')}">10,000,000</span>원</span>
+							<span class="detail" th:unless="${capitalDetail.currency_code=='KRW'}"><span class="num" th:utext="${#numbers.formatInteger(capitalDetail.balance_amt, 0, 'COMMA')}+' '">10,000,000</span>[[${capitalDetail.currency_code}]]</span>
+						</span>
+					</a>
+					<!-- [E] 2021-11-30 topTotal 영역 수정 -->
+				</div>
+				<h4 class="listTit"><em class="pointColor">요약</em></h4>
+				<ul class="accDetailList">
+					<li>
+						<span class="itemTit">대출이자</span>
+						<span class="itemData"><span class="num" th:utext="${#numbers.formatDecimal(capitalDetail.last_offered_rate,0,2)}+'%'">3.14%</span></span>
+					</li>
+					<li>
+						<span class="itemTit">다음이자결제일</span>
+						<span class="itemData"><span class="num" th:utext="${#temporals.format(#temporals.createDate(capitalDetail.next_repay_date,'yyyyMMdd'), 'yyyy.MM.dd')}">2021.09.03</span></span>
+					</li>
+					<li>
+						<span class="itemTit">대출원금</span>
+						<span class="itemData" th:if="${capitalDetail.currency_code=='KRW'}"><span class="num"  th:utext="${#numbers.formatInteger(capitalDetail.loan_principal, 0, 'COMMA')}">150.000.000</span>원</span>
+						<span class="itemData" th:unless="${capitalDetail.currency_code=='KRW'}"><span class="num"  th:utext="${#numbers.formatInteger(capitalDetail.loan_principal, 0, 'COMMA')}">150.000.000</span>[[${capitalDetail.currency_code}]]</span>
+					</li>
+				</ul>
+				<ul class="accDetailList">
+					<li>
+						<span class="itemTit"><em class="pointColor">대출 상품</em></span>
+<!--						<span class="itemData">전세자금대출</span>-->
+					</li>
+					<li>
+						<span class="itemTit">대출 형태</span>
+						<span class="itemData" th:utext="${capitalDetail.repay_method}">원리금균등분할상환</span>
+					</li>
+				</ul>
+				<ul class="accDetailList">
+					<li>
+						<span class="itemTit"><em class="pointColor">남은기간</em></span>
+						<span class="itemData"><span class="num" th:utext="${period+1}">365</span>일</span>
+					</li>
+					<li>
+						<span class="itemTit">대출실행일</span>
+						<span class="itemData"><span class="num" th:utext="${#temporals.format(#temporals.createDate(capitalDetail.issue_date,'yyyyMMdd'), 'yyyy.MM.dd')}">2021.09.03</span></span>
+					</li>
+					<li>
+						<span class="itemTit">만기일</span>
+						<span class="itemData"><span class="num" th:utext="${#temporals.format(#temporals.createDate(capitalDetail.exp_date,'yyyyMMdd'), 'yyyy.MM.dd')}">2021.09.03</span></span>
+					</li>
+					<li>
+						<span class="itemTit">상환일</span>
+						<span class="itemData">매달 <span class="num center" th:utext="${capitalDetail.repay_date}">1</span>일</span>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<!-- //container -->
+
+</div>
+<!-- //wrap -->
+</body>
+</html>

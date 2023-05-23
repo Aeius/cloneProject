@@ -1,0 +1,732 @@
+﻿<!-- [S] 월간 -->
+<!-- <div class="tab_cntDp1" style="display: block;"> -->
+
+<!-- [S] 월 선택 -->
+<div class="calendar_form">
+	<div class="sel_form type_month">
+		<a href="#layer_N001_select_m" class="btn_open_bottom_sheet sel_box" role="button" title="월 선택"><span></span></a>
+	</div>
+	<div class="sel_form type_cate"><!-- 월선택 후 색상 진하게 변경, 클래스 'on' 추가-->
+		<a href="#layer_N001_select_m_category" class="btn_open_bottom_sheet sel_box month" role="button"
+			title="카테고리 선택"><span>입출금</span></a>
+	</div>
+</div>
+<!-- [E] 월 선택 -->
+
+<!-- [S] 달력 -->
+<div class="wrap_cal_tbl">
+	<table class="cal_tbl">
+		<caption>캘린더 일정 정보</caption>
+		<colgroup>
+			<col />
+			<col />
+			<col />
+			<col />
+			<col />
+			<col />
+			<col />
+		</colgroup>
+		<thead>
+			<tr>
+				<th scope="col"><span class="day">일</span></th>
+				<th scope="col"><span class="day">월</span></th>
+				<th scope="col"><span class="day">화</span></th>
+				<th scope="col"><span class="day">수</span></th>
+				<th scope="col"><span class="day">목</span></th>
+				<th scope="col"><span class="day">금</span></th>
+				<th scope="col"><span class="day">토</span></th>
+			</tr>
+		</thead>
+		<tbody>
+			<!-- 달력 출력 위치 -->
+		</tbody>
+	</table>
+	<!-- </div> -->
+	<!-- [E] 달력 -->
+
+	<!-- [S] 월간내역 -->
+	<!-- 2021-10-29 카테고리 카드일때만  클래스 'bg_type_card' 추가 <div class="cal_info w_full bg_type_card">  -->
+	<div class="cal_info w_full">
+		<div class="line_div">
+			<div class="info_today">
+				<p class="today">
+					<span class="num">12</span>월 <span class="num">22</span>일 <span>일요일</span>
+					<button type="button" class="btn_mark_star on"><span class="blind">중요
+							표시</span></button><!-- 활성화시 클래스 'on' 추가 및 title="중요 표시 활성화됨" -->
+				</p>
+				<a href="#N001_icon_p_01" class="btn_open_layer_pop btn_more_ask" role="button"><span
+						class="ico_ask type_gray"><em class="blind">더보기</em></span></a>
+			</div>
+			<div class="info_list event">
+				<!-- 금융이벤트 출력 위치 -->
+			</div>
+		</div>
+		<div class="line_div">
+			<!-- 월간내역 메모 -->
+			<div class="memo_wrap">
+				<p class="label_memo"><span class="ico_memo lg"></span><strong class="memo_tit"><em>메모</em></strong></p>
+				<a href="#layer_N001_edit_memo" class="btn_open_bottom_sheet memo_txt" role="button" title="메모입력 및 편집">
+					<!-- 메모입력 전  -->
+					<span class="tip">메모를 남겨주세요</span>
+					<!-- 메모입력 후 -->
+					<!--<span class="txt">전세자금 대출 상환.</span>-->
+				</a>
+			</div>
+			<!-- //월간내역 메모 -->
+		</div>
+	</div>
+	<!-- [E] 월간내역 -->
+
+</div>
+<!-- // [E] 월간 -->
+
+<script>
+	let memoList = new Array(32).fill("");
+	let starList = new Array(32).fill("N");
+
+	// [S] 달력 출력	
+	function show_calender(member_id, sel_year, sel_month, sel_day, sel_category) {
+		// API 호출 - 메모 유무, 별표 표시 여부
+		ajax_calender_info(member_id, sel_year, sel_month).done(function (response) {
+			memoList.fill("");
+			starList.fill("N");
+
+			for (result of response) {
+				let index = parseInt(result.calender_day.substring(6, 8));
+				starList[index] = result.is_star;
+				memoList[index] = result.memo;
+			}
+
+			// 별표 표시 유무
+			if (starList[sel_day] === "Y") {
+				$('.btn_mark_star').attr('class', 'btn_mark_star on');
+			} else {
+				$('.btn_mark_star.on').attr('class', 'btn_mark_star');
+			}
+
+			// 메모 출력
+			if (memoList[sel_day] == '') {
+				var arr = '<span class="tip">메모를 남겨주세요</span>';
+			} else {
+				var arr = '<span class="txt">' + memoList[sel_day] + '</span>';
+			}
+			$('.btn_open_bottom_sheet.memo_txt').html(arr);
+
+
+			firstDay = new Date(sel_year, sel_month - 1, 1).getDay(); //1일의 요일
+			lastDate = new Date(sel_year, sel_month, 0).getDate(); // 이달 마지막날
+
+			var arr = '<tr>';
+			// 해당 월의 첫번째 주의 쓰이지 않는 요일 빈칸 처리
+			for (var bin = 0; bin < firstDay; bin++) {
+				arr += '<td>'
+					+ '	<div class="date disabled" aria-hidden="true">'
+					+ '		<p class="num"><span></span></p>'
+					+ '	</div>'
+					+ '</td>';
+			}
+			//날짜
+			for (var i = 1; i <= lastDate; i++) {
+				let getday = new Date(sel_year, sel_month - 1, i).getDay(); // 요일을 얻어낸다. (일요일=0, 토요일=6)
+				// 일요일이면 개행 처리
+				if (getday == 0) {
+					arr += "</tr>"
+						+ "<tr>";
+				}
+				if (sel_day == i) { // 선택된 날짜 지정
+					arr += '<td>'
+						+ '	<a href="#none" class="date selday" role="button">'
+						+ '	<p class="num"><span>' + i + '</span></p>'
+						+ '	<div class="mark">'
+						+ ' <span class="ico_mark type_01" style="display: none;"><span class="blind">입출금내역</span></span>'
+						+ ' <span class="ico_mark type_02" style="display: none;"><span class="blind">결제예정</span></span>'
+						+ ' <span class="ico_mark type_03" style="display: none;"><span class="blind">금융이벤트알림</span></span>'
+						+ ' <span class="ico_mark type_star" style="display: none;"><span class="blind">중요</span></span>'
+						+ '</div>'
+						+ '	</a>'
+						+ '</td>';
+				} else {
+					arr += '<td>'
+						+ '	<a href="#none" class="date" role="button">'
+						+ '	<p class="num"><span>' + i + '</span></p>'
+						+ '	<div class="mark">'
+						+ ' <span class="ico_mark type_01" style="display: none;"><span class="blind">입출금내역</span></span>'
+						+ ' <span class="ico_mark type_02" style="display: none;"><span class="blind">결제예정</span></span>'
+						+ ' <span class="ico_mark type_03" style="display: none;"><span class="blind">금융이벤트알림</span></span>'
+						+ ' <span class="ico_mark type_star" style="display: none;"><span class="blind">중요</span></span>'
+						+ '</div>'
+						+ '	</a>'
+						+ '</td>';
+				}
+			}
+			$('.cal_tbl>tbody').html(arr);
+			
+			// 생성된 달력에 입출금내역 표시
+			let select_category = $('#layer_N001_select_m_category').find('.btn_sel_opt').text();
+			let expList = new Array(32).fill(false);
+			ajax_calender_list(member_id, sel_year, sel_month, 'asc').done(function (response) {
+				if (sel_category == '입출금') {
+					for (result of response) {
+						if (result.merchant_name === null) {
+							expList[new Date(result.approved_dtime).getDate()] = true;
+						}
+					}
+				} else {
+					for (result of response) {
+						if (result.merchant_name != null) {
+							expList[new Date(result.approved_dtime).getDate()] = true;
+						}
+					}
+				}
+			}).done(function(){
+				// 생성된 달력에 상환,만기일 표시
+				let redList = new Array(32).fill(false);
+				let greenList = new Array(32).fill(false);
+				ajax_loan(member_id, sel_year, sel_month).done(function(response){
+					if (sel_category === '카드') {
+						for(result of response){
+							if(result.loan_type != null){
+								redList[new Date(result.exp_date).getDate()] = true;
+							} else {
+								greenList[new Date(result.pay_due_date).getDate()] = true;
+							}
+						}
+					}
+				}).done(function(){
+					ajax_bills(member_id, sel_year, sel_month).done(function(response){
+						if(sel_category === '카드')	{
+							for(result of response){
+								redList[new Date(result.paid_out_date).getDate()] = true;
+							}
+						}
+					}).done(function(){
+						ajax_telecom_bills(member_id, sel_year, sel_month).done(function(response){
+							if(sel_category === '입출금'){
+								for(result of response) {
+									date = result.charge_date;
+									year = date.substring(0,4);
+									month = Number(date.substring(4,6)) - 1;
+									day = date.substring(6,8);
+									idx = new Date(year,month,day).getDate();
+									greenList[idx] = true;
+								}
+							}
+						}).done(function(){
+							for (i = 1; i < 32; i++) {
+								// 생성된 달력에 별표 표시
+								if (starList[i] === "Y") {
+									$('a.date').eq(i - 1).find('.mark>.ico_mark.type_star').attr('style', 'display: block;');
+								}
+								// 내역 표시 (회색)
+								if (expList[i]) {
+									$('a.date').eq(i - 1).find('.mark>.ico_mark.type_01').attr('style', 'display: block;');
+								}
+								// 상환일 표시 (녹색)
+								if (greenList[i]) {
+									$('a.date').eq(i - 1).find('.mark>.ico_mark.type_02').attr('style', 'display: block;');
+								}
+								// 만기일 표시 (붉은색)
+								if (redList[i]) {
+									$('a.date').eq(i - 1).find('.mark>.ico_mark.type_03').attr('style', 'display: block;');
+								}
+							}
+						});
+					});
+				});
+			});
+		});
+		show_monthly_dayOfHistory(member_id, sel_year, sel_month, sel_day, sel_category);
+	}
+	// [E] 달력 출력
+
+
+	// [S] 월간 - 입출금 내역 또는 카드 승인 내역 출력
+	function show_monthly_dayOfHistory(member_id, sel_year, sel_month, sel_day, sel_category) {
+		var sel_dayOfWeek = toKor_dayOfWeek(new Date(sel_year, sel_month - 1, sel_day).getDay());
+		// 날짜 출력
+		$('.cal_info.w_full').find('.today>span').eq(0).text(sel_month);
+		$('.cal_info.w_full').find('.today>span').eq(1).text(sel_day);
+		$('.cal_info.w_full').find('.today>span').eq(2).text(sel_dayOfWeek);
+
+		// 별표 표시 유무
+		if (starList[sel_day] === "Y") {
+			$('.btn_mark_star').attr('class', 'btn_mark_star on');
+		} else {
+			$('.btn_mark_star.on').attr('class', 'btn_mark_star');
+		}
+
+		// 메모 출력
+		if (memoList[sel_day] == '') {
+			var arr = '<span class="tip">메모를 남겨주세요</span>';
+		} else {
+			var arr = '<span class="txt">' + memoList[sel_day] + '</span>';
+		}
+		$('.btn_open_bottom_sheet.memo_txt').html(arr);
+
+		// 계좌 입출금 내역 리스트 출력
+		if (sel_category == '입출금') {
+			let temp = '';
+			let telecom_bills_cnt = 0;
+			// API 호출
+			ajax_telecom_bills(member_id, sel_year, sel_month, sel_day).done(function(response){
+				for(result of response) {
+					telecom_bills_cnt++;
+					temp+='<div class="info_asset_wrap type_1"><!-- green 색상 -->'
+						+'	<a href="#layer_N1001_3_4_6" class="btn_open_bottom_sheet telecom_bills" role="button">'
+						+'		<p class="info_label"><span class="label_txt red"><em class="txt">예정</em></span></p>'
+						+'		<div class="info_asset">'
+						+'			<div class="acc">'
+						+'				<p class="mark_acc">'+result.org_name+'</p>'
+						+'				<span class="name">계약번호 <em class="mgmt_id">' + result.mgmt_id + '</em></span>'
+						+'			</div>'
+						+'			<div class="price">'
+						+'			</div>'
+						+'		</div>'
+						+'	<div style="display: none;" class="type">'+result.type+'</div>'
+						+'	<div style="display: none;" class="charge_date">'+result.charge_date+'</div>'
+						+'	</a>'
+						+'</div>'
+				}
+			}).done(function(){
+				ajax_calender_account(member_id, sel_year, sel_month, sel_day).done(function (response) {
+					if (response.length != 0) {
+						for (result of response) {
+							// 계좌 내역 출력
+							temp += '<div class="info_asset_wrap">'
+								+ '	<a href="#layer_N1001_1_1_1" class="btn_open_bottom_sheet monthly_account_history" role="button">'
+								+ '	<div class="info_asset">'
+								+ '	<div class="acc">'
+								+ '	<p><strong class="info_tit">(' + trans_type(result.trans_type) + ') ' + result.trans_memo + '</strong></p>'
+								+ '	<span class="name">' + result.org_name + ' ' + result.prod_name + '</span>'
+								+ '	</div>'
+								+ '	<div class="price">'
+							if (result.trans_type == "02" || result.trans_type == "05" || result.trans_type == "07" || result.trans_type == "99") {
+								temp += '<span><em class="num">-' + result.trans_amt.toLocaleString() + '</em>원</span>'
+							} else {
+								temp += '<span><em class="num">' + result.trans_amt.toLocaleString() + '</em>원</span>'
+							}
+							temp += '</div>'
+								+ '	</div>'
+								+ '<div style="display: none;" class="account_num">' + result.account_num + '</div>'
+								+ '<div style="display: none;" class="balance_amt">' + result.balance_amt.toLocaleString() + '</div>'
+								+ '<div style="display: none;" class="trans_dtime">' + result.trans_dtime + '</div>'
+								+ '	</a>'
+								+ '</div>'
+						}
+					} else if(telecom_bills_cnt === 0 && response.length === 0){
+						temp = '<div class="msgResult">'
+							+ '	<p>해당일의 금융이벤트가 없습니다.</p>'
+							+ '</div>'
+					}
+					$('.cal_info.w_full').find('.info_list').html('');
+					$('.cal_info.w_full').find('.info_list.event').html(temp);
+				});
+			})
+
+		// 카드 금융이벤트 리스트 출력 (승인 내역, 대출 상환)
+		} else {
+			let loan_cnt = 0;
+			let bills_cnt = 0;
+			let temp = '';
+			ajax_loan(member_id, sel_year, sel_month, sel_day).done(function(response) {
+				loan_cnt += response.length;
+				for(result of response){
+					if(result.loan_type === null){
+						// 단기 상환일
+						temp+='<div class="info_asset_wrap type_1"><!-- green 색상 -->'
+							+'	<a href="#layer_N1001_3_4_3" class="btn_open_bottom_sheet loan_short" role="button">'
+							+'		<p class="info_label"><span class="label_txt red"><em class="txt">예정</em></span></p>'
+							+'		<div class="info_asset">'
+							+'			<div class="acc">'
+							+'				<p class="mark_acc">'+result.loan_name+'</p>'
+							+'				<span class="name">'+result.org_name+'</span>'
+							+'			</div>'
+							+'			<div class="price">'
+							+'				<span><em class="num">'+result.balance_amt.toLocaleString()+'</em>원</span>'
+							+'			</div>'
+							+'		</div>'
+							+'	<div style="display: none;" class="loan_dtime">'+result.loan_dtime+'</div>'
+							+'	<div style="display: none;" class="loan_amt">'+result.loan_amt+'</div>'
+							+'	<div style="display: none;" class="pay_due_date">'+result.pay_due_date+'</div>'
+							+'	<div style="display: none;" class="int_rate">'+result.int_rate+'</div>'
+							+'	</a>'
+							+'</div>'
+					} else {
+						// 장기 만기일
+						temp+='<div class="info_asset_wrap type_2"><!-- red 색상 -->'
+							+'	<a href="#layer_N1001_3_4_4" class="btn_open_bottom_sheet loan_long" role="button">'
+							+'		<p class="info_label"><span class="label_txt red"><em class="txt">알림</em></span></p>'
+							+'		<div class="info_asset">'
+							+'			<div class="acc">'
+							+'				<p class="mark_acc">'+result.loan_name+'</p>'
+							+'				<span class="name">'+result.org_name+'</span>'
+							+'			</div>'
+							+'			<div class="price">'
+							+'				<span><em class="num">'+result.balance_amt.toLocaleString()+'</em>원</span>'
+							+'			</div>'
+							+'		</div>'
+							+'	<div style="display: none;" class="loan_dtime">'+result.loan_dtime+'</div>'
+							+'	<div style="display: none;" class="loan_cnt">'+result.loan_cnt+'</div>'
+							+'	<div style="display: none;" class="loan_type">'+result.loan_type+'</div>'
+							+'	<div style="display: none;" class="loan_amt">'+result.loan_amt+'</div>'
+							+'	<div style="display: none;" class="repay_method">'+repay_method(result.repay_method)+'</div>'
+							+'	<div style="display: none;" class="int_rate">'+result.int_rate+'</div>'
+							+'	<div style="display: none;" class="int_amt">'+result.int_amt+'</div>'
+							+'	<div style="display: none;" class="exp_date">'+result.exp_date+'</div>'
+							+'	</a>'
+							+'</div>'
+					}
+				}
+			}).done(function(){
+				ajax_bills(member_id, sel_year, sel_month, sel_day).done(function(response){
+					for(result of response){
+						bills_cnt++;
+						let card_name_list = new Array();
+						let card_name_list_set;
+						
+						ajax_card_list(member_id, result.org_code, sel_year, sel_month).done(function(values){
+							for(val of values){
+								card_name_list.push(val.card_name);
+								card_name_list_set = new Set(card_name_list); // 중복제거 set
+
+								card_name_list = [...card_name_list_set];
+							}
+						}).done(function(){
+							// 카드 청구 알림
+							temp +='<div class="info_asset_wrap type_2"><!-- red 색상 -->'
+								 +'	<a href="#layer_N1001_3_4_5" class="btn_open_bottom_sheet card_bills" role="button">'
+								 +'		<p class="info_label"><span class="label_txt red"><em class="txt">알림</em></span></p>'
+								 +'		<div class="info_asset">'
+								 +'			<div class="acc">'
+								 +'				<p class="mark_acc">'+result.org_name+'</p>'
+								 +'			</div>'
+								 +'			<div class="price">'
+								 +'				<span><em class="num">'+result.charge_amt.toLocaleString()+'</em>원</span>'
+								 +'			</div>'
+								 +'		</div>'
+								 +'	<div style="display: none;" class="paid_out_date">'+result.paid_out_date+'</div>'
+								 +'	<div style="display: none;" class="charge_month">'+result.charge_month+'</div>'
+								 +'	<div style="display: none;" class="charge_day">'+result.charge_day+'</div>'
+								 +'	<div style="display: none;" class="card_name">'+card_name_list+'</div>'
+								 +'	</a>'
+								 +'</div>'
+						})
+					}
+				}).done(function(){
+					// 카드 승인 내역
+					ajax_calender_card(member_id, sel_year, sel_month, sel_day).done(function (response) {
+						if (response.length != 0) {
+							// 카드 내역 출력
+							for (result of response) {
+								temp += '<div class="info_asset_wrap">'
+									+ '	<a href="#layer_N1001_2_1_1" class="btn_open_bottom_sheet monthly_card_history" role="button">'
+									+ '		<div class="info_asset">'
+									+ '			<div class="acc">'
+									+ '				<p><strong class="info_tit">' + result.merchant_name + '</strong></p>'
+									+ '				<span class="name">' + result.card_name + '|' + result.catg_nm + '</span>'
+									+ '			</div>'
+									+ '			<div class="price">'
+													if(result.status === '03'){
+								temp += '				<span><em class="num">' + result.modified_amt.toLocaleString() + '</em>원</span>'
+													} else {
+								temp += '				<span><em class="num">' + (result.krw_amt != 0 ? result.krw_amt.toLocaleString() : result.approved_amt.toLocaleString()) + '</em>원</span>'
+													}
+								temp += '			</div>'
+									+ '		</div>'
+									+ '	<div style="display: none;" class="installments">' + result.total_install_cnt + '</div>'
+									+ '	<div style="display: none;" class="approved_dtime">' + result.approved_dtime + '</div>'
+									+ '	<div style="display: none;" class="approved_num">' + result.approved_num + '</div>'
+									+ '	<div style="display: none;" class="modified_amt">' + result.modified_amt + '</div>'
+									+ '	<div style="display: none;" class="card_id">' + result.card_id + '</div>'
+									+ '	<div style="display: none;" class="org_code">' + result.org_code + '</div>'
+									+ '	<div style="display: none;" class="appr_status">' + result.status + '</div>'
+									+ '	<div style="display: none;" class="appr_seq">' + result.seq + '</div>'
+									+ '	</a>'
+									+ '</div>'
+							}
+						} else if (response.length === 0 && loan_cnt === 0 && bills_cnt === 0){
+							temp = '<div class="msgResult">'
+								+ '	<p>해당일의 금융이벤트가 없습니다.</p>'
+								+ '</div>'
+						}
+						$('.cal_info.w_full').find('.info_list').html('');
+						$('.cal_info.w_full').find('.info_list.event').html(temp);
+					});
+				});
+			});
+		};
+	}
+	// [E] 월간 - 입출금 내역 또는 카드 승인 내역 출력
+
+	// [S] 월간 - 달력에서 일 선택
+	$(document).on("click", "a.date", function () {
+		// 선택된 일 초기화
+		$('.cal_tbl>tbody>tr>td>a').attr('class', 'date');
+		// 오늘 날짜 표시
+		if (sel_year == now_year && sel_month == now_month) {
+			$('.cal_tbl>tbody>tr>td>a:eq(' + (now_day - 1) + ')').attr('class', 'date today');
+		}
+		// 선택된 일 표시
+		$(this).attr('class', 'date selday');
+		sel_day = parseInt($(this).text().trim());
+
+		var sel_dayOfWeek = toKor_dayOfWeek(new Date(sel_year, sel_month, sel_day).getDay());
+		// 날짜 출력
+		$('.cal_info.w_full').find('.today>span').eq(0).text(sel_month);
+		$('.cal_info.w_full').find('.today>span').eq(1).text(sel_day);
+		$('.cal_info.w_full').find('.today>span').eq(2).text(sel_dayOfWeek);
+		// 카테고리 확인
+		let sel_category = $('.btn_open_bottom_sheet.sel_box.month').text();
+		// 월간 - 일일 내역, 금융 이벤트, 메모 출력
+		show_monthly_dayOfHistory(member_id, sel_year, sel_month, sel_day, sel_category);
+	});
+	// [E] 월간 - 달력에서 일 선택
+
+	// [S] 월간 - 일자에 별표 표시 클릭
+	$(document).on("click", ".btn_mark_star", function () {
+		// API 호출 (별표 수정)
+		ajax_calender_info(member_id, sel_year, sel_month).done(function (response) {
+			let isUpdate = false;
+			for (result of response) {
+				let date = parseInt(result.calender_day.substring(6, 8));
+				if (sel_day === date) {
+					isUpdate = true;
+				}
+			}
+			starList[sel_day] === "Y" ? starList[sel_day] = "N" : starList[sel_day] = "Y";
+			let send_data = {
+				"member_id": member_id,
+				"calender_day": "" + sel_year + (sel_month < 10 ? "0" + sel_month : sel_month) + (sel_day < 10 ? "0" + sel_day : sel_day),
+				"is_star": starList[sel_day],
+				"memo": memoList[sel_day]
+			}
+			// 수정
+			if (isUpdate) {
+				ajax_calender_info_set(send_data).done(function () {
+					star_toggle();
+				});
+				// 신규
+			} else {
+				ajax_calender_info_new(send_data).done(function () {
+					star_toggle();
+				});
+			}
+
+		})
+	});
+	function star_toggle() {
+		// 별표 on/off
+		if ($('.date.selday>.mark>.ico_mark.type_star').attr('style') === 'display: none;') {
+			$('.date.selday>.mark>.ico_mark.type_star').attr('style', 'display: block;');
+		} else {
+			$('.date.selday>.mark>.ico_mark.type_star').attr('style', 'display: none;');
+		}
+		if ($('.btn_mark_star').attr('class').includes('on')) {
+			$('.btn_mark_star').attr('class', 'btn_mark_star');
+		} else {
+			$('.btn_mark_star').attr('class', 'btn_mark_star on');
+		}
+	}
+
+	// [E] 별표 표시 클릭
+
+	// [S] 월간 - 일자별 계좌 상세 내역
+	$(document).on('click', '.btn_open_bottom_sheet.monthly_account_history', function () {
+		let account_name = $(this).find('.name').text().split(" ");
+		let trans_type = $(this).find('.info_tit').text().split(" ")
+		let amount = $(this).find('.num').text();
+		let account_num = $(this).find('.account_num').text();
+		let balance_amt = $(this).find('.balance_amt').text();
+		let date = new Date($(this).find('.trans_dtime').text());
+
+		print_account_detail(account_name, trans_type, amount, account_num, balance_amt, date);
+	});
+	// [E] 월간 - 일자별 계좌 상세 내역
+
+	// [S] 월간 - 일자별 카드 상세 내역
+	$(document).on('click', '.btn_open_bottom_sheet.monthly_card_history', function () {
+		let card_name = $(this).find('.name').text().split("|")[0];
+		let catg_nm = $(this).find('.name').text().split("|")[1];
+		let approved_dtime = $(this).find('.approved_dtime').text();
+		let approved_num = $(this).find('.approved_num').text();
+		let approved_amt = $(this).find('.price>span>.num').text();
+		let modified_amt = $(this).find('.modified_amt').text();
+		let merchant_name = $(this).find('.info_tit').text();
+		let installments = $(this).find('.installments').text();
+		let card_id = $(this).find('.card_id').text();
+		let org_code = $(this).find('.org_code').text();
+		let appr_status = $(this).find('.appr_status').text();
+		let appr_seq = $(this).find('.appr_seq').text();
+
+		print_card_detail(card_name, catg_nm, approved_amt, merchant_name, installments, approved_dtime, approved_num, modified_amt, card_id, org_code, appr_status, appr_seq);
+	});
+	// [E] 월간 - 일자별 카드 상세 내역
+	
+	// [S] 월간 - 일자별 단기 대출 상환
+	$(document).on('click', '.btn_open_bottom_sheet.loan_short', function () {
+		let loan_name = $(this).find('.mark_acc').text();
+		let loan_amt = Number($(this).find('.loan_amt').text());
+		let int_rate = $(this).find('.int_rate').text();
+		let loan_dtime = $(this).find('.loan_dtime').text();
+		let balance_amt = $(this).find('.price>span>.num').text();
+		let pay_due_date = $(this).find('.pay_due_date').text();
+
+		$('#layer_N1001_3_4_3').find('.today>.num').eq(0).text(sel_year); // 연
+		$('#layer_N1001_3_4_3').find('.today>.num').eq(1).text(sel_month); // 월
+		$('#layer_N1001_3_4_3').find('.today>.num').eq(2).text(sel_day); // 일
+		$('#layer_N1001_3_4_3').find('.today>span').eq(3).text(toKor_dayOfWeek(new Date(pay_due_date).getDay())); // 요일
+
+		$('#layer_N1001_3_4_3').find('.left>.name').text(loan_name); // 대출상품이름
+		$('#layer_N1001_3_4_3').find('.price>p>.num').text(loan_amt.toLocaleString()); // 이용금액
+		$('#layer_N1001_3_4_3').find('.int_rate>.num').text(int_rate); // 이자율
+		$('#layer_N1001_3_4_3').find('.loan_dtime>.num').text(loan_dtime); // 이용일
+		$('#layer_N1001_3_4_3').find('.balance_amt>.num').text(balance_amt); // 단기대출잔액
+		$('#layer_N1001_3_4_3').find('.pay_due_date>.num').text(pay_due_date); // 결제예정일
+	});
+	// [E] 월간 - 일자별 단기 대출 상환
+
+	// [S] 월간 - 일자별 장기 대출 만기
+	$(document).on('click', '.btn_open_bottom_sheet.loan_long', function () {
+		let loan_name = $(this).find('.mark_acc').text();
+		let loan_amt = Number($(this).find('.loan_amt').text());
+		let int_rate = $(this).find('.int_rate').text();
+		let loan_dtime = $(this).find('.loan_dtime').text();
+		let loan_cnt = $(this).find('.loan_cnt').text();
+		let loan_type = $(this).find('.loan_type').text();
+		let repay_method = $(this).find('.repay_method').text();
+		let int_amt = Number($(this).find('.int_amt').text());
+		let balance_amt = $(this).find('.price>span>.num').text();
+		let exp_date = $(this).find('.exp_date').text();
+
+
+		$('#layer_N1001_3_4_4').find('.today>.num').eq(0).text(sel_year); // 연
+		$('#layer_N1001_3_4_4').find('.today>.num').eq(1).text(sel_month); // 월
+		$('#layer_N1001_3_4_4').find('.today>.num').eq(2).text(sel_day); // 일
+		$('#layer_N1001_3_4_4').find('.today>span').eq(3).text(toKor_dayOfWeek(new Date(exp_date).getDay())); // 요일
+
+		$('#layer_N1001_3_4_4').find('.left>.name').text(loan_name); // 대출상품이름
+		$('#layer_N1001_3_4_4').find('.price>p>.num').text(loan_amt.toLocaleString()); // 이용금액
+		$('#layer_N1001_3_4_4').find('.int_rate>.num').text(int_rate); // 이자율
+		$('#layer_N1001_3_4_4').find('.loan_dtime>.num').text(loan_dtime); // 대출일시
+		$('#layer_N1001_3_4_4').find('.loan_type').text(loan_type); // 대출종류
+		$('#layer_N1001_3_4_4').find('.repay_method').text(repay_method); // 상환방식
+		$('#layer_N1001_3_4_4').find('.loan_cnt>.num').text(loan_cnt); // 대출회차
+		$('#layer_N1001_3_4_4').find('.int_mat>.num').text(int_amt.toLocaleString()); // 상환액중이자
+		$('#layer_N1001_3_4_4').find('.balance_amt>.num').text(balance_amt); //  장기대출잔액
+		$('#layer_N1001_3_4_4').find('.exp_date>.num').text(exp_date); // 만기일
+	});
+	// [E] 월간 - 일자별 장기 대출 만기
+
+	// [S] 월간 - 카드 청구 내역
+	$(document).on('click', '.btn_open_bottom_sheet.card_bills', function () {
+		let paid_out_date = new Date($(this).find('.paid_out_date').text());
+		let charge_month = $(this).find('.charge_month').text();
+		charge_month = charge_month.substring(0,4) + "." + charge_month.substring(4,6);
+		let charge_day = $(this).find('.charge_day').text();
+		let card_name = $(this).find('.card_name').text().replaceAll(',', '<br>');
+		let charge_amt = $(this).find('.price>span>.num').text();
+		let org_name = $(this).find('.mark_acc').text();
+
+		$('#layer_N1001_3_4_5').find('.today>.num').eq(0).text(sel_year); // 연
+		$('#layer_N1001_3_4_5').find('.today>.num').eq(1).text(sel_month); // 월
+		$('#layer_N1001_3_4_5').find('.today>.num').eq(2).text(sel_day); // 일
+		$('#layer_N1001_3_4_5').find('.today>span').eq(3).text(toKor_dayOfWeek(paid_out_date.getDay())); // 요일
+		$('#layer_N1001_3_4_5').find('.name').text(org_name);
+		$('#layer_N1001_3_4_5').find('.price>p>.num').text(charge_amt);
+		$('#layer_N1001_3_4_5').find('.charge_month>.num').text(charge_month);
+		$('#layer_N1001_3_4_5').find('.charge_day>.num').text(charge_day);
+		$('#layer_N1001_3_4_5').find('.card_name').html(card_name);
+	});
+	// [E] 월간 - 카드 청구 내역
+
+	// [S] 월간 - 통신 요금 납입 예정 안내
+	$(document).on('click', '.btn_open_bottom_sheet.telecom_bills', function(){
+		let charge_date = $(this).find('.charge_date').text();
+		year = charge_date.substring(0,4);
+		month = Number(charge_date.substring(4,6)) - 1;
+		day = charge_date.substring(6,8);
+		charge_date = new Date(year, month, day);
+		let mgmt_id = $(this).find('.mgmt_id').text();
+		let type = $(this).find('.type').text();
+		let org_name = $(this).find('.mark_acc').text();
+		
+		$('#layer_N1001_3_4_6').find('.today>.num').eq(0).text(sel_year); // 연
+		$('#layer_N1001_3_4_6').find('.today>.num').eq(1).text(sel_month); // 월
+		$('#layer_N1001_3_4_6').find('.today>.num').eq(2).text(sel_day); // 일
+		$('#layer_N1001_3_4_6').find('.today>span').eq(3).text(toKor_dayOfWeek(charge_date.getDay())); // 요일
+		
+		$('#layer_N1001_3_4_6').find('.name').text(org_name + "-" + type + "요금 납부 예정");
+		$('#layer_N1001_3_4_6').find('.balance>.info').text(mgmt_id);
+	});
+	// [E] 월간 - 통신 요금 납입 예정 안내
+
+	// [S] 월간내역 메모 textarea 자동 높이조절, 글자수 체크, textarea val값 초기화
+	function testAreaHeight1() {
+		var textEle = $('.layer_memo_wrap .js_textarea1');
+		textEle[0].style.height = 'auto';
+		var textEleHeight = textEle.prop('scrollHeight');
+		textEle.css('height', textEleHeight);
+	};
+	var textEle = $('.layer_memo_wrap .js_textarea1');
+	var btnMemoValReset = $('.layer_memo_wrap .btn_val_reset');
+	btnMemoValReset.hide();
+	textEle.on('keyup', function () {
+		//자동높이
+		testAreaHeight1();
+		$('#js_textarea1_cnt').html("<span class='pointColor' tabindex='0'><span class='blind'>현재글자수</span>" + $(this).val().length + "</span> / <span tabindex='0'><span class='blind'>최대글자수</span>60</span>");
+		//val값 초기화
+		if (textEle.val().length === 0) {
+			btnMemoValReset.hide();
+		} else if ($(this).val().length > 60) {
+			$(this).val($(this).val().substring(0, 60));
+			$('#js_textarea1_cnt').html("<span class='pointColor' tabindex='0'><span class='blind'>현재글자수</span>" + 60 + "</span> / <span tabindex='0'><span class='blind'>최대글자수</span>60</span>");
+		} else {
+			btnMemoValReset.show();
+		}
+	});
+	function memoValReset() {
+		textEle.val('').css('height', 'inherit').focus();
+		btnMemoValReset.hide();
+		$('#js_textarea1_cnt').html("<span class='pointColor' tabindex='0'><span class='blind'>현재글자수</span>" + textEle.val().length + "</span> / <span tabindex='0'><span class='blind'>최대글자수</span>60</span>");
+	}
+	// [E] 월간내역 메모 textarea 자동 높이조절, 글자수 체크, textarea val값 초기화
+
+	// [S] 작성한 메모 표시 및 저장
+	$('#layer_N001_edit_memo').find('.js_pop_close.btn_confirm').on('click', function () {
+		var inputText = $('.tx_area.js_textarea1').val();
+		// API 호출 (메모 수정)
+		ajax_calender_info(member_id, sel_year, sel_month).done(function (response) {
+			let isUpdate = false;
+			for (result of response) {
+				let date = parseInt(result.calender_day.substring(6, 8));
+				if (sel_day === date) {
+					isUpdate = true;
+				}
+			}
+			let send_data = {
+				"member_id": member_id,
+				"calender_day": sel_year + (sel_month < 10 ? "0" + sel_month : sel_month) + (sel_day < 10 ? "0" + sel_day : sel_day),
+				"is_star": starList[sel_day],
+				"memo": inputText
+			}
+			// 수정
+			if (isUpdate) {
+				ajax_calender_info_set(send_data).done(function () {
+					memo_init(member_id, sel_year, sel_month, sel_day, sel_category, inputText);
+				})
+				// 신규
+			} else {
+				ajax_calender_info_new(send_data).done(function () {
+					memo_init(member_id, sel_year, sel_month, sel_day, sel_category, inputText);
+				});
+			}
+		});
+	});
+	function memo_init(member_id, sel_year, sel_month, sel_day, sel_category, inputText) {
+		show_calender(member_id, sel_year, sel_month, sel_day, sel_category);
+		$('.btn_open_bottom_sheet.memo_txt').text(inputText);
+		memoValReset();
+	}
+	// [E] 작성한 메모 표시 및 저장
+
+</script>

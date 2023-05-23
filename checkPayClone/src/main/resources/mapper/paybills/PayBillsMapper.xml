@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bit.checkpayclone.paybills.model.PayBillsMapper">
+	
+	<!--청구 가능한 카드사 표출-->
+	<select id="findBillsCard" resultType="com.bit.checkpayclone.paybills.model.PayBillsVo">
+		<![CDATA[ 
+		select 
+			case 
+				when char_length(og.org_name)<=9 then concat(substring(org_name, position('드' in org_name)-3,position('드' in org_name)))
+			end as org_name,
+			og.org_code,
+			cb.charge_amt,
+			(
+			select sum(paid_amt)
+			from tb_a_card_bills cb
+			inner join tb_a_card_bills_detail cbd on cb.memb_cd=cbd.memb_cd and cb.org_code=cbd.org_code and cb.charge_month=cbd.charge_month and cb.seqno=cbd.seqno
+			inner join tb_a_card c on c.memb_cd=cbd.memb_cd and c.org_code=cbd.org_code and c.card_id=cbd.card_id
+			inner join tb_a_apis_orgs og on cb.org_code=og.org_code
+			where cb.memb_cd=#{member_id} and og.org_code=#{org_code} and cb.paid_out_date like concat(#{paid_date},'%') and prod_type >'01'
+			) as install_sum,
+			cb.charge_month, cb.charge_day, 
+			to_timestamp(cb.paid_out_date,'YYYYMMDD')::timestamp as paid_out_date,
+			c.card_name,
+			cbd.card_id,
+			to_timestamp(cbd.paid_dtime, 'YYYYMMDDHH24MISS')::timestamp as paid_dtime,
+			cbd.paid_amt,
+			cbd.currency_code,
+			cbd.merchant_name,
+			cbd.credit_fee_amt,
+			cbd.total_install_cnt,
+			cbd.cur_install_cnt,
+			cbd.balance_amt,
+			cbd.prod_type,
+			cbd.paid_dt,
+			cbd.merchant_regno
+		from tb_a_card_bills cb
+		inner join tb_a_card_bills_detail cbd on cb.memb_cd=cbd.memb_cd and cb.org_code=cbd.org_code and cb.charge_month=cbd.charge_month and cb.seqno=cbd.seqno
+		inner join tb_a_card c on c.memb_cd=cbd.memb_cd and c.org_code=cbd.org_code and c.card_id=cbd.card_id
+		inner join tb_a_apis_orgs og on cb.org_code=og.org_code
+		where cb.memb_cd=#{member_id} and og.org_code=#{org_code} and cb.paid_out_date like concat(#{paid_date},'%')
+		order by cbd.paid_dtime desc;
+		]]>
+	</select>
+	
+	<!--청구 일시불 할부 구분-->
+	<select id="findBillsCardInstall" resultType="com.bit.checkpayclone.paybills.model.PayBillsVo">
+		<![CDATA[ 
+		select 
+			case 
+				when char_length(og.org_name)<=9 then concat(substring(org_name, position('드' in org_name)-3,position('드' in org_name)))
+			end as org_name,
+			og.org_code,
+			cb.charge_amt,
+			cb.charge_month, cb.charge_day, 
+			to_timestamp(cb.paid_out_date,'YYYYMMDD')::timestamp as paid_out_date,
+			c.card_name,
+			cbd.card_id,
+			to_timestamp(cbd.paid_dtime, 'YYYYMMDDHH24MISS')::timestamp as paid_dtime,
+			cbd.paid_amt,
+			cbd.currency_code,
+			cbd.merchant_name,
+			cbd.credit_fee_amt,
+			cbd.total_install_cnt,
+			cbd.cur_install_cnt,
+			cbd.balance_amt,
+			cbd.prod_type,
+			cbd.paid_dt,
+			cbd.merchant_regno
+		from tb_a_card_bills cb
+		inner join tb_a_card_bills_detail cbd on cb.memb_cd=cbd.memb_cd and cb.org_code=cbd.org_code and cb.charge_month=cbd.charge_month and cb.seqno=cbd.seqno
+		inner join tb_a_card c on c.memb_cd=cbd.memb_cd and c.org_code=cbd.org_code and c.card_id=cbd.card_id
+		inner join tb_a_apis_orgs og on cb.org_code=og.org_code
+		where cb.memb_cd=#{member_id} and og.org_code=#{org_code} and cb.paid_out_date like concat(#{paid_date},'%')
+		]]>
+		<choose>
+			<when test="prod_type !=null and prod_type=='01'">
+				and cbd.prod_type = #{prod_type}
+			</when>
+			<otherwise>
+				<![CDATA[ 
+				and cbd.prod_type >'01'
+				]]>
+			</otherwise>
+		</choose>
+		order by cbd.paid_dtime desc;
+	</select>
+	
+</mapper>

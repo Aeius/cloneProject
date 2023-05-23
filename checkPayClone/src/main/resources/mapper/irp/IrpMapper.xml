@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bit.checkpayclone.irp.model.IrpMapper">
+	<select id="findUserIrpAccountList" resultType="com.bit.checkpayclone.irp.model.IrpAccountVo">
+		select
+			ia.org_code,
+			ia.prod_name,
+			ib.eval_amt,
+			ib.account_num
+		from tb_a_irps_accounts ia
+		inner join tb_a_irps_basic ib on ia.memb_cd=ib.memb_cd and ia.org_code=ib.org_code and ia.account_num=ib.account_num
+		inner join tb_a_apis_orgs og on ia.org_code=og.org_code
+		where ia.memb_cd=#{memb_cd}
+		<if test='org != null and org.equals("i")'>
+			and og.org_name like '%증권%' 
+		</if>
+		<if test='org != null and org.equals("b")'>
+			and og.org_name like '%은행%' 
+		</if>
+	</select>
+	
+	<select id="findUserIrpAccountDetail" resultType="com.bit.checkpayclone.irp.model.IrpAccountDetailVo">
+		select
+			ia.prod_name, 
+			og.org_name,
+			data_decrypt(ia.account_num) as account_num,
+			ib.eval_amt, 
+			ib.accum_amt, 
+			ib.employer_amt, 
+			ib.employee_amt
+		from tb_a_irps_accounts ia
+		inner join tb_a_irps_basic ib on ia.memb_cd=ib.memb_cd and ia.org_code=ib.org_code and ia.account_num=ib.account_num
+		inner join tb_a_apis_orgs og on ia.org_code=og.org_code
+		where
+			ia.memb_cd=#{memb_cd} and 
+			ia.org_code=#{org_code} and 
+			ia.account_num=#{account_num};
+	</select>
+	<select id="findUserIrpAccountTrans" resultType="com.bit.checkpayclone.irp.model.IrpAccountTransVo">
+		select
+			to_timestamp(it.trans_dtime,'YYYYMMDDHH24MIss') as trans_dtime, 
+			it.trans_type as trans_type, 
+			it.trans_amt as trans_amt
+		from tb_a_irps_accounts ia
+		inner join tb_a_irps_trans it on ia.memb_cd=it.memb_cd and ia.org_code=it.org_code and ia.account_num=it.account_num
+		inner join tb_a_irps_basic ib on ia.memb_cd=ib.memb_cd and ia.org_code=ib.org_code and ia.account_num=ib.account_num
+		inner join tb_a_apis_orgs og on ia.org_code=og.org_code
+		where ia.memb_cd=#{memb_cd} and ia.account_num=#{account_num}
+		<if test='start_day == null or start_day.equals("") or end_day == null or end_day.equals("")'>
+			and it.trans_dtime like concat(to_char(now(),'YYYY'), '%')
+		</if>
+		<if test='start_day != null and !start_day.equals("") and end_day != null and !end_day.equals("")'>
+			and it.trans_dtime between concat(#{start_day},'%') and concat(#{end_day},'%') 
+		</if>
+		<if test='sort != null and sort.equals("desc")'>
+			order by trans_dtime desc
+		</if>
+		<if test='sort != null and sort.equals("asc")'>
+			order by trans_dtime asc
+		</if>
+		limit 10 offset #{offset}
+		
+	</select>
+	<select id="findUserIrpAccountProducts" resultType="com.bit.checkpayclone.irp.model.IrpAccountProductsVo">
+		select
+			irp_name,
+			eval_amt,
+			inv_principal,
+			fund_num,
+			to_timestamp(open_date ,'YYYYMMDDHH24MIss')::timestamp as open_date,
+			int_rate,
+			to_timestamp(exp_date ,'YYYYMMDDHH24MIss')::timestamp as exp_date
+		from tb_a_irps_detail
+		where 
+			memb_cd = #{memb_cd} and
+			org_code = #{org_code} and
+			account_num = #{account_num}
+		order by seq asc;
+	</select>
+
+</mapper>

@@ -1,0 +1,196 @@
+
+<!DOCTYPE html>
+<html lang="ko" class="leaf">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>CheckPay</title>
+<meta http-equiv="Cache-Control" content="No-Cache">
+<meta http-equiv="Pragma" content="No-Cache">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<!--<meta name="title" content="">-->
+<meta name="description" content="">
+<!--<meta name="keywords" content="">-->
+<!-- The Open Graph protocol -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="">
+<meta property="og:description" content="">
+<meta property="og:url" content="">
+<meta property="og:image" content=""><!-- [D]리얼경로로 변경하세요 -->
+<!-- //The Open Graph protocol -->
+<link rel="SHORTCUT ICON" href=""><!-- [D]리얼경로로 변경하세요 -->
+<link rel="stylesheet" type="text/css" href="../css/jquery-ui.min.css">
+<link rel="stylesheet" type="text/css" href="../css/reset.css">
+<link rel="stylesheet" type="text/css" href="../css/content.css">
+<link rel="stylesheet" type="text/css" href="../css/theme_checkpay.css">
+<script type="text/javascript" src="../js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="../js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="../js/jquery.ui.touch-punch.min.js"></script>
+<script type="text/javascript" src="../js/slide_slick.js"></script>
+<script type="text/javascript" src="../js/publishing.ui.library.1.0.0.js"></script>
+<script type="text/javascript" src="../js/cmd.js"></script>
+<script type="text/javascript" src="../js/common.js"></script>
+<!-- thymeleaf -->
+<html xmlns:th="http://www.thymeleaf.org">
+</head>
+<body>
+<!-- wrap -->
+<div class="wrap">
+	<!-- header -->
+	<div class="header">
+		<div class="header_inn">
+			<div class="left">
+				<a onclick="window.history.back()" class="btnBack"><span class="blind">Back</span></a>
+			</div>
+			<div class="right">
+                <!-- <a onclick="window.history.back()" class="btnClose"><span class="blind">close</span></a> -->
+			</div>
+		</div>
+	</div>
+	<!-- //header -->
+	<!-- container -->
+	<div class="container">
+		<div class="content">
+
+			<div class="tBalance">
+				<h3 class="tBaltit">총 계좌 잔액<a href="#layer1_short" class="btn_open_layer_pop btn_more_ask" role="button"><span class="ico_ask type_gray"><em class="blind">더보기</em></span></a></h3>
+				<p class="tBalAmount" th:with="amt=(${bankAccList1001.size}==0?0:${#aggregates.sum(bankAccList1001.?[currency_code=='원'].![balance_amt])})
+                +(${bankAccList1002.size}==0?0:${#aggregates.sum(bankAccList1002.?[currency_code=='원'].![balance_amt])})
+				+(${irpList.size}==0?0:${#aggregates.sum(irpList.![eval_amt])})
+				+(${bankAccList2000.size}==0?0:${#aggregates.sum(bankAccList2000.?[currency_code=='원'].![balance_amt])})
+                ">
+                <em class="amount" th:utext ="${#numbers.formatInteger(amt,0,'COMMA')}">81,153,000</em>원</p>
+				<p class="tBalAmount loan" th:with="amt=(${bankAccList3000.size}==0?0:${#aggregates.sum(bankAccList3000.![balance_amt])})">-대출<em class="amount" th:utext ="${#numbers.formatInteger(amt,0,'COMMA')}">5,000,000</em>원</p>
+				<p class="tBalDetail" >외화계좌 <span th:each="bankCurrencySum,cnt : ${sumByCurrency}"
+					th:utext="${#numbers.formatInteger(bankCurrencySum.value,0,'COMMA')}+${bankCurrencySum.key}+(${cnt.last}?'':' + ')">
+				</span> 미합산</p>
+			</div>
+			<div class="asGroup">
+				<div class="listTit" th:if="${bankAccList1001.size}!=0">
+					<h3 
+                    th:utext="'입출금 <em class=pointColor>'+${bankAccList1001.size}+'</em>'">입출금 <em class="pointColor">3</em></h3>
+				</div>
+				<div class="asList" th:if="${bankAccList1001.size}!=0">
+					<div class="accItem ableTrf"  th:each="bankList,cnt : ${bankAccList1001}">
+						<a th:onclick="javascript:detailmove('/bank/deposittrans', 'org_code',/*[[${bankList.org_code}]]*/null, 'account_num', /*[[${bankList.account_num}]]*/null)">
+							<div class="im">
+								<img th:src="'../img/bank/'+${bankList.org_code}+'.png'" src="../img/bank/D1AABJ0000.png" th:alt="${bankList.org_name}" alt="국민은행">
+							</div>
+							<div class="tx">
+								<p th:if="${bankList.is_consent.toString().equals('Y')}" class="prdName"><span class="ellipsis">[[${bankList.prod_name}]]</span></p>
+                                <!-- 계좌 오류 발생 시 -->
+                                <p th:if="${bankList.is_consent.toString().equals('N')}" class="prdName"><span class="error"><span class="blind">오류</span></span><span class="ellipsis">[[${bankList.prod_name}]]</span></p>
+                                <p th:with="currency_code=${bankList.currency_code}==null?'원':${bankList.currency_code}"
+                                 class="amount"><em th:utext="${#numbers.formatInteger(bankList.balance_amt,0,'COMMA')}+${currency_code}">359,153,000</em></p>
+							</div>
+						</a>
+						<!-- <button href="#" class="btnTransfer">송금</button> -->
+					</div>
+				</div>
+				<div class="listTit" th:if="${bankAccList1002.size}!=0">
+					<h3 th:utext="'예적금 <em class=pointColor>'+${bankAccList1002.size}+'</em>'">예적금 <em class="pointColor">2</em></h3>
+				</div>
+				<div class="asList" th:if="${bankAccList1002.size}!=0">
+					<div class="accItem" th:each="bankList,cnt : ${bankAccList1002}">
+						<a th:onclick="javascript:detailmove('/bank/deposittrans', 'org_code',/*[[${bankList.org_code}]]*/null, 'account_num', /*[[${bankList.account_num}]]*/null)">
+							<div class="im">
+								<img th:src="'../img/bank/'+${bankList.org_code}+'.png'" src="../img/bank/D1AABJ0000.png" th:alt="${bankList.org_name}" alt="국민은행">
+							</div>
+							<div class="tx">
+								<p th:if="${bankList.is_consent.toString().equals('Y')}" class="prdName"><span class="ellipsis">[[${bankList.prod_name}]]</span></p>
+                                <!-- 계좌 오류 발생 시 -->
+                                <p th:if="${bankList.is_consent.toString().equals('N')}" class="prdName"><span class="error"><span class="blind">오류</span></span><span class="ellipsis">[[${bankList.prod_name}]]</span></p>
+								<p th:with="currency_code=${bankList.currency_code}==null?'원':${bankList.currency_code}"
+								class="amount"><em th:utext="${#numbers.formatInteger(bankList.balance_amt,0,'COMMA')}+${currency_code}">359,153,000</em></p>
+							</div>
+						</a>
+					</div>
+				</div>
+				<div class="listTit" th:if="${irpList.size}!=0">
+					<h3 th:utext="'IRP <em class=pointColor>'+${irpList.size}+'</em>'">IRP <em class="pointColor">2</em></h3>
+				</div>
+				<div class="asList" th:if="${irpList.size}!=0">
+					<div class="accItem" th:each="bankList,cnt : ${irpList}">
+						<a th:onclick="javascript:detailmove('/bank/irpdetail', 'org_code',/*[[${bankList.org_code}]]*/null, 'account_num', /*[[${bankList.account_num}]]*/null)">
+							<div class="im">
+								<img th:src="'../img/bank/'+${bankList.org_code}+'.png'" src="../img/bank/D1AABJ0000.png" alt="국민은행">
+							</div>
+							<div class="tx">
+								<p class="prdName"><span class="ellipsis">[[${bankList.prod_name}]]</span></p>
+								<p class="amount"><em th:utext="${#numbers.formatInteger(bankList.eval_amt,0,'COMMA')}+원">359,153,000</em></p>
+								<!-- <p class="profit plus"><em class="num">40,000,000</em>원<em class="num">(+40.00%)</em></p> -->
+								<!-- <p class="profit minus"><em class="num">1,000,000</em>원<em class="num">(-9.88%)</em></p> -->
+							</div>
+						</a>
+					</div>
+				</div>
+				<div class="listTit" th:if="${bankAccList2000.size}!=0">
+					<h3 th:utext="'펀드·신탁 <em class=pointColor>'+${bankAccList2000.size}+'</em>'">펀드·신탁 <em class="pointColor">2</em></h3>
+				</div>
+				<div class="asList" th:if="${bankAccList2000.size}!=0">
+					<div class="accItem" th:each="bankList,cnt : ${bankAccList2000}">
+						<a th:onclick="javascript:detailmove('/bank/investdetail', 'org_code',/*[[${bankList.org_code}]]*/null, 'account_num', /*[[${bankList.account_num}]]*/null)">
+							<div class="im">
+								<img th:src="'../img/bank/'+${bankList.org_code}+'.png'" src="../img/bank/D1AABJ0000.png" th:alt="${bankList.org_name}" alt="국민은행">
+							</div>
+							<div class="tx">
+								<p th:if="${bankList.is_consent.toString().equals('Y')}" class="prdName"><span class="ellipsis">[[${bankList.prod_name}]]</span></p>
+                                <!-- 계좌 오류 발생 시 -->
+                                <p th:if="${bankList.is_consent.toString().equals('N')}" class="prdName"><span class="error"><span class="blind">오류</span></span><span class="ellipsis">[[${bankList.prod_name}]]</span></p>
+								<p th:with="currency_code=${bankList.currency_code}==null?'원':${bankList.currency_code}" 
+								class="amount"><em th:utext="${#numbers.formatInteger(bankList.balance_amt,0,'COMMA')}+${currency_code}">359,153,000</em></p>
+							</div>
+						</a>
+					</div>
+				</div>
+				<div class="listTit" th:if="${bankAccList3000.size}!=0">
+					<h3 th:utext="'대출 <em class=pointColor>'+${bankAccList3000.size}+'</em>'">대출 <em class="pointColor">2</em></h3>
+				</div>
+				<div class="asList loan" th:if="${bankAccList3000.size}!=0">
+					<div class="accItem" th:each="bankList,cnt : ${bankAccList3000}">
+						<a th:onclick="javascript:detailmove('/bank/bankloandetail', 'org_code',/*[[${bankList.org_code}]]*/null, 'account_num', /*[[${bankList.account_num}]]*/null)">
+							<div class="im">
+								<img th:src="'../img/bank/'+${bankList.org_code}+'.png'" src="../img/bank/D1AABJ0000.png" th:alt="${bankList.org_name}" alt="국민은행">
+							</div>
+							<div class="tx">
+								<p th:if="${bankList.is_consent.toString().equals('Y')}" class="prdName"><span class="ellipsis">[[${bankList.prod_name}]]</span></p>
+                                <!-- 계좌 오류 발생 시 -->
+                                <p th:if="${bankList.is_consent.toString().equals('N')}" class="prdName"><span class="error"><span class="blind">오류</span></span><span class="ellipsis">[[${bankList.prod_name}]]</span></p>
+								<p th:with="currency_code=${bankList.currency_code}==null?'원':${bankList.currency_code}" 
+								class="amount"><em th:utext="${#numbers.formatInteger(bankList.balance_amt,0,'COMMA')}+${currency_code}">359,153,000</em></p>
+								<p class="deposit">금리 <em class="num" th:utext="${bankList.last_offered_rate}+'%'">30.88%</em></p>
+							</div>
+						</a>
+					</div>
+				</div>
+			</div>
+			<div class="btn_wrap">
+				<div class="btnGroup type2">
+					<!-- <p><a href="#none" class="btnBl1">계좌 추가</a></p> -->
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- //container -->
+
+</div>
+<!-- //wrap -->
+<!-- [S] layer_popup type1 A타입 짧은문구, 총 계좌 잔액 -->
+<div id="layer1_short" class="layer_popup type1 short" role="dialog" tabindex="-1" aria-hidden="true"><!-- 2021-09-08 A타입 짧은문구, 클래스 'short' 추가 -->
+	<div class="layer_position">
+		<div class="layer_inner">
+			<div class="layer_tit">
+				<strong class="tit">총 계좌 잔액</strong>
+				<button type="button" class="js_pop_close btn_close"><span class="blind">닫기</span></button>
+			</div>
+			<div class="layer_cont">
+				<div class="msg_box">
+					입출금 잔액 + 예적금 잔액 + IRP평가금액 + 펀드신탁 평가금액<br>(외화 결제내역 제외)
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- [E] layer_popup type1 A타입 짧은문구, 총 계좌 잔액 -->
+</body>
+</html>

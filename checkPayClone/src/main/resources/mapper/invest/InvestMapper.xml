@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bit.checkpayclone.invest.model.InvestMapper">
+	<select id="findUserInvestAccountList" resultType="com.bit.checkpayclone.invest.model.InvestAccountVo">
+		select
+			ia.org_code,
+			ia.account_num,
+			ia.account_name,
+			sum(ip.eval_amt) as eval_amt,
+			idbc.withholdings_amt,
+			ip.currency_code
+		from tb_a_invest_accounts ia
+		inner join tb_a_invest_products ip on ia.memb_cd=ip.memb_cd and ia.memb_cd=ip.memb_cd and ia.account_num=ip.account_num
+		inner join tb_a_invest_deposit_base idb on ia.memb_cd=idb.memb_cd and ia.org_code=idb.org_code and ia.account_num=idb.account_num
+		inner join tb_a_invest_deposit_basic idbc on idb.memb_cd=idbc.memb_cd and idb.org_code=idbc.org_code and idb.account_num=idbc.account_num
+		where ia.memb_cd=#{memb_cd}
+		group by ia.org_code, ia.account_num, ia.account_name, idbc.withholdings_amt, ip.currency_code
+	</select>
+	
+	<select id="findUserInvestProductsList" resultType="com.bit.checkpayclone.invest.model.InvestProductsVo">
+		select 
+			ip.prod_type,
+			sum(ip.eval_amt) as eval_amt, 
+			sum(ip.purchase_amt) as purchase_amt,
+			ip.currency_code
+		from tb_a_invest_accounts ia
+		inner join tb_a_invest_products ip on ia.memb_cd=ip.memb_cd and ia.org_code=ip.org_code and ia.account_num=ip.account_num
+		where ia.memb_cd = #{memb_cd}
+		group by ip.prod_type, ip.currency_code
+		order by ip.prod_type asc;
+	</select>
+	
+	<select id="findUserInvestProductDetailList" resultType="com.bit.checkpayclone.invest.model.InvestProductsDetailListVo">
+		select 
+			ip.org_code,
+			ip.account_num,
+			ip.prod_name,
+			ip.holding_num,
+			ip.eval_amt,
+			ip.purchase_amt,
+			ip.seq,
+			ip.currency_code
+		from tb_a_invest_accounts ia
+		inner join tb_a_invest_products ip on ia.memb_cd=ip.memb_cd and ia.org_code=ip.org_code and ia.account_num=ip.account_num
+		where ia.memb_cd=#{memb_cd} and ip.prod_type=#{prod_type}
+	</select>
+	
+	<select id="findUserInvestProductDetail" resultType="com.bit.checkpayclone.invest.model.InvestProductsDetailVo">
+		select
+			ip.prod_name,
+			ip.eval_amt,
+			ip.holding_num,
+			ip.purchase_amt,
+			ip.currency_code,
+			ia.account_name,
+			ip.prod_type,
+			ia.account_num,
+			ia.org_code
+		from tb_a_invest_accounts ia
+		inner join tb_a_invest_products ip on ia.memb_cd=ip.memb_cd and ia.org_code=ip.org_code and ia.account_num=ip.account_num
+		where ia.memb_cd=#{memb_cd} and ia.account_num=#{account_num} and ia.org_code=#{org_code} and ip.prod_type=#{prod_type} and ip.seq=#{seq}
+	</select>
+	
+	<select id="findUserInvestStockList" resultType="com.bit.checkpayclone.invest.model.InvestProductsDetailListVo">
+		select 
+			ip.org_code,
+			ip.account_num,
+			ip.prod_name,
+			ip.holding_num,
+			ip.eval_amt,
+			ip.purchase_amt,
+			ip.prod_type,
+			ip.seq,
+			ip.currency_code
+		from tb_a_invest_accounts ia
+		inner join tb_a_invest_products ip on ia.memb_cd=ip.memb_cd and ia.org_code=ip.org_code and ia.account_num=ip.account_num
+		where ia.memb_cd=#{memb_cd}
+	</select>
+	
+	<select id="findUserInvestAccountDetail" resultType="com.bit.checkpayclone.invest.model.InvestAccountDetailVo">
+		select 
+			ia.account_name,
+			og.org_name,
+			data_decrypt(ia.account_num) as account_num,
+			idb.withholdings_amt,
+			idb.credit_loan_amt,
+			idb.mortgage_amt,
+			sum(ip.eval_amt) as eval_amt,
+			sum(ip.purchase_amt) as purchase_amt,
+			ia.is_tax_benefits,
+			to_date(ib.base_date, 'YYYYMMDD') as base_date,
+			ia.account_num as encrypt_an,
+			ip.currency_code
+		from tb_a_invest_accounts ia
+		inner join tb_a_invest_deposit_basic idb on ia.memb_cd=idb.memb_cd and ia.org_code=idb.org_code and ia.account_num=idb.account_num
+		inner join tb_a_invest_base ib on ib.memb_cd=ia.memb_cd and ib.org_code=ia.org_code and ia.account_num=ib.account_num
+		inner join tb_a_apis_orgs og on ia.org_code=og.org_code
+		inner join tb_a_invest_products ip on ip.memb_cd=ia.memb_cd and ip.org_code=ia.org_code and ip.account_num=ia.account_num
+		where ia.memb_cd=#{memb_cd} and ia.account_num=#{account_num} and ia.org_code=#{org_code}
+		group by ia.account_name, og.org_name, ia.account_num, idb.withholdings_amt, idb.credit_loan_amt, idb.mortgage_amt, ia.is_tax_benefits, ib.base_date, ip.currency_code
+	</select>
+	
+	<select id="findUserInvestAccountProductsList" resultType="com.bit.checkpayclone.invest.model.InvestAccountProductsListVo">
+		select 
+			ip.prod_name, og.org_name, 
+			data_decrypt(ia.account_num) as account_num, 
+			ip.holding_num, 
+			ip.eval_amt, 
+			ip.currency_code, 
+			ip.purchase_amt, 
+			ip.seq,
+			idb.withholdings_amt, 
+			ia.account_num as encrypt_an,
+			ip.prod_type
+		from tb_a_invest_accounts ia
+		inner join tb_a_invest_products ip on ia.memb_cd=ip.memb_cd and ia.org_code=ip.org_code and ia.account_num=ip.account_num
+		inner join tb_a_invest_deposit_basic idb on ia.memb_cd=idb.memb_cd and ia.org_code=idb.org_code and ia.account_num=idb.account_num
+		inner join tb_a_apis_orgs og on ia.org_code=og.org_code
+		where ia.memb_cd=#{memb_cd} and ia.account_num=#{account_num} and ia.org_code=#{org_code}
+	</select>
+	
+	<select id="findUserInvestAccountTransList" resultType="com.bit.checkpayclone.invest.model.InvestAccountTransVo">
+			select 
+				to_timestamp(it.trans_dtime,'YYYYMMDDHH24MIss') as trans_dtime,
+				it.trans_type_detail,
+				it.prod_name,
+				it.settle_amt,
+				it.trans_type,
+				it.base_amt,
+				it.trans_num,
+				it.prod_code,
+				it.currency_code
+			from tb_a_invest_accounts ia
+			inner join tb_a_invest_trans it on ia.memb_cd=it.memb_cd and ia.org_code=it.org_code and ia.account_num=it.account_num
+			where 
+				ia.memb_cd=#{memb_cd} and ia.account_num=#{account_num} and ia.org_code=#{org_code}
+			<if test='start_day == null or start_day.equals("") or end_day == null or end_day.equals("")'>
+				and it.trans_dtime like concat(to_char(now()::timestamp, 'YYYYMM'),'%') 
+			</if> 
+			<if test='start_day != null and !start_day.equals("") and end_day != null and !end_day.equals("")'>
+					and it.trans_dtime between concat(#{start_day},'%') and concat(#{end_day},'%') 
+			</if>
+			<if test='sort != null and sort.equals("desc")'>
+				order by it.trans_dtime desc
+			</if>
+			<if test='sort != null and sort.equals("asc")'>
+				order by it.trans_dtime asc
+			</if>
+	</select>
+</mapper>

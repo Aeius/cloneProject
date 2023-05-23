@@ -1,0 +1,469 @@
+﻿<!DOCTYPE html>
+<html lang="ko" class="leaf">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport"
+		content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+	<title>CheckPay</title>
+	<meta http-equiv="Cache-Control" content="No-Cache">
+	<meta http-equiv="Pragma" content="No-Cache">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<!--<meta name="title" content="">-->
+	<meta name="description" content="">
+	<!--<meta name="keywords" content="">-->
+	<!-- The Open Graph protocol -->
+	<meta property="og:type" content="website">
+	<meta property="og:title" content="">
+	<meta property="og:description" content="">
+	<meta property="og:url" content="">
+	<meta property="og:image" content=""><!-- [D]리얼경로로 변경하세요 -->
+	<!-- //The Open Graph protocol -->
+	<link rel="SHORTCUT ICON" href=""><!-- [D]리얼경로로 변경하세요 -->
+	<link rel="stylesheet" type="text/css" href="../../css/jquery-ui.min.css">
+	<link rel="stylesheet" type="text/css" href="../../css/reset.css">
+	<link rel="stylesheet" type="text/css" href="../../css/content.css">
+	<link rel="stylesheet" type="text/css" href="../../css/theme_checkpay.css">
+	<script type="text/javascript" src="../../js/jquery-1.8.3.min.js"></script>
+	<script type="text/javascript" src="../../js/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="../../js/jquery.ui.touch-punch.min.js"></script>
+	<script type="text/javascript" src="../../js/slide_slick.js"></script>
+	<script type="text/javascript" src="../../js/publishing.ui.library.1.0.0.js"></script>
+	<script type="text/javascript" src="../../js/cmd.js"></script>
+	<script type="text/javascript" src="../../js/common.js"></script>
+</head>
+
+<body>
+
+	<!-- wrap -->
+	<div class="wrap">
+
+		<!-- header -->
+		<div class="header">
+			<div class="header_inn">
+				<div class="left">
+					<a href="/main" class="btnBack"><span class="blind">Back</span></a>
+				</div>
+				<!--
+				<div class="right">
+					<a href="/main" class="btnClose"><span class="blind">close</span></a>
+				</div>
+				-->
+			</div>
+		</div>
+		<!-- //header -->
+
+		<!-- container -->
+		<div class="container">
+			<div class="content">
+
+				<div class="tBalance">
+					<h3 class="tBaltit">
+						총 투자 자산<a href="#layer1_short" class="btn_open_layer_pop btn_more_ask" role="button"><span
+								class="ico_ask type_gray"><em class="blind">더보기</em></span></a>
+					</h3>
+					<p class="tBalAmount"><em class="amount">0</em>원</p>
+					<!--<p class="invest plus"><em class="num">40,000,000</em>원 <em class="num">(+40.00%)</em></p>-->
+					<p class="invest minus"><em class="num">0</em>원 <em class="num"></em></p> <!-- // 수익이 마이너스 일때
+				<p class="invest"><em class="num">40,000,000</em>원 <em class="num">(0.00%)</em></p> // 수익이 0 일때 -->
+					<p class="tBalDetail">외화투자 0USD 미합산</p>
+					<!--<p class="update">마지막 업데이트 : 21.07.15 07:15</p>-->
+					<a href="/invest" class="btnRef"><span class="blind">새로고침</span></a>
+				</div>
+				<div class="asGroup">
+					<div class="tabs_wrap tabInter">
+						<div class="tabs_header type2">
+							<ul class="cboth">
+								<li class="js_tabclickDp1 on"><a href="#none" title="선택됨"><span>종목</span></a></li>
+								<li class="js_tabclickDp1"><a href="#none"><span>상품</span></a></li>
+								<li class="js_tabclickDp1"><a href="#none"><span>계좌</span></a></li>
+							</ul>
+						</div>
+						<div class="tabs_body_wrap">
+							<div class="tabs_body cboth">
+								<!-- 종목 -->
+								<div class="tab_cntDp1 stocks" style="display: block;">
+									<div class="listTit">
+										<h3>종목 <em class="pointColor">2</em></h3>
+									</div>
+									<div class="asList">
+										<!-- 종목 리스트 출력 위치 -->
+									</div>
+								</div>
+								<!--// 종목-->
+
+								<!-- 상품 -->
+								<div class="tab_cntDp1 product" style="display: none;">
+									<!-- 상품 리스트 출력 위치 -->
+								</div>
+								<!-- //상품 -->
+
+								<!-- 계좌 -->
+								<div class="tab_cntDp1 account" style="display: none;">
+									<!-- 계좌 리스트 출력 위치-->
+								</div>
+								<!-- //계좌 -->
+
+							</div>
+						</div>
+					</div>
+				</div>
+				<!--
+				<div class="btn_wrap">
+					<div class="btnGroup type2">
+						<p><a href="#none" class="btnBl1">증권 추가</a></p>
+					</div>
+				</div>
+				-->
+			</div>
+		</div>
+		<!-- //container -->
+
+	</div>
+	<!-- //wrap -->
+
+	<!-- [S] layer_popup type1 A타입 짧은문구, 총 투자 자산 -->
+	<div id="layer1_short" class="layer_popup type1 short"><!-- 2021-09-08 A타입 짧은문구, 클래스 'short' 추가 -->
+		<div class="layer_position">
+			<div class="layer_inner">
+				<div class="layer_tit">
+					<strong class="tit">총 투자 자산</strong>
+					<button type="button" class="js_pop_close btn_close"><span class="blind">닫기</span></button>
+				</div>
+				<div class="layer_cont">
+					<div class="msg_box">
+						마지막 업데이트 일시 기준 <br>총 투자 자산 합산액입니다.
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- [E] layer_popup type1 A타입 짧은문구, 총 투자 자산 -->
+
+	<script>
+		$(window).bind("pageshow", function(e){
+			// 로컬 스토리지 초기화
+			localStorage.removeItem('org_code');
+			localStorage.removeItem('account_num');
+			localStorage.removeItem('eval_amt');
+			localStorage.removeItem('account_name');
+			localStorage.removeItem('account_full');
+			localStorage.removeItem('total_amt');
+			localStorage.removeItem('prod_type');
+			localStorage.removeItem('return_rate');
+			localStorage.removeItem('diffrence');
+			localStorage.removeItem('stock_name');
+			localStorage.removeItem('profit');
+			localStorage.removeItem('seq');
+			localStorage.removeItem('total_balance');
+		});
+
+		$(document).ready(function () {
+			
+
+			//은행,카드,기타 선택 탭
+			$(".tabInter").tabs({
+				wrapClass: ".tabInter",
+				clickClass: ".js_tabclickDp1",
+				showClass: ".tab_cntDp1",
+				animate: false,
+				contentWidthFull: false,//effect when animate:true
+				animateBorder: ["false", ".tabs_header"],//show border in class .
+				fade: false,
+				speed: 500
+			});
+			// 종목 내역 출력
+			$('.js_tabclickDp1.on').trigger('click');
+
+		});
+		$(document).on('click', '.js_tabclickDp1.on', function () {
+			let sel_tab = $(this).find('a>span').text();
+			switch (sel_tab) {
+				case '종목':
+					let stock_temp = '';
+					ajax_invest_stock(member_id).done(function(response){
+						$('.stocks').find('.pointColor').text(response.length);
+						let eval_total = 0;
+						let diff_total = 0;
+						let foreign_total = new Map();
+						for(result of response){
+							stock_temp += '<div class="accItem">'
+										+ '	<a href="#none">'
+										+ '		<div class="im">'
+										+ '			<img src="../../img/invest/'+result.org_code+'.png" alt="">'
+										+ '		</div>'
+										+ '		<div class="tx">'
+										+ '			<p class="prdName">'
+										+ '				<span class="ellipsis">'+result.prod_name+'</span>'
+										+ '				<span class="detail"><em class="num">'+result.holding_num+'</em>주</span>'
+										+ '			</p>'
+										+ '			<p class="amount"><em>'+result.eval_amt.toLocaleString()+'</em>'+(result.currency_code != "KRW" ? result.currency_code : "원")+'</p>'
+							if(result.return_rate < 0){
+								stock_temp+= '		<p class="profit minus"><em class="num">'+result.difference.toLocaleString()+'</em>'+(result.currency_code != "KRW" ? result.currency_code : "원")+'<em class="num">('+result.return_rate.toFixed(2)+'%)</em></p>'
+							} else if (result.return_rate > 0){
+								stock_temp+= '		<p class="profit plus"><em class="num">'+result.difference.toLocaleString()+'</em>'+(result.currency_code != "KRW" ? result.currency_code : "원")+'<em class="num">('+result.return_rate.toFixed(2)+'%)</em></p>'
+							} else {
+								stock_temp+= '		<p class="profit zero"><em class="num">'+result.difference.toLocaleString()+'</em>'+(result.currency_code != "KRW" ? result.currency_code : "원")+'<em class="num">('+result.return_rate.toFixed(2)+'%)</em></p>'
+							}
+							stock_temp+= '		</div>'
+										+ '		<div class="seq" style="display:none;">'+result.seq+'</div>'
+										+ '		<div class="prod_type" style="display:none;">'+result.prod_type+'</div>'
+										+ '		<div class="account_num" style="display:none;">'+result.account_num+'</div>'
+										+ '		<div class="org_code" style="display:none;">'+result.org_code+'</div>'
+										+ '	</a>'
+										+ '</div>';
+							// 총 평가 금액 & 손익 금액
+							if(result.currency_code === "KRW"){
+								eval_total += result.eval_amt;
+								diff_total += result.difference;
+							// 외화 투자
+							} else {
+								if(foreign_total.has(result.currency_code)){
+									foreign_total.set(result.currency_code, foreign_total.get(result.currency_code) + result.eval_amt);
+								} else {
+									foreign_total.set(result.currency_code, result.eval_amt);
+								}
+							}
+						}
+						$('.stocks').find('.asList').html(stock_temp);
+						// 총 투자 자산 출력
+						$('.tBalAmount>.amount').text(eval_total.toLocaleString());
+						$('.invest').find('.num').eq(0).text(diff_total.toLocaleString());
+						$('.invest').find('.num').eq(1).text("(" + (((eval_total + diff_total) / eval_total) * 100).toFixed(2) + "%)");
+						if(diff_total < 0){
+							$('.invest').attr('class', 'invest minus');
+						} else if(diff_total > 0){
+							$('.invest').attr('class', 'invest plus');
+						} else {
+							$('.invest').attr('class', 'invest zero');
+						}
+						
+						// 외화 투자 미합산
+						let foreign_temp = "외화투자 "
+						foreign_total.forEach(function(val, key){
+							if(foreign_total.size != 1){
+								foreign_temp += val.toLocaleString() + key + "+";
+							} else {
+								foreign_temp += val.toLocaleString() + key;
+							}
+							foreign_total.delete(key);
+						})
+						foreign_temp += " 미합산";
+						$('.tBalDetail').text(foreign_temp);
+					})
+					break;
+
+				case '상품':
+					let prod_temp = '';
+					ajax_invest_prod(member_id).done(function(response){
+						let init_prod_type = response[0].prod_type;
+						prod_temp +='<div class="listTit">'
+									+ '	<h3>'+invest_products_type(response[0].prod_type)+' <em class="pointColor">1</em></h3>'
+									+ '</div>'
+									+ '<div class="asList">'
+						for(result of response){
+							if(init_prod_type != result.prod_type){
+								prod_temp += '</div>'
+											+'<div class="listTit">'
+											+ '	<h3>'+invest_products_type(result.prod_type)+' <em class="pointColor">1</em></h3>'
+											+ '</div>'
+											+ '<div class="asList">'
+								init_prod_type = result.prod_type;
+							}
+							prod_temp += '	<div class="accItem">'
+										+ '		<a href="#none">'
+										+ '			<div class="im">'
+										+ '				<i class="imStock"></i>'
+										+ '			</div>'
+										+ '			<div class="tx">'
+										+ '				<p class="prdName"><span class="ellipsis">'+invest_products_type(result.prod_type)+'</span></p>'
+										+ '				<p class="amount"><em>'+result.eval_amt.toLocaleString()+'</em>'+(result.currency_code != "KRW" ? result.currency_code : "원")+'</p>'
+										if(result.return_rate > 0){
+											prod_temp += '<p class="profit plus"><em class="num">'+result.difference.toLocaleString() +'</em>'+ (result.currency_code != "KRW" ? result.currency_code : "원")+' (+<em class="num">'+result.return_rate.toFixed(2)+'</em>%)</p>'
+										} else if (result.return_rate < 0) {
+											prod_temp += '<p class="profit minus"><em class="num">'+result.difference.toLocaleString() +'</em>'+ (result.currency_code != "KRW" ? result.currency_code : "원")+' (<em class="num">'+result.return_rate.toFixed(2)+'</em>%)</p>'
+										} else {
+											prod_temp += '<p class="profit zero"><em class="num">'+result.difference.toLocaleString() +'</em>'+ (result.currency_code != "KRW" ? result.currency_code : "원")+' (<em class="num">'+result.return_rate+'</em>%)</p>'
+										}
+							prod_temp += '			</div>'
+										+ '			<div class="prod_type" style="display: none;">'+result.prod_type+'</div>'
+										+ '		</a>'
+										+ '	</div>'
+						}
+						prod_temp += '</div>'
+						$('.product').html(prod_temp);					
+					})
+					break;
+
+				case '계좌':
+					let acc_temp = '';
+					ajax_invest_acc(member_id).done(function(response){
+						acc_temp +='<div class="listTit">'
+									 +'	<h3>계좌 <em class="pointColor acc">'+response.length+'</em></h3>'
+									 +'</div>'
+									 +'<div class="asList">'
+						for(result of response){
+							acc_temp += '<div class="accItem">'
+								+'	<a href="#none">'
+								+'		<div class="im">'
+								+'			<img src="../../img/invest/'+result.org_code+'.png" alt="">'
+								+'		</div>'
+								+'		<div class="tx">'
+								+'			<p class="prdName">'
+								+'				<span class="ellipsis">'+result.account_name+'</span>'
+								+'			</p>'
+								+'			<p class="amount"><em>'+result.eval_amt.toLocaleString()+'</em>'+(result.currency_code === "KRW" ? '원' : result.currency_code )+'</p>'
+								+'			<p class="deposit">예수금 <em class="num">'+result.withholdings_amt.toLocaleString()+' </em>'+(result.currency_code === "KRW" ? '원' : result.currency_code )+'</p>'
+								+'		</div>'
+								+ '      <div class="org_code" style="display: none;">' + result.org_code + '</div>'
+								+ '      <div class="account_num" style="display: none;">' + result.account_num + '</div>'
+								+'	</a>'
+								+'</div>'
+						}
+						acc_temp += '</div>'
+						// IRP 계좌 리스트
+						ajax_irp_acc(member_id).done(function (response) {
+							acc_temp +='<div class="listTit">'
+									 +'	<h3>IRP <em class="pointColor irp">'+response.length+'</em></h3>'
+									 +'</div>'
+									 +'<div class="asList">'
+							$('.account').find('.pointColor').text(response.length);
+							for (result of response) {
+								acc_temp += '<div class="accItem">'
+									+ '	<a href="#none">'
+									+ '		<div class="im">'
+									+ '			<img src="../../img/invest/'+result.org_code+'.png" alt="bnk">'
+									+ '		</div>'
+									+ '		<div class="tx">'
+									+ '			<p class="prdName">'
+									+ '				<span class="ellipsis">' + result.prod_name + '</span>'
+									+ '			</p>'
+									+ '			<p class="amount"><em>' + result.eval_amt.toLocaleString() + '</em>원</p>'
+									+ '		</div>'
+									+ '      <div class="org_code" style="display: none;">' + result.org_code + '</div>'
+									+ '      <div class="account_num" style="display: none;">' + result.account_num + '</div>'
+									+ '	</a>'
+									+ ' </div>'
+							}
+							acc_temp += '</div>'
+							$('.account').html(acc_temp);
+						})
+					})
+					break;
+			}
+
+		})
+		// 메인으로 가기
+		$(document).on('click', '.btnBack', function () {
+			//location.href = "/main"
+		})
+		// [S] 종목 클릭 시 -> D1300 | D1303
+		$(document).on('click', '.stocks>.asList>.accItem>a', function (e) {
+			e.preventDefault();
+			localStorage.setItem('stock_name', $(this).find('.ellipsis').text());
+			localStorage.setItem('org_code', $(this).find('.org_code').text());
+			localStorage.setItem('account_num', $(this).find('.account_num').text());
+			localStorage.setItem('profit', $(this).find('.profit').text());
+			localStorage.setItem('prod_type', $(this).find('.prod_type').text());
+			localStorage.setItem('seq', $(this).find('.seq').text());
+			location.href="/invest/stock"
+		})
+		// [E] 종목 클릭 시 
+		// [S] 상품 클릭 시 -> D1200
+		$(document).on('click', '.product>.asList>.accItem>a', function (e) {
+			e.preventDefault();
+			localStorage.setItem('prod_type', $(this).find('.prod_type').text());
+			localStorage.setItem('total_amt', $(this).find('.amount>em').text());
+			localStorage.setItem('diffrence', $(this).find('.profit>.num').eq(0).text());
+			localStorage.setItem('return_rate', $(this).find('.profit>.num').eq(1).text());
+			location.href = "/invest/product"
+		})
+		// [E] 상품 클릭 시
+		// [S] 계좌 클릭 시 -> D1100 | D1103
+		$(document).on('click', '.account>.asList>.accItem>a', function (e) {
+			e.preventDefault();
+			// 증권 계좌
+			if ($(this).find('.deposit').text()) {
+				localStorage.setItem('org_code', $(this).find('.org_code').text());
+				localStorage.setItem('account_num', $(this).find('.account_num').text());
+				location.href = "/invest/account"
+			// IRP 계좌
+			} else {
+				localStorage.setItem('org_code', $(this).find('.org_code').text());
+				localStorage.setItem('account_num', $(this).find('.account_num').text());
+				location.href = "/invest/irp/account"
+			}
+		})
+		// [E] 계좌 클릭 시
+		
+		// [S] ajax 함수 리스트
+		let member_id = parseJwt(getCookie("jwt")).sub;
+		// IRP 계좌 리스트
+		function ajax_irp_acc(member_id) {
+			return $.ajax({
+				url: "http://192.168.240.208:8081/api/irp/account/list/" + member_id + "/i",
+				type: "GET",
+				contentType: "application/json",
+				dataType: "json",
+				headers: {
+					"Authorization": "Bearer " + getCookie("jwt")
+				},
+				error: async function(jqXHR) {
+					await userErrorHandler(jqXHR);
+					ajax_irp_acc(member_id);
+				}
+			});
+		}
+		// 증권 계좌 리스트 조회
+		function ajax_invest_acc(member_id){
+			return $.ajax({
+				url: "http://192.168.240.208:8081/api/invest/account/list/" + member_id,
+				type: "GET",
+				contentType: "application/json",
+				dataType: "json",
+				headers: {
+					"Authorization": "Bearer " + getCookie("jwt")
+				},
+				error: async function(jqXHR) {
+					await userErrorHandler(jqXHR);
+					ajax_invest_acc(member_id);
+				}
+			})
+		}
+		// 증권 상품 리스트 조회
+		function ajax_invest_prod(member_id){
+			return $.ajax({
+				url: "http://192.168.240.208:8081/api/invest/product/list/" + member_id + "/",
+				type: "GET",
+				contentType: "application/json",
+				dataType: "json",
+				headers: {
+					"Authorization": "Bearer " + getCookie("jwt")
+				},
+				error: async function(jqXHR) {
+					await userErrorHandler(jqXHR);
+					ajax_invest_prod(member_id);
+				}
+			})
+		}
+		// 증권 종목 리스트 조회
+		function ajax_invest_stock(member_id){
+			return $.ajax({
+				url: "http://192.168.240.208:8081/api/invest/stock/list/" + member_id,
+				type: "GET",
+				contentType: "application/json",
+				dataType: "json",
+				headers: {
+					"Authorization": "Bearer " + getCookie("jwt")
+				},
+				error: async function(jqXHR) {
+					await userErrorHandler(jqXHR);
+					ajax_invest_prod(member_id);
+				}
+			})
+		}
+	// [E] ajax 함수 리스트
+	</script>
+</body>
+
+</html>

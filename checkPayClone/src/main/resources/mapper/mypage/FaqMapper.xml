@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bit.checkpayclone.mypage.model.MypageMapper">
+
+	<select id="findMypageAll" resultType="com.bit.checkpayclone.mypage.model.FaqVo"> 
+			select num, seq, title, cntns, catg_cd, ord_seq
+		    FROM (SELECT ROW_NUMBER() OVER (PARTITION BY title, catg_cd ORDER BY catg_cd) AS NUM, * 
+		    FROM tb_notice) a
+			WHERE num = 1
+			and seq not in ('136', '127', '140', '133', '139' , '86', '123', '131', '84')
+				and catg_cd != ''
+				and catg_cd != '05'
+			order by catg_cd asc, ord_seq asc
+	</select>
+	
+		<select id="findTerms" resultType="com.bit.checkpayclone.mypage.model.TermsVo"> 
+			select org_cd, cls_cd, rgsn_dt, terms_cnts, terms_title
+			from tb_terms
+			where (cls_cd, rgsn_dt)
+				in (select cls_cd, max(rgsn_dt) as rgsn_dt
+				from tb_terms
+				group by cls_cd
+				)
+			and org_cd = 'T0000002'
+			order by cls_cd
+	</select>
+</mapper>

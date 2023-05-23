@@ -1,0 +1,142 @@
+﻿<!-- [S] 내역 -->
+<!-- <div class="tab_cntDp1" style="display: none;"> -->
+
+<!-- [S] 월 선택 -->
+<div class="calendar_form">
+	<div class="sel_form type_month">
+		<a href="#layer_N001_select_m" class="btn_open_bottom_sheet sel_box" role="button" title="월 선택"><span></span></a>
+	</div>
+	<div class="sel_form type_cate"><!-- 월선택 후 색상 진하게 변경, 클래스 'on' 추가-->
+		<a href="#layer_N001_select_m_sort" class="btn_open_bottom_sheet sel_box history" role="button"
+			title="정렬기준 선택"><span>최신순</span></a>
+	</div>
+</div>
+<!-- [E] 월 선택 -->
+
+<div class="cal_acc_history">
+	<p class="acc_history_num">총<span class="num">6</span>건</p>
+	<div class="accHistory type_layer">
+		<div class="historyList">
+			<!-- 내역 출력 위치 -->
+		</div>
+	</div>
+</div>
+<!-- </div> -->
+<!-- // [E] 내역 -->
+
+<script>
+
+	// [S] 내역 - 모든 내역 호출
+	function show_all_history(member_id, sel_year, sel_month, sel_sort) {
+		ajax_calender_list(member_id, sel_year, sel_month, sel_sort).done(function (response) {
+			// 총 조회건 수
+			$('.acc_history_num').find('.num').text(response.length);
+
+			// 지출 데이터가 없을 경우
+			if (response.length === 0) {
+				let temp = '<div class="msgResult">'
+					+ '<p>불러올 내용이 없습니다</p>'
+					+ '</div>';
+				$('#history').find('.historyList').html(temp);
+				return;
+			};
+
+			let now_date = month_date_dot(new Date(response[0].approved_dtime));
+			let dayOfWeek = toKor_dayOfWeek(new Date(response[0].approved_dtime).getDay());
+			let temp = '<span class="date"><span class="num">' + now_date + '</span> ' + dayOfWeek + '</span>'
+				+ '<ul class="info">'
+
+			for (result of response) {
+				// 날짜 출력 - 00.00 0요일
+				let result_date = month_date_dot(new Date(result.approved_dtime));
+				if (now_date != result_date) {
+					now_date = result_date;
+					dayOfWeek = toKor_dayOfWeek(new Date(result.approved_dtime).getDay());
+					temp += '</ul>'
+						+ '</div>'
+						+ '<div class="wrap_date">'
+						+ '<span class="date"><span class="num">' + result_date + '</span> ' + dayOfWeek + '</span>'
+						+ '<ul class="info">'
+				}
+				if (result.merchant_name == null) {
+					// 계좌 내역 인 경우
+					temp += '<li>'
+						+ '<a href="#layer_N1001_1_1_1" class="btn_open_bottom_sheet history_account_history" role="button">'
+						+ '<div class="left">'
+						+ '<span class="category">(' + trans_type(result.trans_type) + ')' + result.trans_memo + '</span>'
+						+ '<span class="balance">' + result.org_name + ' ' + result.prod_name + '</span>'
+						+ '</div>'
+						+ '<div class="right">'
+					if(trans_type(result.trans_type).includes('출금')){
+						temp += '<span class="amount">-<em class="num" ">' + result.trans_amt.toLocaleString() + '</em>원</span>'
+					} else {
+						temp += '<span class="amount"><em class="num">' + result.trans_amt.toLocaleString() + '</em>원</span>'
+					}
+					temp += '</div>'
+						+ '<div style="display: none;" class="account_num">' + result.account_num + '</div>'
+						+ '<div style="display: none;" class="balance_amt">' + result.balance_amt.toLocaleString() + '</div>'
+						+ '<div style="display: none;" class="trans_dtime">' + result.approved_dtime + '</div>'
+						+ '</a>'
+						+ '</li>'
+				} else {
+					// 카드 내역 일 경우
+					temp += '<li>'
+						+ '<a href="#layer_N1001_2_1_1" class="btn_open_bottom_sheet history_card_history" role="button">'
+						+ '<div class="left">'
+						+ '<span class="category">' + result.merchant_name + '</span>'
+						+ '<span class="balance">' + result.card_name + '|' + result.catg_nm + '</span>'
+						+ '</div>'
+						+ '<div class="right">'
+						+ '<span class="amount"><em class="num">' + result.approved_amt.toLocaleString() + '</em>원</span>'
+						+ '</div>'
+						+ '	<div style="display: none;" class="installments">' + result.total_install_cnt + '</div>'
+						+ '	<div style="display: none;" class="approved_dtime">' + result.approved_dtime + '</div>'
+						+ '	<div style="display: none;" class="approved_num">' + result.approved_num + '</div>'
+						+ '	<div style="display: none;" class="modified_amt">' + result.modified_amt + '</div>'
+						+ '	<div style="display: none;" class="card_id">' + result.card_id + '</div>'
+						+ '	<div style="display: none;" class="org_code">' + result.org_code + '</div>'
+						+ '	<div style="display: none;" class="appr_status">' + result.status + '</div>'
+						+ '	<div style="display: none;" class="appr_seq">' + result.seq + '</div>'
+						+ '</a>'
+						+ '</li>'
+				}
+			}
+			$('#history').find('.historyList').html(temp);
+
+		});
+	}
+	// [E] 내역 - 모든 내역 호출
+
+	// [S] 내역 - 계좌 상세 내역
+	$(document).on('click', '.btn_open_bottom_sheet.history_account_history', function () {
+		let account_name = $(this).find('.balance').text();
+		let trans_type = $(this).find('.category').text();
+		let amount = $(this).find('.amount>.num').text();
+		let account_num = $(this).find('.account_num').text();
+		let balance_amt = $(this).find('.balance_amt').text();
+		let date = new Date($(this).find('.trans_dtime').text());
+
+		print_account_detail(account_name, trans_type, amount, account_num, balance_amt, date);
+	});
+	// [E] 내역 - 계좌 상세 내역
+
+	// [S] 내역 - 카드 상세 내역
+	$(document).on('click', '.btn_open_bottom_sheet.history_card_history', function () {
+		let card_name = $(this).find('.balance').text().split("|")[0];
+		let catg_nm = $(this).find('.balance').text().split("|")[1];
+		let approved_dtime = $(this).find('.approved_dtime').text();
+		let approved_num = $(this).find('.approved_num').text();
+		let approved_amt = $(this).find('.amount>.num').text();
+		let modified_amt = $(this).find('.modified_amt').text();
+		let merchant_name = $(this).find('.category').text();
+		let installments = $(this).find('.installments').text();
+		let card_id = $(this).find('.card_id').text();
+		let org_code = $(this).find('.org_code').text();
+		let appr_status = $(this).find('.appr_status').text();
+		let appr_seq = $(this).find('.appr_seq').text();
+
+		print_card_detail(card_name, catg_nm, approved_amt, merchant_name, installments, approved_dtime, approved_num, modified_amt, card_id, org_code, appr_status, appr_seq);
+	});
+	// [E] 내역 - 카드 상세 내역
+
+</script>

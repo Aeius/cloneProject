@@ -1,0 +1,163 @@
+﻿<div class="historyList">
+	<span class="date"><span class="num"></span> </span>
+	<ul>
+		<li>
+			<a href="#layer_B1120" class="link btn_open_bottom_sheet" role="button"><!-- 2021-12-23 개별 거래내역 버튼, 바텀시트 오픈 추가 -->
+				<div class="left">
+					<span class="category"></span>
+					<span class="time"></span>
+				</div>
+				<div class="right">
+					<span class="amount"><em class="num"></em></span>
+					<span class="balance"></span>
+				</div>
+			</a>
+		</li>
+	</ul>
+	<div class="upLoading circleBar">
+		<div class="loader"></div>
+		<p>업데이트 중입니다</p>
+	</div>
+</div>
+<div class="btnMore" id="more2">
+	<a class="btn" id="default2"></a>
+	<a class="btn" id="filter2"></a>
+</div>
+							
+<!-- //wrap -->
+<script>
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	///																															 ///
+	///			   									* 기본 디폴트 api 호출 (offset = 0) *										  ///
+	///																															 ///
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	var msg = '';
+	let arr2 = '';
+	let offset = 0;
+	let isEnd2 = false;
+
+	// api 호출 성공 후 함수
+	function success_ajax2(data){
+		arr = '';
+		offset = 0;
+		let isData=false;
+		if (data.length == 0) {
+			arr += '<p class="listNone">불러올 내역이 없습니다.</p>';
+			$('#il').find('.historyList').html(arr);
+			isEnd2 = true;
+			$('#more2').hide();
+			return;
+		} 
+		else if(data.length == 10 ){
+			arr2 ='내역 더보기';
+			$('#default2').text(arr2);
+			$('#filter2').text(arr2);
+		} else {
+			$('#more2').hide();
+		}
+		let today = new Date(data[0].approved_dtime);
+		msg = month_date_dot(today);
+		let nowDay = today.getDay();
+		let nowWeek = " " + toKor_dayOfWeek(nowDay);
+		arr += '<span class="date"><span class="num">' + msg + '</span> '+ nowWeek + '</span>';
+		arr += '<ul>';
+			
+		$(data).each(function (index, item) {
+			payinfo_ajax_arr(item);
+		});
+		if(isData==true){	// 데이터가 있었다면 ul 닫아주기
+			arr +='</ul>';
+		}
+		$('#il').find('.historyList').html(arr);
+	}
+
+	function payInfoIl(member_id, year, month, offset) {
+		payInfoIl_ajax(member_id, year, month, offset).done(function(data){
+			success_ajax2(data);
+		});
+	}
+
+	function payInfoIlFilter(startDate, endDate, sort, keywords, offset){
+		payInfoIlFilter_ajax(startDate, endDate, sort, keywords, offset).done(function(data){
+			success_ajax2(data);
+		});
+	}
+
+	function payInfoIlStateFilter(state, startDate, endDate, sort, keywords, offset){
+		payInfoIlStateFilter_ajax(state, startDate, endDate, sort, keywords, offset).done(function(data){
+			success_ajax2(data);
+		});
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	///																															 ///
+	///			   									* 10개씩 불러오기 api 호출 (offset+= 10) *									  ///
+	///																															 ///
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	// api 호출 성공 후 함수 (page 처리 offset += 10)
+	function success_ajax2_page(data) {
+		arr = '';
+		let isData=false;
+		if (data.length == 0) {
+			isEnd2 = true;
+			$('#more2').hide();
+			return;
+		} 
+		else if(data.length == 10 ){
+			arr2 ='내역 더보기';
+			$('#default2').text(arr2);
+			$('#filter2').text(arr2);
+		} else {
+			$('#more2').hide();
+		}
+
+		$(data).each(function (index, item) {
+			isData=true;
+			payinfo_ajax_arr(item);		
+		});
+		if(isData==true){	// 데이터가 있었다면 ul 닫아주기
+			arr +='</ul>';
+		}
+		$('#il').find('.historyList').append(arr);
+	}
+
+	function payInfoIl_page(member_id, year, month, offset) {
+		if(isEnd2 == true) return;
+		payInfoIl_ajax(member_id, year, month, offset).done(function(data){
+			success_ajax2_page(data);
+		});
+	}
+
+	function payInfoIlFilter_page(startDate, endDate, sort, keywords, offset) {		
+		if(isEnd2 == true) return;
+		payInfoIlFilter_ajax(startDate, endDate, sort, keywords, offset).done(function(data){
+			success_ajax2_page(data);
+		});
+	}
+
+	function payInfoIlStateFilter_page(state, startDate, endDate, sort, keywords, offset) {
+		if(isEnd2 == true) return;
+		payInfoIlStateFilter_ajax(state, startDate, endDate, sort, keywords, offset).done(function(data){
+			success_ajax2_page(data);
+		});
+	}
+
+	$('#default2').click(function(){
+		offset += 10;
+		payInfoIl_page(member_id, year, month, offset);
+	});
+
+	$('#filter2').click(function(){
+		offset += 10;
+		if(state == 'all'){
+			payInfoIlFilter_page(replcae_startDate, replcae_endDate, sort, keywords, offset);	
+		} else {
+			payInfoIlStateFilter_page(state, replcae_startDate, replcae_endDate, sort, keywords, offset);			
+		}
+	});
+
+</script>
+</body>
+</html>

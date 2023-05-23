@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bit.checkpayclone.card.model.CardMapper">
+
+	<select id="findUserCard" resultType="com.bit.checkpayclone.card.model.CardVo">
+		select
+			c.memb_cd ,c.card_name, c.org_code , c.card_type, c.card_num, coalesce(sum(coalesce(nullif(b.modified_amt,0) ,b.approved_amt )),0) as sum , c.card_id ,coalesce(nullif(a.img_uri,''),'N') as img_uri   
+		from 
+			tb_a_card_member cm
+	    left join tb_a_card c ON cm.memb_cd = c.memb_cd AND cm.card_id = c.card_id
+	    left join tb_a_card_appr_domestic b ON c.memb_cd = b.memb_cd 
+	    and c.card_id = b.card_id 
+	    and TO_CHAR(b.approved_dt::timestamp,'YYYYMM') = TO_CHAR(now(), 'YYYYMM')
+	    inner join tb_a_card_images a on a.card_name = c.card_name
+			where
+				c.memb_cd = #{id} 
+			group by c.memb_cd ,c.card_name, c.org_code , c.card_type, c.card_num  , c.card_id  ,a.img_uri
+	</select>
+	
+	<select id="findUserCardName" resultType="com.bit.checkpayclone.card.model.CardVo">
+		select
+			c.memb_cd ,c.card_name, c.org_code , c.card_type, c.card_num, coalesce(sum(coalesce(nullif(b.modified_amt,0) ,b.approved_amt )),0) as sum , c.card_id ,coalesce(nullif(a.img_uri,''),'N') as img_uri   
+		from 
+			tb_a_card_member cm
+	    left join tb_a_card c ON cm.memb_cd = c.memb_cd AND cm.card_id = c.card_id
+	    left join tb_a_card_appr_domestic b ON c.memb_cd = b.memb_cd 
+	    and c.card_id = b.card_id 
+	    and TO_CHAR(b.approved_dt::timestamp,'YYYYMM') = TO_CHAR(now(), 'YYYYMM')
+	    inner join tb_a_card_images a on a.card_name = c.card_name
+			where
+				c.memb_cd = #{id} and c.card_id = #{card_id}
+			group by c.memb_cd ,c.card_name, c.org_code , c.card_type, c.card_num  , c.card_id  ,a.img_uri
+ 
+	</select>
+	
+	<select id="findLoanLongCard" resultType="com.bit.checkpayclone.card.model.CardLoneLongVo">
+		select memb_cd,org_code,int_rate,loan_amt,balance_amt,int_amt,loan_name,coalesce(nullif(loan_type,''),'N') as loan_type,repay_method,reg_dttm,exp_date	
+		from tb_a_card_loan_long
+		where memb_cd = #{id}
+	</select>
+
+	<select id="findLoanShortCard" resultType="com.bit.checkpayclone.card.model.CardLoneShortVo">
+		select memb_cd, a.org_code, loan_dtime, pay_due_date, reg_dttm,loan_amt, balance_amt,int_rate, b.descrption 
+		from tb_a_card_loan_short a
+			inner join tb_a_scap_to_card_org b on b.org_code = a.org_code
+		where memb_cd = #{id};
+	</select>
+	
+	<select id="findUserCardPoint" resultType="com.bit.checkpayclone.card.model.CardPointVo">
+		<![CDATA[
+		select 
+		case
+		when char_length(og.org_name)<=9 then concat(substring(org_name, position('드' in org_name)-3,position('드' in org_name)))
+		end as org_name,
+		point_name,
+		remain_point_amt,
+		expiring_point_amt,
+		tacp.reg_dttm
+		from tb_a_card_point tacp 
+		inner join tb_a_apis_orgs og on tacp.org_code=og.org_code
+		where memb_cd = #{id} and og.org_code=#{org_code};
+		]]>
+	</select>
+	
+	<select id="findUserCardRevolvig" resultType="com.bit.checkpayclone.card.model.CardRevolvigVo">
+		<![CDATA[
+		select 
+		case
+		when char_length(og.org_name)<=9 then concat(substring(org_name, position('드' in org_name)-3,position('드' in org_name)))
+		end as org_name,
+		to_timestamp(req_date,'YYYYMMDD')::timestamp as req_date,
+		min_pay_rate,
+		min_pay_amt,
+		agreed_pay_rate,
+		agreed_pay_amt,
+		remained_amt,
+		is_revolving
+		from tb_a_card_pay_revolvig_list tacprl 
+		inner join tb_a_apis_orgs og on tacprl.org_code=og.org_code
+		inner join tb_a_card_payment tacp on tacp.org_code = og.org_code and tacp.memb_cd = tacprl.memb_cd and is_revolving='Y'
+		where tacprl.memb_cd=#{id} and og.org_code=#{org_code};
+		]]>
+	</select>
+</mapper>

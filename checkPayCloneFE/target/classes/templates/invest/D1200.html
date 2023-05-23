@@ -1,0 +1,189 @@
+﻿<!DOCTYPE html>
+<html lang="ko" class="leaf">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>CheckPay</title>
+<meta http-equiv="Cache-Control" content="No-Cache">
+<meta http-equiv="Pragma" content="No-Cache">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<!--<meta name="title" content="">-->
+<meta name="description" content="">
+<!--<meta name="keywords" content="">-->
+<!-- The Open Graph protocol -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="">
+<meta property="og:description" content="">
+<meta property="og:url" content="">
+<meta property="og:image" content=""><!-- [D]리얼경로로 변경하세요 -->
+<!-- //The Open Graph protocol -->
+<link rel="SHORTCUT ICON" href=""><!-- [D]리얼경로로 변경하세요 -->
+<link rel="stylesheet" type="text/css" href="../../css/jquery-ui.min.css">
+<link rel="stylesheet" type="text/css" href="../../css/reset.css">
+<link rel="stylesheet" type="text/css" href="../../css/content.css">
+<link rel="stylesheet" type="text/css" href="../../css/theme_checkpay.css">
+<script type="text/javascript" src="../../js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="../../js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="../../js/jquery.ui.touch-punch.min.js"></script>
+<script type="text/javascript" src="../../js/slide_slick.js"></script>
+<script type="text/javascript" src="../../js/publishing.ui.library.1.0.0.js"></script>
+<script type="text/javascript" src="../../js/cmd.js"></script>
+<script type="text/javascript" src="../../js/common.js"></script>
+</head>
+
+<body>
+
+<!-- wrap -->
+<div class="wrap">
+
+	<!-- header -->
+	<div class="header">
+		<div class="header_inn">
+			<div class="left">
+				<a href="#none" class="btnBack"><span class="blind">Back</span></a>
+			</div>
+			<!--
+			<div class="right">
+                <a href="/invest" class="btnClose"><span class="blind">close</span></a>
+			</div>
+			-->
+		</div>
+	</div>
+	<!-- //header -->
+
+	<!-- container -->
+	<div class="container">
+		<div class="content">
+
+			<div class="tBalance">
+				<h3 class="tBaltit">총 평가 금액</h3>
+				<p class="tBalAmount"><em class="amount">0</em><em>원</em></p>
+				<p class="invest plus"><em class="num">0</em><em>원</em> <em class="num">(0%)</em></p>
+				<p class="tBalDetail"></p>
+				<a href="#" class="btnRef"><span class="blind">새로고침</span></a>
+			</div>
+			<div class="asGroup">
+				<div class="asList">
+					<!-- 종목 출력 리스트 -->
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- //container -->
+
+</div>
+<!-- //wrap -->
+<script>
+	$(document).ready(function(){
+		//은행,카드,기타 선택 탭
+		$(".tabInter").tabs({
+			wrapClass:".tabInter",
+			clickClass:".js_tabclickDp1",
+			showClass:".tab_cntDp1",
+			animate:false,
+			contentWidthFull:false,//effect when animate:true
+			animateBorder:["false",".tabs_header"],//show border in class .
+			fade:false,
+			speed:500
+		});
+
+		// 순서대로 접근하지 않았을 경우
+		if(localStorage.getItem('prod_type') === null){
+			location.href = "/invest"
+		}
+		
+		// 총 투자 자산
+		$('.tBalAmount>.amount').text(localStorage.getItem('total_amt'));
+		
+		// 손익 금액
+		$('.invest>.num').eq(0).text(localStorage.getItem('diffrence'));
+		// 손익률
+		if(localStorage.getItem('return_rate') < 0){
+			$('.invest').attr('class', 'invest minus');
+			$('.invest>.num').eq(1).text('('+localStorage.getItem('return_rate')+'%)');
+		} else if (localStorage.getItem('return_rate') > 0){
+			$('.invest').attr('class', 'invest plus');
+			$('.invest>.num').eq(1).text('(+'+localStorage.getItem('return_rate')+'%)');
+		} else {
+			$('.invest').attr('class', 'invest zero');
+			$('.invest>.num').eq(1).text('('+localStorage.getItem('return_rate')+'%)');
+		}
+		
+		
+		
+		let memb_cd = parseJwt(getCookie("jwt")).sub;
+		let prod_type = localStorage.getItem('prod_type');
+		ajax_invest_product_list(memb_cd, prod_type).done(function(response){
+			// 통화 표시
+			$('.tBalAmount>em').eq(1).text((response[0].currency_code != "KRW" ? response[0].currency_code : "원"));
+			$('.invest>em').eq(1).text((response[0].currency_code != "KRW" ? response[0].currency_code : "원"));
+			let temp = '';
+			for(result of response){
+				temp+='<div class="accItem">'
+					+'	<a href="#none">'
+					+'		<div class="im">'
+					+'			<img src="../../img/invest/'+result.org_code+'.png" alt="bnk">'
+					+'		</div>'
+					+'		<div class="tx">'
+					+'			<p class="prdName">'
+					+'				<span class="ellipsis">'+result.prod_name+'</span>'
+					+ '				<span class="detail"><em class="num">'+result.holding_num+'</em>주</span>'
+					+'			</p>'
+					+'			<p class="amount"><em>'+result.eval_amt.toLocaleString()+'</em>'+(result.currency_code != "KRW" ? result.currency_code : "원")+'</p>'
+				if(result.return_rate > 0){
+					temp += '	<p class="profit plus"><em class="num">'+result.difference.toLocaleString()+'</em>'+(result.currency_code != "KRW" ? result.currency_code : "원")+'<em class="num">(+'+result.return_rate.toFixed(2)+'%)</em></p>'
+				} else if(result.return_rate < 0){
+					temp += '	<p class="profit minus"><em class="num">'+result.difference.toLocaleString()+'</em>'+(result.currency_code != "KRW" ? result.currency_code : "원")+'<em class="num">('+result.return_rate.toFixed(2)+'%)</em></p>'
+				} else {
+					temp += '	<p class="profit zero"><em class="num">'+result.difference.toLocaleString()+'</em>'+(result.currency_code != "KRW" ? result.currency_code : "원")+'<em class="num">('+result.return_rate.toFixed(2)+'%)</em></p>'
+				}
+				temp+='		</div>'
+					+'		<div class="org_code" style="display:none;">'+result.org_code+'</div>'
+					+'		<div class="account_num" style="display:none;">'+result.account_num+'</div>'
+					+'		<div class="seq" style="display:none;">'+result.seq+'</div>'
+					+'	</a>'
+					+'</div>'
+			}
+			$('.asList').html(temp);
+		})
+		
+	});
+	// 뒤로가기
+	$(document).on('click', '.btnBack', function(){
+		history.back();
+	})
+	// [S] 투자 종목 클릭 시 -> D1300
+	$(document).on('click', '.accItem>a', function(e){
+		e.preventDefault();
+		localStorage.setItem('stock_name', $(this).find('.ellipsis').text());
+		localStorage.setItem('org_code', $(this).find('.org_code').text());
+		localStorage.setItem('account_num', $(this).find('.account_num').text());
+		localStorage.setItem('profit', $(this).find('.profit').text());
+		localStorage.setItem('seq', $(this).find('.seq').text());
+		location.href="/invest/stock"
+	})
+	// [E] 투자 종목 클릭 시
+	// ajax 함수 리스트
+	function ajax_invest_product_list(member_id, prod_type) {
+		return $.ajax({
+			url: 'http://192.168.240.208:8081/api/invest/product/list/'+ member_id + "/" + prod_type,
+			type: "GET",
+			contentType: "application/json",
+			dataType: "json",
+			headers: {
+				"Authorization": "Bearer " + getCookie("jwt")
+			},
+			error: function (jqXHR) {
+				if (jqXHR.status == 401) {
+					tokenCall2(false).done(function () {
+						ajax_invest_product_list(values);
+					});
+				}
+			}
+		})
+		
+	}
+	// ajax 함수 리스트
+</script>
+</body>
+</html>

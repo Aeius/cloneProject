@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="ko" class="leaf">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport"
+		content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+	<title>CheckPay</title>
+	<meta http-equiv="Cache-Control" content="No-Cache">
+	<meta http-equiv="Pragma" content="No-Cache">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<!--<meta name="title" content="">-->
+	<meta name="description" content="">
+	<!--<meta name="keywords" content="">-->
+	<!-- The Open Graph protocol -->
+	<meta property="og:type" content="website">
+	<meta property="og:title" content="">
+	<meta property="og:description" content="">
+	<meta property="og:url" content="">
+	<meta property="og:image" content=""><!-- [D]리얼경로로 변경하세요 -->
+	<!-- //The Open Graph protocol -->
+	<link rel="SHORTCUT ICON" href=""><!-- [D]리얼경로로 변경하세요 -->
+	<link rel="stylesheet" type="text/css" href="../css/jquery-ui.min.css">
+	<link rel="stylesheet" type="text/css" href="../css/reset.css">
+	<link rel="stylesheet" type="text/css" href="../css/content.css">
+	<link rel="stylesheet" type="text/css" href="../css/theme_checkpay.css">
+	<script type="text/javascript" src="../js/jquery-1.8.3.min.js"></script>
+	<script type="text/javascript" src="../js/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="../js/jquery.ui.touch-punch.min.js"></script>
+	<script type="text/javascript" src="../js/slide_slick.js"></script>
+	<script type="text/javascript" src="../js/publishing.ui.library.1.0.0.js"></script>
+	<script type="text/javascript" src="../js/cmd.js"></script>
+	<script type="text/javascript" src="../js/common.js"></script>
+	<script type="text/javascript" src="../../js/crypto-js.min.js" th:src="@{/js/crypto-js.min.js}"></script>
+</head>
+
+<script type="text/javascript">
+	let baseUrl = "http://192.168.240.208:8081";//"http://192.168.240.208:8081";
+	let id;
+
+	function pageChange(after) {
+		$('.wrap').hide();
+		$(after).show();
+	}
+
+	$(document).ready(function () {
+		yy1100_load();
+
+		$('#YY1100 .logout').click(() => {
+
+			$.ajax({
+				url: baseUrl + "/api/login/logout",
+				type: 'post',
+				data: {
+					"rtk": getCookie("rtk")
+				},
+				success: function () {
+					deleteCookie('jwt');
+					deleteCookie('rtk');
+					location.replace('/login');
+				},
+				error: function (jqXHR) {
+					console.log("로그아웃 error" + jqXHR.status);
+				}
+			});
+		});
+	});
+
+
+	function yy1100_load() {
+		pageChange('#YY1100');
+		var name = "";
+		var email = "";
+
+		$.ajax({
+			type: "GET",
+			url: baseUrl + "/api/member/auth",
+			beforeSend: function (xhr) {
+				xhr.setRequestHeader("Authorization", "Bearer " + getCookie("jwt"));
+			},
+			success: function (data) {
+
+				name += data.member_name;
+				$('.name').html(name);
+
+				email += data.member_email;
+				$('.email').html(email);
+
+				id = data.memb_cd;
+
+			},
+			error: function (jqXHR) {
+				if (jqXHR.status == 401 && jqXHR.responseText == "토큰 기한 만료") {
+					tokenCall2();
+				}
+				else {
+					console.log(jqXHR.status);
+					console.log(jqXHR.responseText);
+				}
+			}
+		});
+	}
+
+	function valueCheck(type, value) {
+		let regExp;
+		switch (type) {
+			case "#email":
+				regExp = /^[a-zA-Z0-9+-\_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
+				if (value.match(regExp) != null) return true;
+				return false;
+			case "#name":
+				regExp = /^[a-zA-Z가-힣]{2,}$/;
+				if (value.match(regExp) != null) return true;
+				return false;
+		}
+	}
+
+
+	function yy1110_load() {
+		pageChange('#YY1110');
+		memberPageSetting("#YY1110", "#name", "memb_nm", $('#YY1100 .name').html());
+	}
+
+	function yy1120_load() {
+		pageChange('#YY1120');
+
+		memberPageSetting("#YY1120", "#email", "email", $('#YY1100 .email').html());
+	}
+
+
+	function memberPageSetting(pagename, inputname, editCumn, inputValue) {
+		// 이름 받아오기
+		$(inputname).val(inputValue);
+
+		// '저장'버튼 클릭 시 
+		$(pagename + ' .btnBl1').click(function (e) {
+			e.preventDefault();
+			// Body에 첨부할 json 데이터
+			var jsonData = {"upd_dttm": "NOW"};
+			jsonData[editCumn] = $(inputname).val();
+
+			if (!valueCheck(inputname, $(inputname).val())) {
+				alert("올바른 형식의 입력이 아닙니다. (이메일 형식 맞춤, 이름 2글자 이상)");
+				return;
+			}
+
+			if (inputname == "#email") {
+				let inputEmail = $('#YY1120 #email').val();
+				//이미 존재하는 이메일이 아니어야 다음단계(이메일 인증)
+				emailNotDuplication(inputEmail, function() {
+					
+					//이메일 인증 진행 실패시 리턴
+					modalShow_emailAuth_bottom_sheet(e.target, inputEmail, jsonData);
+				});
+			} else {
+				updateUser(jsonData);
+			}
+
+		});
+	}
+	
+	//이메일 중복검사
+	function emailNotDuplication(email, successFunc){
+		let encoded = CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(email));
+		
+		$.ajax({
+			type: "GET",
+			contentType: "application/json",
+			url: baseUrl + "/api/member/email-duplication/" + encoded,
+			dataType: "JSON",
+			contentType: "application/json; charset=UTF-8",
+			beforeSend: function (xhr) {
+				xhr.setRequestHeader("Authorization", "Bearer " + getCookie("jwt"));
+			},
+			success: function (data) {
+				if(data.result){
+					successFunc();
+				}
+				else{
+					popModalShow_myMainReplacePopup("이미 존재하는 이메일 입니다");
+				}
+			},
+			error: function (jqXHR) {
+				if (jqXHR.status == 401 && jqXHR.responseText == "토큰 기한 만료") {
+					tokenCall2();
+				}
+				else {
+					console.log(jqXHR.status)
+				}
+			}
+		});
+	}
+	
+	//회원정보 업데이트
+	function updateUser(jsonData) {
+		$.ajax({
+			data: JSON.stringify(jsonData),
+			type: "PUT",
+			contentType: "application/json",
+			url: baseUrl + "/api/member/member/" + id,
+			dataType: "JSON",
+			contentType: "application/json; charset=UTF-8",
+			beforeSend: function (xhr) {
+				xhr.setRequestHeader("Authorization", "Bearer " + getCookie("jwt"));
+			},
+			success: function () {
+				yy1100_load();
+			},
+			error: function (jqXHR) {
+				if (jqXHR.status == 401 && jqXHR.responseText == "토큰 기한 만료") {
+					tokenCall2();
+				}
+				else {
+					console.log(jqXHR.status)
+				}
+			}
+		});
+	}
+
+	/* 팝업 호출 예시 */
+	function modalShow_emailAuth_bottom_sheet(btnTarget, inputEmail, jsonData) {
+		let confirm_mail = $('#layerEmailCert .confirm_mail');
+
+		confirm_mail.find('.inp_err_msg').hide();
+		$("#layerEmailCert .btn_cancel").on("click", function (e) {
+			clearInterval(timerInterval);
+		});
+
+		//10분 타이머
+		let timeOver; //제한시간 만료 여부
+		function tenMinuteTimer(startTime, target, timerInterval) {
+			let endTime = new Date().getTime();
+			let resultTime = parseInt((1000 * 60 * 10 + startTime - endTime) / 1000);
+			let minute = parseInt(resultTime / 60);
+			let second = resultTime % 60;
+			if (resultTime <= 0)
+				clearInterval(timerInterval);
+			if (second < 10) second = '0' + second;
+			if (second < 0) second = '00';
+			target.text(minute + ":" + second);
+
+			timeOver = function () {
+				if (minute == 0 && second == '00') return true;
+				return false;
+			}();
+		}
+
+		//변수 설정
+		let delay = 1000; //1초
+		let startTime = new Date().getTime(); //타이머 시작시간
+		let target = $('#layerEmailCert .confirm_mail .inp_time>span');
+		let timerInterval;
+
+		$.ajax({
+			type: 'GET',
+			url: 'http://192.168.240.208:8081/api/mypage/email-authentication' //192.168.240.208:8081/checkpay
+				+ '?email=' + inputEmail
+				+ '&sendType=' + 'NOR',
+			dataType: 'json',
+			success: function (data) {
+				if (data.result) {
+					timerInterval = setInterval(function () {tenMinuteTimer(startTime, target, timerInterval);}, delay);
+
+					var $href = $(btnTarget).attr('href');
+					layer_bottomsheet($href);
+					$('html').addClass('scroll_lock');//2021-10-28 html 스크롤 잠금 수정
+
+					// [S] multi layer 2021-08-02 추가
+					var dimIdx = $('.dim').index();
+					eval('$focusReturn' + [dimIdx] + '= $(this)');
+					//$focusReturn = $(this); // multi layer 2021-08-02 삭제
+					// [E] multi layer 2021-08-02 추가
+				} else {
+					if (data.num_trials == -1) {
+						alert("일일 인증횟수를 초과했습니다.");
+					} else {
+						alert("API 내부 에러 관리자에게 문의하세요");
+					}
+					$('#layerEmailCert .btn_cancel').click();
+				}
+			},
+			error: function (jqXHR, textStatus, errorThrown) {
+				alert('이메일 전송실패: ' + textStatus + "||" + errorThrown);
+			}
+		});
+
+		$('#layerEmailCert .btn_confirm').click(function (e) {
+			e.preventDefault();
+
+			if (timeOver) {
+				alert("인증 시간 초과");
+				return;
+			}
+			
+			let du = {
+					email: inputEmail,
+					inputCode: confirm_mail.find('.certi_num_inp').val(),
+					useType: "SIGN"
+			}
+			console.log(du);
+			
+			$.ajax({
+				type: 'POST',
+				url: 'http://192.168.240.208:8081/api/mypage/email-authentication',
+				dataType: 'json',
+				data: {
+					email: inputEmail,
+					inputCode: confirm_mail.find('.certi_num_inp').val(),
+					useType: "SIGN"
+				},
+				success: function (data) {
+					console.log(data.result);
+					if (data.result) {
+						clearInterval(timerInterval);
+						//수정 
+						updateUser(jsonData);
+						popModalShow_myMainReplacePopup('수정이 성공하였습니다');
+					} else {
+						if (data.num_trials == -1) {
+							popModalShow_myMainReplacePopup('인증에 실패했습니다');
+							return;
+						}
+						confirm_mail.find('.inp_err_msg').text('인증번호가 일치하지 않습니다 (' + (data.num_trials) + '/5)').show();
+					}
+				},
+				error: function (jqXHR, textStatus, errorThrown) {
+					alert('인증번호 검증 실패: ' + textStatus + "||" + errorThrown);
+				}
+			});
+		});
+	}
+
+	function layer_bottomsheet(el) {
+		var $el = $(el);
+		$el.append("<div class=\"dim\"></div>");
+		isDim ? $('.layer_bottomsheet').show() : $el.show().attr({'tabindex': '0', 'aria-hidden': 'false'}).focus();
+		setTimeout(function () {
+			$el.find('.layer_inner').addClass('on');
+		}, 50);
+
+		// [S] multi layer 2021-08-02 추가
+		//var isDim = $el.siblings().hasClass('dim');
+		var isDim;
+		var dimIdx = $('.dim').index();
+		var thisDim = $el.find('.dim');
+		var thisLyZindex = dimIdx + 4000;
+		$('.dim').css('opacity', '0');
+		thisDim.css('opacity', '.7');
+		thisDim.closest('.layer_bottomsheet, .layer_popup').css('z-index', thisLyZindex);
+		// [E] multi layer 2021-08-02 추가
+
+		$el.find('.js_pop_close').click(function () {
+
+			$el.find('.layer_inner').removeClass('on');
+			setTimeout(function () {
+				isDim ? $('.layer_bottomsheet').hide() : $el.hide();
+				$('html').removeClass('scroll_lock');//2021-10-28 html 스크롤 잠금 수정
+				$el.attr({'tabindex': '-1', 'aria-hidden': 'true'}).find(".dim").remove();
+				// [S] multi layer 2021-08-02 추가
+				if ($('.dim').length == '2') {
+					$('.dim:eq(1)').css('opacity', '.7');
+				} else if ($('.dim').length == '1') {
+					$('.dim').css('opacity', '.7');
+				}
+				// [E] multi layer 2021-08-02 추가
+			}, 200);
+
+			// [S] multi layer 2021-08-02 추가
+			eval('$focusReturn' + [dimIdx]).focus();
+			//$focusReturn.focus(); // multi layer 2021-08-02 삭제
+			// [E] multi layer 2021-08-02 추가
+
+			return false;
+		});
+	}
+	
+	/* emailFailPopup 팝업 호출 예시 */
+	function popModalShow_myMainReplacePopup(msg){
+		$('#open_layer_myMainReplacePopup')
+		 .show()
+		 .attr({'tabindex':'0','aria-hidden':'false'})
+		 .focus()
+		 .css('z-index', '99999')
+		 .find('button').on('click',function(){
+			 let url = /*[[ @{/mypage/member-info} ]]*/'';
+			  location.replace(url);
+		  })
+		  .end().find('.msg_alert').text(msg)
+		  
+		$('html').addClass('scroll_lock');
+	}
+</script>
+
+<body>
+	<!-- 페이지 -->
+	<th:block th:include="mypage/YY1100 :: content"></th:block>
+	<th:block th:include="mypage/YY1110 :: content"></th:block>
+	<th:block th:include="mypage/YY1120 :: content"></th:block>
+	
+	<!-- 팝업 -->
+	<th:block th:include="mypage/YYMyMainReplacePopup :: popup"></th:block>
+	<!-- 바텀시트 -->
+	<th:block th:include="mypage/emailAuthBottomSheet :: bottom_sheet"></th:block>
+</body>
+
+
+</html>

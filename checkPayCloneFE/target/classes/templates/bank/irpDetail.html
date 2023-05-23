@@ -1,0 +1,139 @@
+
+<!DOCTYPE html>
+<html lang="ko" class="leaf">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>CheckPay</title>
+<meta http-equiv="Cache-Control" content="No-Cache">
+<meta http-equiv="Pragma" content="No-Cache">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<!--<meta name="title" content="">-->
+<meta name="description" content="">
+<!--<meta name="keywords" content="">-->
+<!-- The Open Graph protocol -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="">
+<meta property="og:description" content="">
+<meta property="og:url" content="">
+<meta property="og:image" content=""><!-- [D]리얼경로로 변경하세요 -->
+<!-- //The Open Graph protocol -->
+<link rel="SHORTCUT ICON" href=""><!-- [D]리얼경로로 변경하세요 -->
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui.min.css">
+<link rel="stylesheet" type="text/css" href="/css/reset.css">
+<link rel="stylesheet" type="text/css" href="/css/content.css">
+<link rel="stylesheet" type="text/css" href="/css/theme_checkpay.css">
+<script type="text/javascript" src="/js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="/js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="/js/jquery.ui.touch-punch.min.js"></script>
+<script type="text/javascript" src="/js/slide_slick.js"></script>
+<script type="text/javascript" src="/js/publishing.ui.library.1.0.0.js"></script>
+<script type="text/javascript" src="/js/cmd.js"></script>
+<script type="text/javascript" src="../js/common.js"></script>
+</head>
+<body>
+<!-- wrap -->
+<div class="wrap">
+	<!-- header -->
+	<div class="header">
+		<div class="header_inn">
+			<div class="left">
+				<a onclick="window.history.back()" class="btnBack"><span class="blind">Back</span></a>
+			</div>
+			<div class="right">
+                <!-- <a onclick="window.history.back()" class="btnClose"><span class="blind">close</span></a> -->
+			</div>
+		</div>
+	</div>
+	<!-- //header -->
+	<!-- container -->
+	<div class="container">
+		<div class="content">
+			<div class="accSetting">
+				<div class="tAccount">
+					<h3 class="tAccTit"></h3>
+					<p class="tAccDetail"></p>
+				</div>
+				<div class="topTotal">
+					<!-- [S] 2021-11-30 topTotal 영역 수정 -->
+					<a class="link" title="더보기">
+						<span class="itemTit">평가금액</span>
+						<span class="itemData">
+							<span class="detail"><span class="num"></span>원</span>
+						</span>
+					</a>
+					<!-- [E] 2021-11-30 topTotal 영역 수정 -->
+				</div>
+				<ul class="accDetailList">
+					<li>
+						<span class="itemTit">잔액</span>
+						<span class="itemData"><em class="num"></em>원</span>
+					</li>
+					<li>
+						<span class="itemTit">사용자부담금</span>
+						<span class="itemData"><em class="num"></em>원</span>
+					</li>
+					<li>
+						<span class="itemTit">가입자부담금</span>
+						<span class="itemData"><em class="num"></em>원</span>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<!-- //container -->
+</div>
+<!-- //wrap -->
+</body>
+<script>
+    var token = getCookie("jwt");
+	var memb_cd=parseJwt(getCookie("jwt")).sub;
+	var account_num='[[${bankReqVo.account_num}]]';
+	var org_code='[[${bankReqVo.org_code}]]';
+
+    // [S] irp 상세 조회 수정중 04.27
+    function irpdetail(){
+        request_data={
+            "memb_cd" : memb_cd,
+			"org_code": org_code,
+            "account_num": account_num
+        }
+        $.ajax({
+		url:'http://192.168.240.208:8081/api/irp/account/detail/',
+		type:'post',
+        dataType: 'json',
+		contentType : 'application/json',
+		data: JSON.stringify(request_data),
+		beforeSend:function(xhr){
+	        xhr.setRequestHeader("Authorization", "Bearer "+token);
+		},
+		success:function(result){
+            var a= result.org_name;
+            if(a.includes('주식회사')){
+				result.org_name=result.org_name.replace('주식회사', '');
+			}else if(a.includes('(주)')){
+				result.org_name=result.org_name.replace('(주)', '');
+			}
+			$('.tAccTit').text(result.prod_name);                                                   // 상품명
+			$('.tAccDetail').text(result.org_name+" "+result.account_num);                       // 은행이름, 계좌번호
+			$('.topTotal').eq(0).find('.link').attr("onclick", "detailmove('/bank/irptrans','org_code',org_code,'account_num',account_num);");                       // 링크
+            $('.itemData>.detail>.num').text(numberWithCommas(result.eval_amt));                    // 평가금액
+            $('.accDetailList>li').eq(0).find('.num').text(numberWithCommas(result.accum_amt));     // 잔액
+            $('.accDetailList>li').eq(1).find('.num').text(numberWithCommas(result.employer_amt));  // 사용자부담금
+            $('.accDetailList>li').eq(2).find('.num').text(numberWithCommas(result.employee_amt )); // 가입자부담금
+            
+		},error: function (jqXHR) {
+            if (jqXHR.status == 401 && jqXHR.responseText=="토큰 기한 만료") {
+            	tokenCall2();
+            }
+	    },complete : function(xhr, status) {
+		    // success와 error 콜백이 호출된 후에 반드시 호출, try - catch - finally의 finally 구문과 동일
+		}
+	    });
+    }
+    // [E] irp 상세 조회 수정중 04.27
+    $(document).ready(function(){
+        irpdetail();
+    })
+</script>
+</html>

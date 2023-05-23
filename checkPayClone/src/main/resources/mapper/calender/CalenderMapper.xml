@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bit.checkpayclone.calender.model.CalenderMapper">
+	
+	<select id="findUserAccountTransSelectDate" resultType="com.bit.checkpayclone.bank.model.BankTransDetailVo"> 
+		select bdt.trans_memo, og.org_name, ba.prod_name, data_decrypt(ba.account_num) as account_num, bdt.trans_type, bdt.trans_amt, bdt.balance_amt, to_timestamp(bdt.trans_dtime,'YYYYMMDDHH24MIss')::timestamp as trans_dtime
+		from tb_member m 
+		inner join tb_a_ca_token tk on m.memb_cd=tk.memb_cd
+		inner join tb_a_banks_accounts ba on ba.memb_cd=tk.memb_cd and ba.org_code=tk.org_code
+		inner join tb_a_apis_orgs og on og.org_code=tk.org_code
+		inner join tb_a_banks_deposit_trans bdt on bdt.memb_cd=tk.memb_cd and bdt.org_code=tk.org_code and bdt.account_num=ba.account_num and not bdt.trans_type in ('01')
+		where m.memb_cd=#{member_id} and bdt.trans_dtime like concat(#{select_date},'%') 
+		order by bdt.trans_dtime desc;
+	</select>
+ 	
+ 	<select id="findUserCardPayInfoSelectDate" resultType="com.bit.checkpayclone.payinfo.model.PayInfoVo">
+		(select 
+			tacad.approved_num, 
+			tacad.merchant_name, 
+			og.org_name, 
+			tac.card_name, 
+			tacad.approved_amt, 
+			tamc.catg_nm,
+			to_timestamp(tacad.approved_dtime,'YYYYMMDDHH24MIss')::timestamp as approved_dtime,
+			case 
+				when tacad.trans_dtime='' then null
+				else to_timestamp(tacad.trans_dtime,'YYYYMMDDHH24MIss')::timestamp
+			end trans_dtime,
+			tacad.modified_amt,
+			tacad.total_install_cnt,
+			null as country_code,
+			null as currency_code,
+			null as krw_amt,
+			tacad.status,
+			tacad.org_code,
+			tacad.card_id,
+			tacad.seq
+		from tb_a_card tac 
+			inner join tb_a_card_appr_domestic tacad on tac.memb_cd=tacad.memb_cd and tac.org_code=tacad.org_code and tac.card_id=tacad.card_id
+			inner join tb_a_card_appr_domestic_catg tacadc on tacadc.card_id=tacad.card_id and tacadc.memb_cd=tacad.memb_cd and tacadc.org_code=tacad.org_code and tacadc.approved_num=tacad.approved_num and tacadc.status=tacad.status and tacadc.approved_dtime=tacad.approved_dtime and tacadc.seq=tacad.seq
+			inner join tb_a_apis_orgs og on og.org_code=tacad.org_code
+			inner join tb_a_merchant_category tamc on tamc.catg_cd=tacadc.catg_cd
+		where tac.memb_cd =#{member_id} and tacadc.foregin_yn = 'N' and tacad.approved_dtime like concat(#{select_date},'%'))
+		union all
+		(select
+			tacao.approved_num, 
+			tacao.merchant_name, 
+			og.org_name, 
+			tac.card_name, 
+			tacao.approved_amt, 
+			tamc.catg_nm, 
+			to_timestamp(tacao.approved_dtime,'YYYYMMDDHH24MIss')::timestamp as approved_dtime,
+			case 
+				when tacao.trans_dtime='' then null
+				else to_timestamp(tacao.trans_dtime,'YYYYMMDDHH24MIss')::timestamp
+			end trans_dtime,
+			tacao.modified_amt,
+			null as total_install_cnt,
+			tacao.country_code,
+			tacao.currency_code,
+			tacao.krw_amt,
+			tacao.status,
+			tacao.org_code,
+			tacao.card_id,
+			tacao.seq
+		from tb_a_card tac 
+			inner join tb_a_card_appr_overseas tacao on tac.memb_cd=tacao.memb_cd and tac.org_code=tacao.org_code and tac.card_id=tacao.card_id
+			inner join tb_a_card_appr_domestic_catg tacadc on tacadc.card_id=tacao.card_id and tacadc.memb_cd=tacao.memb_cd and tacadc.org_code=tacao.org_code and tacadc.approved_num=tacao.approved_num and tacadc.status=tacao.status and tacadc.approved_dtime=tacao.approved_dtime and tacadc.seq=tacao.seq
+			inner join tb_a_apis_orgs og on og.org_code=tacao.org_code
+			inner join tb_a_merchant_category tamc on tamc.catg_cd=tacadc.catg_cd
+		where tac.memb_cd =#{member_id} and tacadc.foregin_yn = 'Y' and tacao.approved_dtime like concat(#{select_date},'%'))
+		order by approved_dtime desc;
+	</select>
+
+	<select id="findUserCardAndAccountSelectMonth" resultType="com.bit.checkpayclone.calender.model.CalenderCardAndAccountVo">
+		((select 
+			null as trans_memo,
+			tacad.approved_num, 
+			tacad.merchant_name, 
+			og.org_name, 
+			null as prod_name,
+			null as account_num,
+			null as trans_type,
+			0 as trans_amt,
+			0 as balance_amt,
+			case 
+				when tacad.trans_dtime='' then null
+				else to_timestamp(tacad.trans_dtime,'YYYYMMDDHH24MIss')::timestamp
+			end trans_dtime,
+			tac.card_name, 
+			tacad.approved_amt, 
+			tamc.catg_nm, 
+			to_timestamp(tacad.approved_dtime,'YYYYMMDDHH24MIss')::timestamp as approved_dtime,
+			tacad.modified_amt,
+			tacad.total_install_cnt,
+			null as country_code,
+			null as currency_code,
+			null as krw_amt,
+			tacad.status,
+			tacad.org_code,
+			tacad.card_id,
+			tacad.seq
+		from tb_a_card tac 
+			inner join tb_a_card_appr_domestic tacad on tac.memb_cd=tacad.memb_cd and tac.org_code=tacad.org_code and tac.card_id=tacad.card_id
+			inner join tb_a_card_appr_domestic_catg tacadc on tacadc.card_id=tacad.card_id and tacadc.memb_cd=tacad.memb_cd and tacadc.org_code=tacad.org_code and tacadc.approved_num=tacad.approved_num and tacadc.status=tacad.status and tacadc.approved_dtime=tacad.approved_dtime and tacadc.seq=tacad.seq
+			inner join tb_a_apis_orgs og on og.org_code=tacad.org_code
+			inner join tb_a_merchant_category tamc on tamc.catg_cd=tacadc.catg_cd
+		where tac.memb_cd =#{member_id} and tacadc.foregin_yn = 'N' and tacad.approved_dtime like concat(#{year_month},'%'))
+		union all
+		(select
+			null as trans_memo,
+			tacao.approved_num, 
+			tacao.merchant_name, 
+			og.org_name,
+			null as prod_name,
+			null as account_num,
+			null as trans_type,
+			0 as trans_amt,
+			0 as balance_amt,
+			case 
+				when tacao.trans_dtime='' then null
+				else to_timestamp(tacao.trans_dtime,'YYYYMMDDHH24MIss')::timestamp
+			end trans_dtime,
+			tac.card_name, 
+			tacao.approved_amt, 
+			tamc.catg_nm, 
+			to_timestamp(tacao.approved_dtime,'YYYYMMDDHH24MIss')::timestamp as approved_dtime, 
+			tacao.modified_amt,
+			null as total_install_cnt,
+			tacao.country_code,
+			tacao.currency_code,
+			tacao.krw_amt,
+			tacao.status,
+			tacao.org_code,
+			tacao.card_id,
+			tacao.seq
+		from tb_a_card tac 
+			inner join tb_a_card_appr_overseas tacao on tac.memb_cd=tacao.memb_cd and tac.org_code=tacao.org_code and tac.card_id=tacao.card_id
+			inner join tb_a_card_appr_domestic_catg tacadc on tacadc.card_id=tacao.card_id and tacadc.memb_cd=tacao.memb_cd and tacadc.org_code=tacao.org_code and tacadc.approved_num=tacao.approved_num and tacadc.status=tacao.status and tacadc.approved_dtime=tacao.approved_dtime and tacadc.seq=tacao.seq
+			inner join tb_a_apis_orgs og on og.org_code=tacao.org_code
+			inner join tb_a_merchant_category tamc on tamc.catg_cd=tacadc.catg_cd
+		where tac.memb_cd =#{member_id} and tacadc.foregin_yn = 'Y' and tacao.approved_dtime like concat(#{year_month},'%')))
+		union all 
+		(select 
+			bdt.trans_memo, 
+			null as approved_num,
+			null as merchant_name,
+			og.org_name, 
+			ba.prod_name, 
+			data_decrypt(ba.account_num) as account_num, 
+			bdt.trans_type, 
+			bdt.trans_amt, 
+			bdt.balance_amt, 
+			null as trans_dtime,
+			null as card_name,
+			0 as approved_amt,
+			null as catg_nm,
+			to_timestamp(bdt.trans_dtime,'YYYYMMDDHH24MIss')::timestamp as approved_dtime,
+			0 as modified_amt,
+			null as total_install_cnt,
+			null as country_code,
+			null as currency_code,
+			0 as krw_amt,
+			null as status,
+			null as org_code,
+			null as card_id,
+			0 as seq
+		from tb_member m 
+			inner join tb_a_ca_token tk on m.memb_cd=tk.memb_cd
+			inner join tb_a_banks_accounts ba on ba.memb_cd=tk.memb_cd and ba.org_code=tk.org_code
+			inner join tb_a_apis_orgs og on og.org_code=tk.org_code
+			inner join tb_a_banks_deposit_trans bdt on bdt.memb_cd=tk.memb_cd and bdt.org_code=tk.org_code and bdt.account_num=ba.account_num and not bdt.trans_type in ('01')
+		where m.memb_cd=#{member_id} and bdt.trans_dtime like concat(#{year_month},'%'))
+		<if test='sort != null and sort.equals("desc")'>
+			order by approved_dtime desc;
+		</if>
+		<if test='sort != null and sort.equals("asc")'>
+			order by approved_dtime asc;
+		</if>
+		
+	</select>
+
+	<select id="existsCalenderBudget" resultType="boolean">
+		select exists(
+				select memb_cd as member_id , year_month , total_amount as total_budget, reg_dttm , upd_dttm 
+				from tb_a_member_month_budget
+				where memb_cd = #{member_id} and year_month = #{year_month}
+			)
+	</select>
+	
+	<insert id="insertUserCalenderBudget">
+		with insert_budget as (
+			insert into tb_a_member_month_budget (memb_cd, year_month, total_amount, reg_dttm, upd_dttm) 
+				values(#{member_id}, #{year_month}, 0, '', '')
+			)
+	 	insert into tb_a_member_month_budget_det (memb_cd, year_month, catg_cd, amount)
+	        values
+        <foreach collection="catg_list" item="catg_code" separator=" , ">
+	            (#{member_id}, #{year_month}, #{catg_code}, 0)
+        </foreach>
+	</insert>
+
+	<select id="findCalenderBudget" resultType="com.bit.checkpayclone.calender.model.CalenderBudgetVo">
+		select tammb.memb_cd as member_id ,tammb.year_month ,tammb.total_amount as total_budget, tamc.catg_nm as category_name ,tammbd.amount as category_budget 
+		from tb_a_member_month_budget tammb
+		inner join tb_a_member_month_budget_det tammbd on tammb.memb_cd = tammbd.memb_cd and tammb.year_month = tammbd.year_month
+		inner join tb_a_merchant_category tamc on tammbd.catg_cd = tamc.catg_cd
+		where tammb.memb_cd = #{member_id} and tammb.year_month = #{year_month} order by tamc.catg_cd asc;
+	</select>	
+	
+	<update id="updateCalenderBudget" >
+		with update_budget as (
+			update tb_a_member_month_budget set total_amount = #{total_budget}::NUMERIC where memb_cd = #{member_id} and year_month = #{year_month}
+		)
+		<foreach collection="budget_map" index="code" item="amount" separator=" ; ">
+			update tb_a_member_month_budget_det set amount = #{amount}::NUMERIC where memb_cd = #{member_id} and year_month = #{year_month} and catg_cd = ${code}::varchar(15)
+		</foreach> 
+	</update>
+	
+	<select id="findUserCalenderStarMemo" resultType="com.bit.checkpayclone.calender.model.CalenderStarMemoVo">
+		select tamc.memb_cd as member_id ,tamc."day" as calender_day ,tamc.check_yn as is_star , tamc.memo 
+		from tb_a_member_calendar tamc 
+		inner join tb_member tm on tamc.memb_cd = tm.memb_cd
+		where tamc.memb_cd = #{member_id} and tamc."day" like '${year_month}%'
+	</select>
+	
+	<insert id="insertUserCalenderStarMemo">
+		insert into tb_a_member_calendar (memb_cd, "day", check_yn, reg_dttm, upd_dttm, memo)
+			values (#{member_id}, #{calender_day}, #{is_star}, #{reg_dttm}, '', #{memo});
+	</insert>
+	
+	<update id="updateUserCalenderStarMemo">
+		update tb_a_member_calendar
+			set check_yn=#{is_star}, memo=#{memo}, upd_dttm = #{upd_dttm}
+			where memb_cd=#{member_id} and "day" = #{calender_day}
+	</update>
+	
+	<update id="updateCardPayInfoIndustry">
+		update tb_a_card_appr_domestic_catg
+		set catg_cd = #{catg_cd}
+		where memb_cd = #{memb_cd} 
+		  and org_code = #{org_code} 
+		  and card_id = #{card_id} 
+		  and approved_dtime = #{approved_dtime} 
+		  and approved_num = #{approved_num} 
+		  and status = #{status} 
+		  and seq = #{seq} 
+	</update>
+	
+	<delete id="deleteCalenderBudgetOldData">
+		<![CDATA[ 
+			delete from tb_a_member_month_budget 
+			where (to_timestamp(year_month, 'YYYYMM')+'6 month')::date<=now()::date;
+		]]>
+	</delete>
+	
+	<delete id="deleteCalenderBudgetDetOldData">
+		<![CDATA[ 
+			delete from tb_a_member_month_budget_det
+			where (to_timestamp(year_month, 'YYYYMM')+'6 month')::date<=now()::date;
+		]]>
+	</delete>
+	
+	<delete id="deleteCalenderStarMemoOldData">
+		<![CDATA[
+		delete from tb_a_member_calendar mc where (to_timestamp(mc."day",'YYYYMMDD')::timestamp+'6 month')::date<=now()::date; 
+		]]>
+	</delete>
+	
+	<select id="findUserCalenderCardLoanAll" resultType="com.bit.checkpayclone.card.model.CardLoanAllVo">
+		<![CDATA[ 
+			(select 
+				og.org_name, 
+				to_date(cls.loan_dtime,'YYYYMMDDHH24MIss') as loan_dtime, 
+				cls.loan_amt, 
+				cls.balance_amt, 
+				to_date(cls.pay_due_date ,'YYYYMMDDHH24MIss') as pay_due_date, 
+				cls.int_rate,
+				case 
+					when char_length(og.org_name)<=5 then concat(og.org_name, ' 단기대출 상환')
+					when char_length(og.org_name)<=9 then concat(substring(org_name, position('드' in org_name)-3,position('드' in org_name)), ' 단기대출 상환')
+					when char_length(og.org_name)=11 then concat(substring(org_name, position('드' in org_name)-5,position('드' in org_name)), ' 단기대출 상환')
+				end as loan_name,
+				null as loan_cnt,
+				null as loan_type,
+				null as exp_date,
+				null as repay_method,
+				null as int_amt,
+				to_timestamp(cls.reg_dttm ,'YYYYMMDDHH24MIss') as reg_dttm 
+			from tb_a_card_loan_short cls
+			inner join tb_a_apis_orgs og on cls.org_code=og.org_code
+			where cls.memb_cd=#{memb_cd} and cls.pay_due_date like concat(#{year_month},'%'))
+			union all
+			(select
+				og.org_name,
+				to_date(cll.loan_dtime,'YYYYMMDDHH24MIss') as loan_dtime,
+				cll.loan_amt,
+				cll.balance_amt,
+				null as pay_due_date,
+				cll.int_rate,
+				cll.loan_name,
+				cll.loan_cnt,
+				cll.loan_type,
+				to_date(cll.exp_date,'YYYYMMDD') as loan_dtime,
+				cll.repay_method,
+				cll.int_amt,
+				to_timestamp(cll.reg_dttm ,'YYYYMMDDHH24MIss') as reg_dttm
+			from tb_a_card_loan_long cll
+			inner join tb_a_apis_orgs og on cll.org_code=og.org_code
+			where cll.memb_cd=#{memb_cd} and cll.exp_date like concat(#{year_month},'%'))
+		]]>
+	</select>
+	
+	<select id="findUserCardBills" resultType="com.bit.checkpayclone.card.model.CardBillsVo">
+		<![CDATA[ 
+			select distinct 
+				case 
+					when char_length(og.org_name)<=9 then concat(substring(org_name, position('드' in org_name)-3,position('드' in org_name)))
+				end as org_name,
+				og.org_code,
+				cb.charge_amt,
+				cb.charge_month, cb.charge_day,
+				to_timestamp(cb.paid_out_date,'YYYYMMDD')::timestamp as paid_out_date
+			from tb_a_card_bills cb
+			inner join tb_a_card_bills_detail cbd on cb.memb_cd=cbd.memb_cd and cb.org_code=cbd.org_code and cb.charge_month=cbd.charge_month and cb.seqno=cbd.seqno
+			inner join tb_a_card c on c.memb_cd=cbd.memb_cd and c.org_code=cbd.org_code and c.card_id=cbd.card_id
+			inner join tb_a_apis_orgs og on cb.org_code=og.org_code
+			where cb.memb_cd=#{memb_cd} and cb.paid_out_date like concat(#{year_month},'%'); 
+		]]>
+	</select>
+	
+	<select id="findUserTelecomPaymentDue" resultType="com.bit.checkpayclone.telecom.model.TelecomPaymentDueVo">
+		select distinct
+			og.org_code,
+			og.org_name,
+			case 
+				when t."type" in ('01') then '휴대폰'
+				when t."type" in ('02') then '집전화'
+				when t."type" in ('03') then '인터넷'
+			end as type
+			,
+			tb.charge_date, 
+			t.mgmt_id
+		from tb_a_telecom t
+		inner join tb_a_telecom_bills tb on t.memb_cd=tb.memb_cd and t.org_code=tb.org_code and t.mgmt_id=tb.mgmt_id
+		inner join tb_a_apis_orgs og on t.org_code=og.org_code
+		where t.memb_cd=#{memb_cd} and tb.charge_date like concat(#{year_month},'%');
+	</select>
+</mapper>

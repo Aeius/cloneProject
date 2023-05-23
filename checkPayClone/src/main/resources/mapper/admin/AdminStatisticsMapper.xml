@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bit.checkpayclone.admin.statistics.model.AdminStatisticsMapper">
+	
+	<select id="getMemberChart1Data" resultType="com.bit.checkpayclone.admin.statistics.model.MemberChart1DataVo">
+		<choose>
+			<when test='(member_id != null and !member_id.equals(""))'>
+				<![CDATA[ 
+				select action_type, count(*) as action_type_count, round((cast(count(*) as real) / cast((select count(*) from member_log where member_id = #{member_id}) as real))*100.00) as action_type_percent from member_log where member_id = #{member_id} group by action_type 
+				]]>
+			</when>
+			<otherwise>
+				<![CDATA[ 
+				select action_type, count(*) as action_type_count, round((cast(count(*) as real) / cast((select count(*) from member_log) as real))*100.00) as action_type_percent from member_log where 1=1 group by action_type 
+				]]>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="getMemberChart2Data" resultType="com.bit.checkpayclone.admin.statistics.model.MemberChart2DataVo">
+			<![CDATA[ 
+				select left(reg_dttm,6) as reg_date, count(*) as member_count from tb_member where 1=1
+			]]>
+			<if test='(selectYear != null and !selectYear.equals(""))'>
+				<![CDATA[ 
+					and reg_dttm between concat(#{selectYear},'0101000000') and concat(#{selectYear},'1231235959')
+				]]>
+			</if>	
+			<![CDATA[ 
+			 group by left(reg_dttm,6)
+			]]>
+	</select>
+	
+	<select id="getAssetChart1Data" resultType="com.bit.checkpayclone.admin.statistics.model.AssetChart1DataVo">
+		<![CDATA[ 
+		select year_month, sum(amount) as amount_sum 
+		from tb_a_month_asset tama 
+		]]>
+		<where>
+			<choose>
+				<when test='amount_type!=null and amount_type.equals("deposit")'>
+					<![CDATA[ 
+					and ((code BETWEEN 2000 AND 2999) or (code BETWEEN 4000 AND 4999) or (code BETWEEN 7000 AND 7999) or code = 700) 
+					]]>
+				</when>
+				<otherwise>
+					<![CDATA[ 
+					and ((code BETWEEN 1000 AND 1999) or (code BETWEEN 3000 AND 3999) or (code BETWEEN 5000 AND 6999))
+					]]>
+				</otherwise>
+			</choose>
+			<![CDATA[ 
+			and year_month like concat(#{selectYear},'%')
+			and currency_code ='KRW'
+			]]>
+		</where>
+		<![CDATA[ 
+		group by year_month
+		]]>
+	</select>
+	
+	<select id="getAssetChart2Data" resultType="com.bit.checkpayclone.admin.statistics.model.AssetChart2DataVo">
+		<![CDATA[ 
+		select a.*, a.bank_member_count + a.card_member_count + a.capital_loan_member_count + a.efin_member_count + a.invest_member_count + a.telecom_member_count as total_member_count from (
+			select
+				(select COUNT(*) from tb_a_banks_accounts_member) as bank_member_count,
+				(select COUNT(*) from tb_a_card_member) as card_member_count,
+				(select COUNT(*) from tb_a_capital_member) as capital_loan_member_count,
+				(select COUNT(*) from tb_a_efin_paid_member) as efin_member_count,
+				(select COUNT(*) from tb_a_invest_member) as invest_member_count,
+				(select COUNT(*) from tb_a_telecom_member) as telecom_member_count
+		) a
+		]]>
+	</select>
+	
+	<select id="getBankChartData" resultType="com.bit.checkpayclone.admin.statistics.model.BankChartDataVo">
+		<![CDATA[ 
+		select substring(to_char(approved_dtime,'YYYY-MM'),6,2) as approved_month, avg(trans_amt) as trans_amt_avg 
+		from (select 
+		bdt.trans_memo, 
+		null as approved_num,
+		null as merchant_name,
+		og.org_name, 
+		ba.prod_name, 
+		data_decrypt(ba.account_num) as account_num, 
+		bdt.trans_type, 
+		bdt.trans_amt, 
+		bdt.balance_amt, 
+		null as trans_dtime,
+		null as card_name,
+		0 as approved_amt,
+		null as catg_nm,
+		to_timestamp(bdt.trans_dtime,'YYYYMMDDHH24MIss')::timestamp as approved_dtime,
+		0 as modified_amt,
+		null as total_install_cnt,
+		null as country_code,
+		null as currency_code,
+		0 as krw_amt,
+		null as status,
+		null as org_code,
+		null as card_id,
+		0 as seq
+	from tb_member m 
+		inner join tb_a_ca_token tk on m.memb_cd=tk.memb_cd
+		inner join tb_a_banks_accounts ba on ba.memb_cd=tk.memb_cd and ba.org_code=tk.org_code
+		inner join tb_a_apis_orgs og on og.org_code=tk.org_code
+		inner join tb_a_banks_deposit_trans bdt on bdt.memb_cd=tk.memb_cd and bdt.org_code=tk.org_code and bdt.account_num=ba.account_num 
+		]]>
+		<choose>
+			<when test='trans_type!=null and trans_type.equals("deposit")'>
+				<![CDATA[ 
+				and bdt.trans_type in ('03', '04', '06', '98')
+				]]>
+			</when>
+			<otherwise>
+				<![CDATA[ 
+				and bdt.trans_type in ('02', '05', '07', '99')
+				]]>
+			</otherwise>
+		</choose>
+		<![CDATA[ 
+	where m.memb_cd='U000000000U000000022' and bdt.trans_dtime like concat(#{selectYear},'%')) a 
+	group by substring(to_char(approved_dtime,'YYYY-MM'),6,2)
+		]]>
+	</select>
+	
+	<select id="getCardChartData" resultType="com.bit.checkpayclone.admin.statistics.model.CardChartDataVo">
+		<![CDATA[ 
+		select substring(to_char(approved_dtime,'YYYY-MM'),6,2) as approved_month, catg_nm, avg(a.approved_amt) as approved_amt_avg from ((select 
+			tacad.approved_num, 
+			tacad.merchant_name, 
+			og.org_name, 
+			tac.card_name, 
+			tacad.approved_amt, 
+			tamc.catg_nm,
+			to_timestamp(tacad.approved_dtime,'YYYYMMDDHH24MIss')::timestamp as approved_dtime,
+			case 
+				when tacad.trans_dtime='' then null
+				else to_timestamp(tacad.trans_dtime,'YYYYMMDDHH24MIss')::timestamp
+			end trans_dtime,
+			tacad.modified_amt,
+			tacad.total_install_cnt,
+			null as country_code,
+			null as currency_code,
+			null as krw_amt,
+			tacad.status,
+			tacad.org_code,
+			tacad.card_id,
+			tacad.seq
+		from tb_a_card tac 
+			inner join tb_a_card_appr_domestic tacad on tac.memb_cd=tacad.memb_cd and tac.org_code=tacad.org_code and tac.card_id=tacad.card_id
+			inner join tb_a_card_appr_domestic_catg tacadc on tacadc.card_id=tacad.card_id and tacadc.memb_cd=tacad.memb_cd and tacadc.org_code=tacad.org_code and tacadc.approved_num=tacad.approved_num and tacadc.status=tacad.status and tacadc.approved_dtime=tacad.approved_dtime and tacadc.seq=tacad.seq
+			inner join tb_a_apis_orgs og on og.org_code=tacad.org_code
+			inner join tb_a_merchant_category tamc on tamc.catg_cd=tacadc.catg_cd
+		where tacadc.foregin_yn = 'N' and tacad.approved_dtime like concat(#{selectYear},'%'))
+		union all
+		(select
+			tacao.approved_num, 
+			tacao.merchant_name, 
+			og.org_name, 
+			tac.card_name, 
+			tacao.approved_amt, 
+			tamc.catg_nm, 
+			to_timestamp(tacao.approved_dtime,'YYYYMMDDHH24MIss')::timestamp as approved_dtime,
+			case 
+				when tacao.trans_dtime='' then null
+				else to_timestamp(tacao.trans_dtime,'YYYYMMDDHH24MIss')::timestamp
+			end trans_dtime,
+			tacao.modified_amt,
+			null as total_install_cnt,
+			tacao.country_code,
+			tacao.currency_code,
+			tacao.krw_amt,
+			tacao.status,
+			tacao.org_code,
+			tacao.card_id,
+			tacao.seq
+		from tb_a_card tac 
+			inner join tb_a_card_appr_overseas tacao on tac.memb_cd=tacao.memb_cd and tac.org_code=tacao.org_code and tac.card_id=tacao.card_id
+			inner join tb_a_card_appr_domestic_catg tacadc on tacadc.card_id=tacao.card_id and tacadc.memb_cd=tacao.memb_cd and tacadc.org_code=tacao.org_code and tacadc.approved_num=tacao.approved_num and tacadc.status=tacao.status and tacadc.approved_dtime=tacao.approved_dtime and tacadc.seq=tacao.seq
+			inner join tb_a_apis_orgs og on og.org_code=tacao.org_code
+			inner join tb_a_merchant_category tamc on tamc.catg_cd=tacadc.catg_cd
+		where tacadc.foregin_yn = 'Y' and tacao.approved_dtime like concat(#{selectYear},'%'))) a
+		group by substring(to_char(approved_dtime,'YYYY-MM'),6,2), catg_nm;
+		]]>
+	</select>
+		
+	<select id="getEfinChartData" resultType="com.bit.checkpayclone.admin.statistics.model.EfinChartDataVo">
+		<![CDATA[ 
+		select left(trans_dt, 6) as trans_month, round(avg(trans_amt)) as trans_amt_avg
+		from tb_a_efin_prepaid_trans
+		]]>
+		<where>
+			<choose>
+				<when test='trans_type!=null and trans_type.equals("deposit")'>
+					<![CDATA[ 
+					and trans_type in ('5101','5102','5103','5104','5105','5109','5211','5212','5219','5221','5222','5229','5301','5502','5901','6201','6202','6203','6204','6209')
+					]]>
+				</when>
+				<otherwise>
+					<![CDATA[ 
+					and trans_type in ('5111','5112','5113','5114','5115','5119','5201','5202','5209','5302','5401','5501','5902','6101','6102','6103','6104','6109')
+					]]>
+				</otherwise>
+			</choose>
+			<![CDATA[ 
+			and trans_dt like concat(#{selectYear},'%')
+			]]>
+		</where>
+		<![CDATA[ 
+			group by left(trans_dt, 6)
+			]]>
+	</select>
+	
+	<select id="getInvestChartData" resultType="com.bit.checkpayclone.admin.statistics.model.InvestChartDataVo">
+		<![CDATA[ 
+			select left(trans_dt, 6) as trans_month, round(avg(trans_amt)) as trans_amt_avg
+			from tb_a_invest_trans
+			where trans_dt like concat(#{selectYear},'%') and currency_code = #{currency_code}
+			group by left(trans_dt, 6)
+		]]>
+	</select>
+	
+	<select id="getTelecomChartData" resultType="com.bit.checkpayclone.admin.statistics.model.TelecomChartDataVo">
+		<![CDATA[ 
+			select charge_month, round(avg(charge_amt)) as charge_amt_avg 
+			from tb_a_telecom_bills tatb 
+			where charge_month like concat(#{selectYear},'%') 
+			group by charge_month
+		]]>
+	</select>
+	
+	<select id="getCapitalChartData" resultType="com.bit.checkpayclone.admin.statistics.model.CapitalChartDataVo">
+		<![CDATA[ 
+			select  
+			left(reg_dttm, 6) as year_month, round(avg(balance_amt)) as balance_amt_avg
+			from tb_a_capital_loan_detail a
+			where reg_dttm like concat(#{selectYear},'%') and currency_code = #{currency_code}
+			group by left(reg_dttm, 6)
+		]]>
+	</select>
+	
+</mapper>

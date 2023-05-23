@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bit.checkpayclone.asset.main.model.EditinfoMapper">
+
+	<select id="findUserEditList" resultType="com.bit.checkpayclone.asset.main.model.EditinfoVo">
+	select memb_cd, array_agg(catg_cd order by ord_seq asc) as catg_cd
+	FROM tb_member_category
+	WHERE memb_cd = #{member_id} and hidden_yn='N'
+	group by memb_cd;
+	</select>
+
+	<update id="updateUserEditList">
+		update tb_member_category
+		set ord_seq=#{ord_seq}, hidden_yn=#{hide}
+		where memb_cd=#{member_id} and catg_cd=#{catg_cd}
+	</update>
+
+	<select id="findUserAsset" resultType="com.bit.checkpayclone.asset.main.model.AssetVo">
+	select  coalesce(sum(amount) - 
+			(select sum(amount)
+			FROM tb_a_month_asset  
+			WHERE memb_cd=#{id}  and year_month = to_char(now()- interval '1 MONTH' ,'YYYYMM')
+			and ((code BETWEEN 2000 AND 2999) or (code BETWEEN 4000 AND 4999) or (code BETWEEN 7000 AND 7999) or code = 700)
+			and currency_code ='KRW'
+			) ,0) as sum
+	FROM tb_a_month_asset  
+	WHERE memb_cd=#{id}  and year_month = to_char(now()- interval '1 MONTH' ,'YYYYMM')
+	and ((code BETWEEN 1000 AND 1999) or (code BETWEEN 3000 AND 3999) or (code BETWEEN 5000 AND 6999)
+	and currency_code ='KRW' )
+	</select>
+
+</mapper>

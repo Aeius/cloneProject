@@ -1,0 +1,1476 @@
+<!DOCTYPE html>
+<html lang="ko" class="leaf">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport"
+		content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+	<title>CheckPay</title>
+	<meta http-equiv="Cache-Control" content="No-Cache">
+	<meta http-equiv="Pragma" content="No-Cache">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<!--<meta name="title" content="">-->
+	<meta name="description" content="">
+	<!--<meta name="keywords" content="">-->
+	<!-- The Open Graph protocol -->
+	<meta property="og:type" content="website">
+	<meta property="og:title" content="">
+	<meta property="og:description" content="">
+	<meta property="og:url" content="">
+	<meta property="og:image" content=""><!-- [D]리얼경로로 변경하세요 -->
+	<!-- //The Open Graph protocol -->
+	<link rel="SHORTCUT ICON" href=""><!-- [D]리얼경로로 변경하세요 -->
+	<link rel="stylesheet" type="text/css" href="../css/jquery-ui.min.css">
+	<link rel="stylesheet" type="text/css" href="../css/reset.css">
+	<link rel="stylesheet" type="text/css" href="../css/content.css">
+	<link rel="stylesheet" type="text/css" href="../css/theme_checkpay.css">
+	<script type="text/javascript" src="../js/jquery-1.8.3.min.js"></script>
+	<script type="text/javascript" src="../js/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="../js/jquery.ui.touch-punch.min.js"></script>
+	<script type="text/javascript" src="../js/slide_slick.js"></script>
+	<script type="text/javascript" src="../js/publishing.ui.library.1.0.0.js"></script>
+	<script type="text/javascript" src="../js/cmd.js"></script>
+	<script type="text/javascript" src="../js/common.js"></script>
+
+	<!-- [S] chart -->
+	<script src="https://code.highcharts.com/highcharts.js"></script>
+	<script src="https://code.highcharts.com/modules/exporting.js"></script>
+	<script src="https://code.highcharts.com/modules/export-data.js"></script>
+	<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+	<!-- [E] chart -->
+</head>
+
+<body>
+	<!-- wrap -->
+	<div class="wrap">
+
+		<!-- header -->
+		<div class="header">
+			<!-- nav -->
+			<div class="nav">
+				<div class="menu">
+					<ul class="menu_inn">
+						<li class="item home"><a href="/main" class="link"><span class="tx">나의 자산</span></a></li>
+						<li class="item calendar on"><a href="/calender" class="link"><span class="tx">캘린더</span></a>
+						</li>
+						<!-- 활성화일때 클래스 'on'추가 -->
+						<li class="item setup"><a href="/mypage/" class="link"><span class="tx">마이페이지</span></a></li>
+					</ul>
+				</div>
+			</div>
+			<!-- //nav -->
+			<!-- <div class="header_inn">
+			<div class="left">
+				<a href="#none" class="btnBack"><span class="blind">Back</span></a>
+			</div>
+			<div class="center">
+				<h2 class="tit_h2">캘린더</h2>
+			</div>
+			<div class="right">
+				<a href="#none" class="btnClose"><span class="blind">close</span></a>
+			</div>
+		</div> -->
+		</div>
+		<!-- //header -->
+
+		<!-- container -->
+		<div class="container">
+			<div class="content">
+
+				<div class="tabs_wrap tabInter tab_calendar">
+					<div class="tabs_header type1">
+						<ul class="cboth">
+							<li class="js_tabclickDp1 on"><a href="#none"><span>월간</span></a></li>
+							<!-- 선택시 title="선택됨" 추가 -->
+							<li class="js_tabclickDp1"><a href="#none"><span>내역</span></a></li>
+							<li class="js_tabclickDp1"><a href="#none"><span>통계</span></a></li>
+							<li class="js_tabclickDp1"><a href="#none"><span>예산</span></a></li>
+						</ul>
+					</div>
+					<div class="tabs_body_wrap">
+						<div class="tabs_body type1 cboth">
+							<!-- [S] 월간 -->
+							<div class="tab_cntDp1" id="monthly" style="display: block;"></div>
+							<!-- // [E] 월간 -->
+							<!-- [S] 내역 -->
+							<div class="tab_cntDp1" id="history" style="display: none;"></div>
+							<!-- // [E] 내역 -->
+							<!-- [S] 통계 -->
+							<div class="tab_cntDp1" id="statis" style="display: none;"></div>
+							<!-- // [E] 통계 -->
+							<!-- [S] 예산 -->
+							<div class="tab_cntDp1" id="budget" style="display: none;"></div>
+							<!-- // [E] 예산 -->
+						</div>
+					</div>
+				</div>
+
+				<!-- [S] 하단 고정 영역 -->
+				<div class="fix_bottom">
+					<!-- 2021-12-16 btn_wrap 위치이동 -->
+					<!-- <div class="btn_wrap">
+					<div class="btnGroup type_col">
+						<p><a href="#none" class="btnBl1" role="button">설정 저장하기</a></p>
+					</div>
+				</div> -->
+				</div>
+				<!-- [E] 하단 고정 영역 -->
+
+			</div>
+		</div>
+		<!-- //container -->
+	</div>
+	<!-- //wrap -->
+
+	<!-- bottomsheet N001_select_m 월선택 -->
+	<div id="layer_N001_select_m" class="layer_bottomsheet">
+		<div class="layer_inner">
+			<div class="layer_tit">
+				<strong class="tit"><span>월 선택</span></strong>
+				<button type="button" class="js_pop_close btn_close"><span class="blind">닫기</span></button>
+			</div>
+			<div class="layer_cont">
+				<!-- 페이지 스타일 -->
+				<div class="type_page">
+					<ul class="layer_sel_opt type_date">
+						<li><button type="button" class="btn_sel_opt on" title="선택됨"><span><em class="num">2021</em>년
+									<em class="num">11</em>월</span></button></li><!-- 선택시 클래스 'on' 및 title="선택됨" 추가 -->
+						<li><button type="button" class="btn_sel_opt"><span><em class="num">2021</em>년 <em
+										class="num">10</em>월</span></button></li>
+						<li><button type="button" class="btn_sel_opt"><span><em class="num">2021</em>년 <em
+										class="num">9</em>월</span></button></li>
+						<li><button type="button" class="btn_sel_opt"><span><em class="num">2021</em>년 <em
+										class="num">8</em>월</span></button></li>
+						<li><button type="button" class="btn_sel_opt"><span><em class="num">2021</em>년 <em
+										class="num">7</em>월</span></button></li>
+						<li><button type="button" class="btn_sel_opt"><span><em class="num">2021</em>년 <em
+										class="num">6</em>월</span></button></li>
+						<li><button type="button" class="btn_sel_opt"><span><em class="num">2021</em>년 <em
+										class="num">5</em>월</span></button></li>
+						<li><button type="button" class="btn_sel_opt"><span><em class="num">2021</em>년 <em
+										class="num">4</em>월</span></button></li>
+						<li><button type="button" class="btn_sel_opt"><span><em class="num">2021</em>년 <em
+										class="num">3</em>월</span></button></li>
+						<li><button type="button" class="btn_sel_opt"><span><em class="num">2021</em>년 <em
+										class="num">2</em>월</span></button></li>
+						<li><button type="button" class="btn_sel_opt"><span><em class="num">2021</em>년 <em
+										class="num">1</em>월</span></button></li>
+					</ul>
+				</div>
+				<!-- //페이지 스타일 -->
+			</div>
+			<div class="layer_footer">
+				<button type="button" class="js_pop_close btn_confirm"><span>저장</span></button>
+			</div>
+		</div>
+	</div>
+	<!-- // bottomsheet N001_select_m 월선택 -->
+
+	<!-- bottomsheet N001_select_m 월별 카테고리 선택 -->
+	<div id="layer_N001_select_m_category" class="layer_bottomsheet">
+		<div class="layer_inner">
+			<div class="layer_tit">
+				<strong class="tit"><span>카테고리</span></strong>
+				<button type="button" class="js_pop_close btn_close"><span class="blind">닫기</span></button>
+			</div>
+			<div class="layer_cont">
+				<!-- 페이지 스타일 -->
+				<div class="type_page">
+					<ul class="layer_sel_opt">
+						<li><button type="button" class="btn_sel_opt on" title="선택됨"><span>입출금</span></button></li>
+						<!-- 선택시 클래스 'on' 및 title="선택됨" 추가 -->
+						<li><button type="button" class="btn_sel_opt"><span>카드</span></button></li>
+					</ul>
+				</div>
+				<!-- //페이지 스타일 -->
+			</div>
+			<div class="layer_footer">
+				<button type="button" class="js_pop_close btn_confirm"><span>저장</span></button>
+			</div>
+		</div>
+	</div>
+	<!-- // bottomsheet N001_select_m 월별 카테고리 선택 -->
+
+	<!-- bottomsheet N001_select_m 내역, 정렬 선택 -->
+	<div id="layer_N001_select_m_sort" class="layer_bottomsheet">
+		<div class="layer_inner">
+			<div class="layer_tit">
+				<strong class="tit"><span>정렬</span></strong>
+				<button type="button" class="js_pop_close btn_close"><span class="blind">닫기</span></button>
+			</div>
+			<div class="layer_cont">
+				<!-- 페이지 스타일 -->
+				<div class="type_page">
+					<ul class="layer_sel_opt">
+						<li><button type="button" class="btn_sel_opt on" title="선택됨"><span>최신순</span></button></li>
+						<!-- 선택시 클래스 'on' 및 title="선택됨" 추가 -->
+						<li><button type="button" class="btn_sel_opt"><span>과거순</span></button></li>
+					</ul>
+				</div>
+				<!-- //페이지 스타일 -->
+			</div>
+			<div class="layer_footer">
+				<button type="button" class="js_pop_close btn_confirm"><span>저장</span></button>
+			</div>
+		</div>
+	</div>
+	<!-- // bottomsheet N001_select_m 내역, 정렬 선택 -->
+
+	<!-- layer_popup 월간 캘린더 안내 알럿팝업 type3 N001_icon_p_01 -->
+	<div id="N001_icon_p_01" class="layer_popup type3">
+		<div class="layer_position">
+			<div class="layer_inner">
+				<div class="layer_cont">
+					<div class="msg_box">
+						<strong class="msg_alert">
+							<ul class="cal_exp_box">
+								<li class="list">
+									<p class="exp_ico"><span class="date" aria-hidden="true">23</span></p>
+									<p class="exp_txt">오늘날짜</p>
+								</li>
+								<li class="list">
+									<p class="exp_ico"><span class="blit_1"></span></p>
+									<p class="exp_txt">개설,발급,만기 등 이벤트</p>
+								</li>
+								<li class="list">
+									<p class="exp_ico"><span class="blit_2"></span></p>
+									<p class="exp_txt">결제,상환 등 알림</p>
+								</li>
+								<!-- [S] 2021-12-02 캘린더 정보팝업, 입출금,카드승인 정보 추가 -->
+								<li class="list">
+									<p class="exp_ico"><span class="blit_3"></span></p>
+									<p class="exp_txt">입출금,카드승인 내역 정보</p>
+								</li>
+								<!-- [E] 2021-12-02 캘린더 정보팝업, 입출금,카드승인 정보 추가 -->
+								<li class="list">
+									<p class="exp_ico"><span class="star_off"></span><span class="star_on"></span></p>
+									<p class="exp_txt">별표를 Tap하면<br>해당 일에 표기설정</p>
+								</li>
+							</ul>
+						</strong>
+					</div>
+					<div class="btn_layer_wrap">
+						<button type="button" class="js_pop_close btn_confirm"><span>닫기</span></button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- // layer_popup 월간 캘린더 안내 알럿팝업 type3 N001_icon_p_01 -->
+
+	<!-- bottomsheet N001_edit_memo  메모 -->
+	<div id="layer_N001_edit_memo" class="layer_bottomsheet">
+		<div class="layer_inner">
+			<div class="layer_tit">
+				<strong class="tit"><span>메모란</span></strong>
+				<button type="button" class="js_pop_close btn_close"><span class="blind">닫기</span></button>
+			</div>
+			<div class="layer_cont">
+				<!-- 페이지 스타일 -->
+				<div class="type_page">
+					<div class="line_div">
+						<div class="layer_memo_wrap">
+							<textarea class="tx_area js_textarea1" name="textfield1" cols="45" rows="1" maxlength="60"
+								placeholder="메모를 남겨주세요" title="메모를 남겨주세요, 최대 60자 까지 가능합니다"></textarea>
+							<button type="button" class="btn_val_reset" onclick="memoValReset();"><span
+									class="ico_del"><em class="blind">메모 텍스트 비우기</em></span></button>
+						</div>
+						<div id="js_textarea1_cnt" class="txtarea_cnt"><span class="pointColor" tabindex="0">0</span> /
+							<em tabindex="0">60</em>
+						</div>
+					</div>
+				</div>
+				<!-- //페이지 스타일 -->
+			</div>
+			<div class="layer_footer">
+				<button type="button" class="js_pop_close btn_confirm"><span>저장</span></button>
+			</div>
+		</div>
+	</div>
+	<!-- // bottomsheet N001_edit_memo  메모 -->
+
+	<!-- bottomsheet N1001_1_1_1(통장/출금) -->
+	<div id="layer_N1001_1_1_1" class="layer_bottomsheet">
+		<div class="layer_inner">
+			<div class="layer_tit">
+				<strong class="tit"><span>상세내역</span></strong>
+				<button type="button" class="js_pop_close btn_close"><span class="blind">닫기</span></button>
+			</div>
+			<div class="layer_cont">
+				<!-- 페이지 스타일 -->
+				<div class="type_page">
+					<div class="line_div">
+						<div class="layer_detail">
+							<p class="today">
+								<span class="num">2021</span>년 <span class="num">9</span>월 <span class="num">23</span>일
+								<span>월요일</span>
+							</p>
+							<div class="history_box">
+								<div class="cal_cate_history">
+									<div class="left">
+										<p class="name">OO은행 입출금 통장</p>
+										<p class="balance">계좌번호 <span class="num">1234-5678-9012</span></p>
+									</div>
+								</div>
+								<div class="trans_info">
+									<p class="tit">출금</p>
+									<div class="price">
+										<p><span class="num">-100,000</span>원</p>
+										<p class="balance">잔액 <span class="num">1,780,000</span>원</p>
+									</div>
+								</div>
+							</div>
+							<div class="history_date">
+								<ul class="accDetailList type_layer">
+									<li>
+										<span class="itemTit">거래시간</span>
+										<span class="itemData"><em class="num">2021.9.23 12:00</em></span>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- //페이지 스타일 -->
+			</div>
+		</div>
+	</div>
+	<!-- // bottomsheet N1001_1_1_1(통장/출금) -->
+
+	<!-- bottomsheet 월간 상세내역 N1001_3_4_1(은행대출상환) -->
+	<div id="layer_N1001_3_4_1" class="layer_bottomsheet">
+		<div class="layer_inner">
+			<div class="layer_tit">
+				<strong class="tit"><span>상세내역</span></strong>
+				<button type="button" class="js_pop_close btn_close"><span class="blind">닫기</span></button>
+			</div>
+			<div class="layer_cont">
+				<!-- 페이지 스타일 -->
+				<div class="type_page">
+					<div class="line_div">
+						<div class="layer_detail">
+							<p class="today">
+								<span class="num">12</span>월 <span class="num">22</span>일 <span>일요일</span>
+							</p>
+							<div class="history_box">
+								<div class="cal_cate_history">
+									<div class="left">
+										<p class="name">OO은행 입출금 통장</p>
+										<p class="balance">계좌번호 <span class="num">1234-5678-9012</span></p>
+									</div>
+									<!-- <div class="right">
+									<p class="amount"><span class="num">2,500,000</span>원</p>
+									<p class="balance">잔액 <span class="num">1,780,000</span>원</p>
+								</div> -->
+								</div>
+								<div class="trans_info">
+									<p class="tit">입금</p>
+									<div class="price">
+										<p><span class="num">800,000</span>원</p>
+										<p class="balance">잔액 <span class="num">1,780,000</span>원</p>
+										<!-- <a href="#layer_N1001_2_1_1_1" class="btn_open_bottom_sheet" role="button"><span class="cate_name pointColor">카페/디저트</span></a> -->
+									</div>
+								</div>
+							</div>
+							<div class="history_date">
+								<ul class="accDetailList type_layer">
+									<li>
+										<span class="itemTit">거래시간</span>
+										<span class="itemData"><em class="num">2021.10.21 12:00</em></span>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- //페이지 스타일 -->
+			</div>
+		</div>
+	</div>
+	<!-- // bottomsheet 월간 상세내역 N1001_3_4_1(은행대출상환) -->
+
+	<!-- bottomsheet N1003_1_1(해당 내역 보기) -->
+	<div id="layer_N1003_1_1" class="layer_bottomsheet">
+		<div class="layer_inner">
+			<div class="layer_tit">
+				<strong class="tit"><span>상세내역</span></strong>
+				<button type="button" class="js_pop_close btn_close"><span class="blind">닫기</span></button>
+			</div>
+			<div class="layer_cont">
+				<!-- 페이지 스타일 -->
+				<div class="type_page">
+					<div class="line_div">
+						<div class="layer_detail">
+							<p class="today">
+								<span class="num">2020</span>년 <span class="num">12</span>월
+							</p>
+							<div class="cal_cate_history">
+								<div class="left">
+									<p class="name">지출식비</p>
+								</div>
+								<div class="right">
+									<p class="amount"><span class="num">2,500,000</span>원</p>
+									<p class="balance">설정예산 <span class="num">1,780,000</span>원</p>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="line_div">
+						<!-- [S] 내용 없음 -->
+						<!--
+						<div class="msgResult">
+							<p>지출 내역이 없습니다.</p>
+						</div>
+						-->
+						<!-- [E] 내용 없음 -->
+						<div class="cal_acc_history">
+							<div class="accHistory type_layer">
+								<div class="historyList">
+									<div class="wrap_date">
+										<span class="date"><span class="num">09.30</span> 금요일</span>
+										<ul>
+											<li>
+												<a href="#layer_N1001_2_1_1" class="btn_open_bottom_sheet"
+													role="button">
+													<div class="left">
+														<span class="category">신세계이마트</span>
+														<span class="balance"><em class="num">20:28</em></span>
+													</div>
+													<div class="right">
+														<span class="amount"><em class="num">50,000</em>원</span>
+														<span class="balance">일시불</span>
+													</div>
+												</a>
+											</li>
+										</ul>
+									</div>
+									<div class="wrap_date">
+										<span class="date"><span class="num">09.28</span> 목요일</span>
+										<ul>
+											<li>
+												<a href="#layer_N1001_2_1_1" class="btn_open_bottom_sheet"
+													role="button">
+													<div class="left">
+														<span class="category">골목식당</span>
+														<span class="balance"><em class="num">07:28</em></span>
+													</div>
+													<div class="right">
+														<span class="amount"><em class="num">40,000</em>원</span>
+														<span class="balance">일시불</span>
+													</div>
+												</a>
+											</li>
+										</ul>
+									</div>
+									<div class="wrap_date">
+										<span class="date"><span class="num">09.20</span> 월요일</span>
+										<ul>
+											<li>
+												<a href="#layer_N1001_2_1_1" class="btn_open_bottom_sheet"
+													role="button">
+													<div class="left">
+														<span class="category">패밀리레스토랑</span>
+														<span class="balance"><em class="num">22:55</em></span>
+													</div>
+													<div class="right">
+														<span class="amount"><em class="num">150,000</em>원</span>
+														<span class="balance">할부</span>
+													</div>
+												</a>
+											</li>
+											<li>
+												<a href="#layer_N1001_2_1_1" class="btn_open_bottom_sheet"
+													role="button">
+													<div class="left">
+														<span class="category">아이디룩</span>
+														<span class="balance"><em class="num">08:25</em></span>
+													</div>
+													<div class="right">
+														<span class="amount"><em class="num">150,000</em>원</span>
+														<span class="balance">일시불</span>
+													</div>
+												</a>
+											</li>
+										</ul>
+									</div>
+									<div class="wrap_date">
+										<span class="date"><span class="num">2021.7.21. 10:28</span></span>
+										<ul>
+											<li>
+												<div class="left">
+													<span class="category">7회 차 상환금액</span>
+													<span class="balance">상환계좌</span>
+												</div>
+												<div class="right">
+													<span class="amount"><em class="num">1,990,000</em>원</span>
+													<span class="balance"><em class="num">123-45678-9011</em>
+														부산은행</span>
+												</div>
+											</li>
+											<li>
+												<div class="left">
+													<span class="category">7회 차 상환금액</span>
+													<span class="balance">상환계좌</span>
+												</div>
+												<div class="right">
+													<span class="amount"><em class="num">1,990,000</em>원</span>
+													<span class="balance"><em class="num">123-45678-9011</em>
+														부산은행</span>
+												</div>
+											</li>
+										</ul>
+									</div>
+									<div class="upLoading circleBar">
+										<div class="loader"></div>
+										<p>업데이트 중입니다</p>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- //페이지 스타일 -->
+			</div>
+		</div>
+	</div>
+	<!-- // bottomsheet N1003_1_1(해당 내역 보기) -->
+
+	<!-- bottomsheet N1001_2_1_1(카드사용내역) -->
+	<div id="layer_N1001_2_1_1" class="layer_bottomsheet">
+		<div style="display: none;" class="approved_num"></div>
+		<div style="display: none;" class="card_id"></div>
+		<div style="display: none;" class="org_code"></div>
+		<div style="display: none;" class="appr_status"></div>
+		<div style="display: none;" class="appr_seq"></div>
+		<div class="layer_inner">
+			<div class="layer_tit">
+				<strong class="tit"><span>상세내역</span></strong>
+				<button type="button" class="js_pop_close btn_close"><span class="blind">닫기</span></button>
+			</div>
+			<div class="layer_cont">
+				<!-- 페이지 스타일 -->
+				<div class="type_page">
+					<div class="line_div">
+						<div class="layer_detail">
+							<p class="today">
+								<span class="num">2020</span>년 <span class="num">12</span>월 <span class="num">22</span>일
+								<span>일요일</span>
+							</p>
+							<div class="history_box">
+								<div class="cal_cate_history">
+									<div class="left">
+										<p class="name">스타벅스 코리아</p>
+										<p class="balance">카드정보 <span class="info">카드의 정석</span></p>
+									</div>
+								</div>
+								<div class="trans_info">
+									<p class="tit">승인</p>
+									<div class="price">
+										<p><span class="num">100,000</span>원</p>
+										<!-- <p class="balance">잔액 <span class="num">1,780,000</span>원</p> -->
+										<a href="#layer_N1001_2_1_1_1" class="btn_open_bottom_sheet" role="button"><span
+												class="cate_name pointColor">카페/디저트</span></a>
+									</div>
+								</div>
+							</div>
+							<div class="history_date">
+								<ul class="accDetailList type_layer">
+									<li>
+										<span class="itemTit">거래시간</span>
+										<span class="itemData"><em class="num">2021.10.21 12:00</em></span>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+
+					<div class="line_div">
+						<ul class="accDetailList type_layer">
+							<li>
+								<span class="itemTit">승인상태</span>
+								<span class="itemData status"><strong>승인</strong></span>
+							</li>
+							<li>
+								<span class="itemTit">결제방법</span>
+								<span class="itemData method"><strong>일시불</strong></span>
+							</li>
+						</ul>
+					</div>
+				</div>
+				<!-- //페이지 스타일 -->
+			</div>
+		</div>
+	</div>
+	<!-- // bottomsheet N1001_2_1_1(카드사용내역) -->
+
+	<!-- bottomsheet N1001_2_1_1_1(카테고리설정) -->
+	<div id="layer_N1001_2_1_1_1" class="layer_bottomsheet">
+		<div class="layer_inner">
+			<div class="layer_tit">
+				<strong class="tit"><span>카테고리분류</span></strong>
+				<button type="button" class="js_pop_close btn_close"><span class="blind">닫기</span></button>
+			</div>
+			<div class="layer_cont">
+				<!-- 페이지 스타일 -->
+				<div class="type_page">
+					<div class="line_div">
+						<div class="category_set">
+							<p class="ck_box"><a class="ck_name on" title="선택됨">식비</a></p>
+							<!-- 선택시 클래스 'on'추가 및 title="선택됨" 추가 -->
+							<p class="ck_box"><a class="ck_name">주거/통신</a></p>
+							<p class="ck_box"><a class="ck_name">카페/디저트</a></p>
+							<p class="ck_box"><a class="ck_name">의료/건강</a></p>
+							<p class="ck_box"><a class="ck_name">술/유흥</a></p>
+							<p class="ck_box"><a class="ck_name">금융</a></p>
+							<p class="ck_box"><a class="ck_name">생활</a></p>
+							<p class="ck_box"><a class="ck_name">문화/여가</a></p>
+							<p class="ck_box"><a class="ck_name">온라인쇼핑</a></p>
+							<p class="ck_box"><a class="ck_name">여행/숙박</a></p>
+							<p class="ck_box"><a class="ck_name">패션/쇼핑</a></p>
+							<p class="ck_box"><a class="ck_name">교육/학습</a></p>
+							<p class="ck_box"><a class="ck_name">뷰티</a></p>
+							<p class="ck_box"><a class="ck_name">자녀/육아</a></p>
+							<p class="ck_box"><a class="ck_name">교통</a></p>
+							<p class="ck_box"><a class="ck_name">애완동물</a></p>
+							<p class="ck_box"><a class="ck_name">자동차</a></p>
+							<p class="ck_box"><a class="ck_name">경조/선물</a></p>
+							<p class="ck_box"><a class="ck_name">기타</a></p>
+						</div>
+					</div>
+				</div>
+				<!-- //페이지 스타일 -->
+			</div>
+			<div class="layer_footer">
+				<button type="button" id="category_confirm" class="js_pop_close btn_confirm"><span>확인</span></button>
+			</div>
+		</div>
+	</div>
+	<!-- // bottomsheet N1001_2_1_1_1(카테고리설정) -->
+
+	<!-- bottomsheet N1001_3_4_3(카드단기대출) -->
+	<div id="layer_N1001_3_4_3" class="layer_bottomsheet">
+		<div class="layer_inner">
+			<div class="layer_tit">
+				<strong class="tit"><span>상세내역</span></strong>
+				<button type="button" class="js_pop_close btn_close"><span class="blind">닫기</span></button>
+			</div>
+			<div class="layer_cont">
+				<!-- 페이지 스타일 -->
+				<div class="type_page">
+					<div class="line_div">
+						<div class="layer_detail">
+							<p class="today">
+								<span class="num">2020</span>년 <span class="num">12</span>월 <span class="num">22</span>일
+								<span>일요일</span>
+							</p>
+							<div class="history_box">
+								<div class="cal_cate_history">
+									<div class="left">
+										<p class="name">OO카드 단기대출 상환</p>
+									</div>
+								</div>
+								<div class="trans_info">
+									<p class="tit">이용 금액</p>
+									<div class="price">
+										<p><span class="num">10,000,000</span>원</p>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="line_div">
+						<ul class="accDetailList type_layer">
+							<li>
+								<span class="itemTit">이자율</span>
+								<span class="itemData int_rate"><em class="num">3.14</em>%</span>
+							</li>
+							<li>
+								<span class="itemTit">이용일</span>
+								<span class="itemData loan_dtime"><em class="num">2021.09.01</em></span>
+							</li>
+							<li class="mgt50">
+								<span class="itemTit">단기대출잔액</span>
+								<span class="itemData balance_amt"><em class="num">1,000,000</em>원</span>
+							</li>
+							<li>
+								<span class="itemTit">결제예정일</span>
+								<span class="itemData pay_due_date"><em class="num">2021.12.20</em></span>
+							</li>
+						</ul>
+					</div>
+				</div>
+				<!-- //페이지 스타일 -->
+			</div>
+		</div>
+	</div>
+	<!-- // bottomsheet N1001_3_4_3(카드단기대출) -->
+
+	<!-- bottomsheet N1001_3_4_4(카드장기대출) -->
+	<div id="layer_N1001_3_4_4" class="layer_bottomsheet">
+		<div class="layer_inner">
+			<div class="layer_tit">
+				<strong class="tit"><span>상세내역</span></strong>
+				<button type="button" class="js_pop_close btn_close"><span class="blind">닫기</span></button>
+			</div>
+			<div class="layer_cont">
+				<!-- 페이지 스타일 -->
+				<div class="type_page">
+					<div class="line_div">
+						<div class="layer_detail">
+							<p class="today">
+								<span class="num">2020</span>년 <span class="num">12</span>월 <span class="num">22</span>일
+								<span>일요일</span>
+							</p>
+							<div class="history_box">
+								<div class="cal_cate_history">
+									<div class="left">
+										<p class="name">OO카드 장기대출</p>
+									</div>
+								</div>
+								<div class="trans_info">
+									<p class="tit">이용 금액</p>
+									<div class="price">
+										<p><span class="num">10,000,000</span>원</p>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="line_div">
+						<ul class="accDetailList type_layer">
+							<li>
+								<span class="itemTit">이자율</span>
+								<span class="itemData int_rate"><em class="num">3.14</em>%</span>
+							</li>
+							<li>
+								<span class="itemTit">대출일시</span>
+								<span class="itemData loan_dtime"><em class="num">2021.09.01</em></span>
+							</li>
+							<li class="mgt50">
+								<span class="itemTit">대출종류</span>
+								<span class="itemData loan_type">카드론</span>
+							</li>
+							<li>
+								<span class="itemTit">상환방식</span>
+								<span class="itemData repay_method">만기일시상환</span>
+							</li>
+							<li>
+								<span class="itemTit">대출회차</span>
+								<span class="itemData loan_cnt"><em class="num">1</em>회차</span>
+							</li>
+							<li>
+								<span class="itemTit">상환액중이자</span>
+								<span class="itemData int_amt"><em class="num">100,000</em>원</span>
+							</li>
+							<li class="mgt50">
+								<span class="itemTit">장기대출잔액</span>
+								<span class="itemData balance_amt"><em class="num">1,000,000</em>원</span>
+							</li>
+							<li>
+								<span class="itemTit">만기일</span>
+								<span class="itemData exp_date"><em class="num">2021.12.20</em></span>
+							</li>
+						</ul>
+					</div>
+				</div>
+				<!-- //페이지 스타일 -->
+			</div>
+		</div>
+	</div>
+	<!-- // bottomsheet N1001_3_4_4(카드장기대출) -->
+
+	<!-- bottomsheet N1001_3_4_5(카드 청구 내역) -->
+	<div id="layer_N1001_3_4_5" class="layer_bottomsheet">
+		<div class="layer_inner">
+			<div class="layer_tit">
+				<strong class="tit"><span>상세내역</span></strong>
+				<button type="button" class="js_pop_close btn_close"><span class="blind">닫기</span></button>
+			</div>
+			<div class="layer_cont">
+				<!-- 페이지 스타일 -->
+				<div class="type_page">
+					<div class="line_div">
+						<div class="layer_detail">
+							<p class="today">
+								<span class="num">2020</span>년 <span class="num">12</span>월 <span class="num">22</span>일
+								<span>일요일</span>
+							</p>
+							<div class="history_box">
+								<div class="cal_cate_history">
+									<div class="left">
+										<p class="name">OO카드 결제</p>
+									</div>
+								</div>
+								<div class="trans_info">
+									<p class="tit">청구 금액</p>
+									<div class="price">
+										<p><span class="num">10,000,000</span>원</p>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="line_div">
+						<ul class="accDetailList type_layer">
+							<li>
+								<span class="itemTit">청구년월</span>
+								<span class="itemData charge_month"><em class="num">2021.01</em></span>
+							</li>
+							<li>
+								<span class="itemTit">결제일</span>
+								<span class="itemData charge_day">매달 <em class="num">01</em>일</span>
+							</li>
+							<li>
+								<span class="itemTit">사용카드</span>
+								<span class="itemData card_name"><em class="num">00은행 신용카드</em></span>
+							</li>
+						</ul>
+					</div>
+				</div>
+				<!-- //페이지 스타일 -->
+			</div>
+		</div>
+	</div>
+	<!-- // bottomsheet N1001_3_4_5(카드 청구 내역) -->
+
+	<!-- bottomsheet N1001_3_4_6(휴대폰 요금 청구 내역) -->
+	<div id="layer_N1001_3_4_6" class="layer_bottomsheet">
+		<div class="layer_inner">
+			<div class="layer_tit">
+				<strong class="tit"><span>상세내역</span></strong>
+				<button type="button" class="js_pop_close btn_close"><span class="blind">닫기</span></button>
+			</div>
+			<div class="layer_cont">
+				<!-- 페이지 스타일 -->
+				<div class="type_page">
+					<div class="line_div">
+						<div class="layer_detail">
+							<p class="today">
+								<span class="num">2020</span>년 <span class="num">12</span>월 <span class="num">22</span>일
+								<span>일요일</span>
+							</p>
+							<div class="history_box">
+								<div class="cal_cate_history">
+									<div class="left">
+										<p class="name">SKT 휴대폰 납부예정일자</p>
+										<p class="balance">계약번호 <span class="info">4378943</span></p>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- //페이지 스타일 -->
+			</div>
+		</div>
+	</div>
+	<!-- // bottomsheet N1001_3_4_6(휴대폰 요금 청구 내역) -->
+
+	<script>
+
+		$(document).ready(function () {
+			// 월간, 내역, 통계, 예산 정적파일 호출
+			$("#monthly").load("calender/N1001.html", function () {
+				// 달력 출력
+				pageRefresh();
+				// 오늘의 연,월 세팅
+				var date = new Date();
+				$('.sel_form.type_month').children().children().text(date.getFullYear() + "년 " + (date.getMonth() + 1) + "월");
+			});
+			$("#history").load("calender/N1002.html");
+			$("#statis").load("calender/N1003.html");
+			$("#budget").load("calender/N1004.html", function () {
+				// 오늘의 연,월 세팅
+				var date = new Date();
+				$('.sel_form.type_month').children().children().text(date.getFullYear() + "년 " + (date.getMonth() + 1) + "월");
+			});
+
+			// [S] 캘린더 탭
+			$(".tabInter").tabs({
+				wrapClass: ".tabInter",
+				clickClass: ".js_tabclickDp1",
+				showClass: ".tab_cntDp1",
+				animate: false,
+				contentWidthFull: false,//effect when animate:true
+				animateBorder: ["false", ".tabs_header"],//show border in class .
+				fade: false,
+				speed: 500
+			});
+			// [E] 캘린더 탭
+
+			// [S] 월 선택 리스트 모달 오늘의 날짜에 맞게 출력
+			var date = new Date();
+			date.setDate(1); // 월 별 컨트롤을 위해 일을 1일로 고정
+			var arr = '';
+			for (i = 0; i < 6; i++) {
+				arr += '<li>'
+				if (i === 0) {
+					arr += '	<button type="button" class="btn_sel_opt on">'
+				} else {
+					arr += '	<button type="button" class="btn_sel_opt">'
+				}
+				arr += '		<span>'
+					+ '			<em class="num">' + date.getFullYear() + '</em>년 <em class="num">' + (date.getMonth() + 1) + '</em>월'
+					+ '		</span>'
+					+ '	</button>'
+					+ '</li>';
+				date.setMonth(date.getMonth() - 1); // 1개월씩 감소하여 6개월 전까지 출력
+			}
+			$('.layer_sel_opt.type_date').html(arr); // 출력
+			// [E] 월 선택 리스트 모달 오늘의 날짜에 맞게 출력
+
+		});
+
+		var now_year = new Date().getFullYear();
+		var now_month = new Date().getMonth() + 1;
+		var now_day = new Date().getDate();
+
+		var sel_year = new Date().getFullYear();
+		var sel_month = new Date().getMonth() + 1;
+		var sel_day = new Date().getDate();
+		var sel_category = '입출금';
+		var sel_sort = 'desc';
+
+		var member_id = parseJwt(getCookie("jwt")).sub;
+
+		// [S] 월 선택
+		// 목록에서 원하는 월 선택 시 표시 변경 + 선택한 연월 변수 값 수정
+		$(document).on('click', '.layer_sel_opt.type_date>li>button', function (e) {
+			// 모달에서 선택된 월 리스트 표시 변경
+			$('.layer_sel_opt.type_date>li').children().attr('class', 'btn_sel_opt');
+			$(this).attr('class', 'btn_sel_opt on');
+
+			// 클릭한 연,월 수정
+			var arr = $(this)[0].innerText.split(" ");
+			sel_year = arr[0].substring(0, arr[0].length - 1);
+			sel_month = arr[1].substring(0, arr[1].length - 1);
+			sel_day = 1;
+		});
+		// 월 선택 완료하면 그에 따른 화면 수정 및 값 출력
+		$('#layer_N001_select_m').find('.js_pop_close.btn_confirm').on('click', function () {
+			// 현재 탭 확인하여 탭에 따른 결과값들 출력
+			pageRefresh();
+			// 표시 중인 선택된 연,월 변경
+			$('.sel_form.type_month').children().children().text(sel_year + "년 " + sel_month + "월");
+		})
+		// [E] 월 선택
+
+		// [S] 월간 카테고리 선택(입출금,카드)
+		// 카테고리 선택 시 선택된 카테고리 표시 + 변수 값 수정
+		var category_node = $('#layer_N001_select_m_category').find('.btn_sel_opt');
+		category_node.on('click', function () {
+			sel_category = $(this)[0].innerText;
+
+			// 모달에서 선택된 카테고리 표시 변경
+			category_node.attr('class', 'btn_sel_opt');
+			$(this).attr('class', 'btn_sel_opt on');
+		});
+		// 선택 완료 시 변경한 카테고리에 맞게 값 출력 및 화면 표시
+		$('#layer_N001_select_m_category').find('.js_pop_close.btn_confirm').on('click', function () {
+			// 선택한 월에 맞게 달력 출력
+			pageRefresh();
+			// 표시 중인 카테고리 변경
+			$('.btn_open_bottom_sheet.sel_box.month').children().text(sel_category);
+		});
+		// [E] 월간 카테고리 선택(입출금,카드)
+
+		// [S] 내역 정렬 선택(최신순,과거순)
+		var sort_node = $('#layer_N001_select_m_sort').find('.btn_sel_opt');
+		sort_node.on('click', function () {
+			sel_sort = $(this)[0].innerText;
+			sel_sort === '최신순' ? sel_sort = 'desc' : sel_sort = 'asc';
+			// 모달에서 선택된 카테고리 표시 변경
+			sort_node.attr('class', 'btn_sel_opt');
+			$(this).attr('class', 'btn_sel_opt on');
+		})
+		$('#layer_N001_select_m_sort').find('.js_pop_close.btn_confirm').on('click', function () {
+			// 선택한 정렬에 맞게 내역 출력
+			pageRefresh();
+			// 표시 중인 정렬 변경
+			$('.btn_open_bottom_sheet.sel_box.history').children().text(sel_sort === 'desc' ? '최신순' : '과거순');
+		});
+		// [E] 내역 정렬 선택(최신순,과거순)
+
+		// [S] 카드 상세 내역 카테고리 수정
+		// [S] 카드 상세 내역의 카테고리 클릭 시 - 카테고리 리스트 모달 open
+		$('.cate_name.pointColor').on('click', function () {
+			// 선택되어있는 카테고리 표시
+			$('.ck_name').attr('class', 'ck_name');
+			var category = $(this).text();
+			$('.ck_name').each(function (idx, ele) {
+				if (category === ele.innerText) {
+					$(this).attr('class', 'ck_name on');
+				}
+			})
+		});
+		// [E] 카드 상세 내역의 카테고리 클릭 시 - 카테고리 리스트 모달 open
+		// [S] 카테고리 선택 시 마다 선택된 카테고리 표시
+		$('.ck_name').on('click', function () {
+			$('.ck_name').attr('class', 'ck_name');
+			$(this).attr('class', 'ck_name on');
+		})
+		// [E] 카테고리 선택 시 마다 선택된 카테고리 표시
+
+		// [S] 완료 버튼 눌림
+		$('#category_confirm').on('click', function () {
+			let category = category_code($('.ck_name.on').text());
+			let approved_dtime = new Date($('#layer_N1001_2_1_1').find('.itemData>.num').text());
+			let formatDate = approved_dtime.getFullYear()
+				+ "" + (approved_dtime.getMonth() + 1 < 10 ? "0" + (approved_dtime.getMonth() + 1) : approved_dtime.getMonth() + 1)
+				+ "" + (approved_dtime.getDate() < 10 ? "0" + approved_dtime.getDate() : approved_dtime.getDate())
+				+ "" + (approved_dtime.getHours() < 10 ? "0" + approved_dtime.getHours() : approved_dtime.getHours())
+				+ "" + (approved_dtime.getMinutes() < 10 ? "0" + approved_dtime.getMinutes() : approved_dtime.getMinutes())
+				+ "" + (approved_dtime.getSeconds() < 10 ? "0" + approved_dtime.getSeconds() : approved_dtime.getSeconds())
+			let approved_num = $('#layer_N1001_2_1_1').find('.approved_num').text();
+			let org_code = $('#layer_N1001_2_1_1').find('.org_code').text();
+			let card_id = $('#layer_N1001_2_1_1').find('.card_id').text();
+			let appr_status = $('#layer_N1001_2_1_1').find('.appr_status').text();
+			let appr_seq = Number($('#layer_N1001_2_1_1').find('.appr_seq').text());
+
+			// API 호출 (DB 값 수정)
+			let values = {
+				"catg_cd": category,
+				"memb_cd": member_id,
+				"org_code": org_code,
+				"card_id": card_id,
+				"approved_dtime": formatDate,
+				"approved_num": approved_num,
+				"status": appr_status,
+				"seq": appr_seq
+			}
+			ajax_card_industry(values).done(function () {
+				pageRefresh();
+				$('.cate_name.pointColor').text(category);
+				$('.js_pop_close.btn_close').trigger('click');
+			});
+		});
+		// [E] 완료 버튼 눌림
+		// [E] 카드 상세 내역 카테고리 수정
+
+		// [S] 탭 선택 시 
+		$(document).on('click', '.js_tabclickDp1', function () {
+			pageRefresh();
+		});
+		// [E] 탭 선택 시
+		
+		// [S] 탭에 따른 페이지 비동기 리프레쉬
+		function pageRefresh() {
+			let sel_tab = $('.js_tabclickDp1.on').find('a>span').text();
+			switch (sel_tab) {
+				case '월간':
+					show_calender(member_id, sel_year, sel_month, sel_day, sel_category);
+					break;
+				case '내역':
+					show_all_history(member_id, sel_year, sel_month, sel_sort);
+					break;
+				case '통계':
+					show_statistics(member_id, sel_year, sel_month, sel_sort);
+					break;
+				case '예산':
+					show_budget(member_id, sel_year, sel_month);
+					break;
+			}
+		}
+		// [E] 탭에 따른 페이지 비동기 리프레쉬
+
+		// 계좌 모달에 값 적용
+		function print_account_detail(account_name, trans_type, amount, account_num, balance_amt, date) {
+			// 거래일자
+			$('#layer_N1001_1_1_1').find('.num').eq(0).text(date.getFullYear()); // 연
+			$('#layer_N1001_1_1_1').find('.num').eq(1).text(date.getMonth() + 1); // 월
+			$('#layer_N1001_1_1_1').find('.num').eq(2).text(date.getDate()); // 일
+			$('#layer_N1001_1_1_1').find('.today>span').eq(3).text(toKor_dayOfWeek(date.getDay())); // 요일
+			// 계좌 이름
+			$('#layer_N1001_1_1_1').find('.name').text(account_name.toString().replaceAll(',',' '));
+			// 계좌 번호
+			$('#layer_N1001_1_1_1').find('.num').eq(3).text(account_num);
+			// 입출금 여부
+			$('#layer_N1001_1_1_1').find('.trans_info>.tit').text(trans_type.toString().replaceAll(',',' '));
+			// 금액
+			$('#layer_N1001_1_1_1').find('.num').eq(4).text(amount);
+			// 잔액
+			$('#layer_N1001_1_1_1').find('.num').eq(5).text(balance_amt); // 1,000,000
+			// 거래시간
+			$('#layer_N1001_1_1_1').find('.num').eq(6).text(year_month_date_hours_min(date)); //yyyy-MM-dd HH:SS
+		};
+
+		// 카드 모달에 값 적용
+		function print_card_detail(card_name, catg_nm, approved_amt, merchant_name, installments, approved_dtime, approved_num, modified_amt, card_id, org_code, appr_status, appr_seq) {
+			approved_dtime = new Date(approved_dtime);
+			// 거래일자
+			$('#layer_N1001_2_1_1').find('.num').eq(0).text(approved_dtime.getFullYear()); // 연
+			$('#layer_N1001_2_1_1').find('.num').eq(1).text(approved_dtime.getMonth() + 1); // 월
+			$('#layer_N1001_2_1_1').find('.num').eq(2).text(approved_dtime.getDate()); // 일
+			$('#layer_N1001_2_1_1').find('.today>span').eq(3).text(toKor_dayOfWeek(approved_dtime.getDay())); // 요일
+			// 가맹점명
+			$('#layer_N1001_2_1_1').find('.name').text(merchant_name);
+			// 카드정보
+			$('#layer_N1001_2_1_1').find('.info').text(card_name);
+			// 승인 여부
+			$('#layer_N1001_2_1_1').find('.trans_info>.tit').text(card_state(appr_status));
+			// 금액
+			if (appr_status === '03') {
+				$('#layer_N1001_2_1_1').find('.price>p>.num').text(modified_amt);
+			} else {
+				$('#layer_N1001_2_1_1').find('.price>p>.num').text(approved_amt);
+			}
+			// 카테고리(industry)
+			$('#layer_N1001_2_1_1').find('.cate_name.pointColor').text(catg_nm);
+			// 거래 시간
+			$('#layer_N1001_2_1_1').find('.itemData>.num').text(year_month_date_hours_min(approved_dtime));
+			// 승인 상태
+			$('#layer_N1001_2_1_1').find('.itemData.status').text(card_state(appr_status));
+			// 결제 방법
+			$('#layer_N1001_2_1_1').find('.itemData.method').text(installments === '0' ? '일시불' : "할부 " + installments + "회차");
+			// 결제 번호
+			$('#layer_N1001_2_1_1').find('.approved_num').text(approved_num);
+
+			// 기관코드
+			$('#layer_N1001_2_1_1').find('.org_code').text(org_code);
+			// 카드 코드
+			$('#layer_N1001_2_1_1').find('.card_id').text(card_id);
+			// 승인 코드
+			$('#layer_N1001_2_1_1').find('.appr_status').text(appr_status);
+			// 시퀀스
+			$('#layer_N1001_2_1_1').find('.appr_seq').text(appr_seq);
+		};
+
+		// [S] 바텀시트
+		$(document).on("click", ".btn_open_bottom_sheet", function (e) {
+			e.preventDefault();
+
+			var $href = $(this).attr('href');
+			layer_bottomsheet($href);
+			$('html').addClass('scroll_lock');//2021-10-28 html 스크롤 잠금 수정
+
+			// [S] multi layer 2021-08-02 추가
+			var dimIdx = $('.dim').index();
+			eval('$focusReturn' + [dimIdx] + '= $(this)');
+			//$focusReturn = $(this); // multi layer 2021-08-02 삭제
+			// [E] multi layer 2021-08-02 추가
+
+		});
+		function layer_bottomsheet(el) {
+			var $el = $(el);
+			$el.append("<div class=\"dim\"></div>");
+			isDim ? $('.layer_bottomsheet').show() : $el.show().attr({'tabindex': '0', 'aria-hidden': 'false'}).focus();
+			setTimeout(function () {
+				$el.find('.layer_inner').addClass('on');
+			}, 50);
+
+			// [S] multi layer 2021-08-02 추가
+			//var isDim = $el.siblings().hasClass('dim');
+			var isDim;
+			var dimIdx = $('.dim').index();
+			var thisDim = $el.find('.dim');
+			var thisLyZindex = dimIdx + 4000;
+			$('.dim').css('opacity', '0');
+			thisDim.css('opacity', '.7');
+			thisDim.closest('.layer_bottomsheet, .layer_popup').css('z-index', thisLyZindex);
+			// [E] multi layer 2021-08-02 추가
+
+			$el.find('.js_pop_close').click(function () {
+
+				$el.find('.layer_inner').removeClass('on');
+				setTimeout(function () {
+					isDim ? $('.layer_bottomsheet').hide() : $el.hide();
+					$('html').removeClass('scroll_lock');//2021-10-28 html 스크롤 잠금 수정
+					$el.attr({'tabindex': '-1', 'aria-hidden': 'true'}).find(".dim").remove();
+					// [S] multi layer 2021-08-02 추가
+					if ($('.dim').length == '2') {
+						$('.dim:eq(1)').css('opacity', '.7');
+					} else if ($('.dim').length == '1') {
+						$('.dim').css('opacity', '.7');
+					}
+					// [E] multi layer 2021-08-02 추가
+				}, 200);
+
+				// [S] multi layer 2021-08-02 추가
+				eval('$focusReturn' + [dimIdx]).focus();
+				//$focusReturn.focus(); // multi layer 2021-08-02 삭제
+				// [E] multi layer 2021-08-02 추가
+
+				return false;
+			});
+		}
+		// [E] 바텀시트
+
+		// [S] ajax 호출 함수
+		// 월간 - 선택한 달의 메모 및 중요 표시 조회	
+		function ajax_calender_info(member_id, sel_year, sel_month) {
+			let year_month = "" + sel_year + (sel_month < 10 ? "0" + sel_month : sel_month)
+			return $.ajax({
+				url: 'http://192.168.240.208:8081/api/calender/info/' + member_id + '/' + year_month,
+				type: "GET",
+				dataType: 'json',
+				headers: {
+					"Authorization": "Bearer " + getCookie("jwt")
+				},
+				error: function (jqXHR) {
+					if (jqXHR.status == 401) {
+						tokenCall2(false).done(function () {
+							ajax_calender_info(member_id, sel_year, sel_month)
+						});
+					}
+				}
+			});
+		}
+		// 월간 - 선택한 날의 메모 및 중요 표시 추가
+		function ajax_calender_info_new(send_data) {
+			return $.ajax({
+				url: 'http://192.168.240.208:8081/api/calender/info/new',
+				type: "POST",
+				dataType: 'json',
+				contentType: "application/json",
+				data: JSON.stringify(send_data),
+				headers: {
+					"Authorization": "Bearer " + getCookie("jwt")
+				},
+				error: function (jqXHR) {
+					if (jqXHR.status == 401) {
+						tokenCall2(false).done(function () {
+							ajax_calender_info_new(send_data)
+						});
+					}
+				}
+			});
+		}
+		// 월간 - 선택한 날의 메모 및 중요 표시 수정		
+		function ajax_calender_info_set(send_data) {
+			return $.ajax({
+				url: 'http://192.168.240.208:8081/api/calender/info/set',
+				type: 'POST',
+				dataType: 'json',
+				contentType: "application/json",
+				data: JSON.stringify(send_data),
+				headers: {
+					"Authorization": "Bearer " + getCookie("jwt")
+				},
+				error: function (jqXHR) {
+					if (jqXHR.status == 401) {
+						tokenCall2(false).done(function () {
+							ajax_calender_info_set(send_data);
+						});
+					}
+				}
+			});
+		}
+		// 월간, 내역, 통계 - 캘린더 카드내역 및 계좌내역 정렬 (desc, asc)
+		function ajax_calender_list(member_id, sel_year, sel_month, sel_sort) {
+			let year_month = "" + sel_year + (sel_month < 10 ? "0" + sel_month : sel_month)
+			return $.ajax({
+				url: 'http://192.168.240.208:8081/api/calender/list/' + member_id + '/' + year_month + '/' + sel_sort,
+				type: 'get',
+				dataType: 'json',
+				headers: {
+					"Authorization": "Bearer " + getCookie("jwt")
+				},
+				error: function (jqXHR) {
+					if (jqXHR.status == 401) {
+						tokenCall2(false).done(function () {
+							ajax_calender_list(member_id, sel_year, sel_month, sel_sort);
+						});
+					}
+				}
+			});
+		}
+		// 월간 - 캘린더 날짜 선택 시 입출금 내역 조회	
+		function ajax_calender_account(member_id, sel_year, sel_month, sel_day) {
+			let year_month_day = "" + sel_year + (sel_month < 10 ? "0" + sel_month : sel_month) + (sel_day < 10 ? "0" + sel_day : sel_day);
+			return $.ajax({
+				url: 'http://192.168.240.208:8081/api/calender/account/' + member_id + '/' + year_month_day,
+				type: "GET",
+				dataType: "json",
+				headers: {
+					"Authorization": "Bearer " + getCookie("jwt")
+				},
+				error: function (jqXHR) {
+					if (jqXHR.status == 401) {
+						tokenCall2(false).done(function () {
+							ajax_calender_account(member_id, sel_year, sel_month, sel_day);
+						});
+					}
+				}
+			});
+		}
+		// 월간 - 캘린더 날짜 선택 시 카드 내역 조회
+		function ajax_calender_card(member_id, sel_year, sel_month, sel_day) {
+			let year_month_day = "" + sel_year + (sel_month < 10 ? "0" + sel_month : sel_month) + (sel_day < 10 ? "0" + sel_day : sel_day);
+			return $.ajax({
+				url: 'http://192.168.240.208:8081/api/calender/card/' + member_id + '/' + year_month_day,
+				type: 'GET',
+				dataType: 'json',
+				headers: {
+					"Authorization": "Bearer " + getCookie("jwt")
+				},
+				error: function (jqXHR) {
+					if (jqXHR.status == 401) {
+						tokenCall2(false).done(function () {
+							ajax_calender_card(member_id, sel_year, sel_month, sel_day);
+						});
+					}
+				}
+			});
+		}
+		// 예산 - 특정 유저의 캘린더 예산 조회
+		function ajax_budget_find(member_id, sel_year, sel_month) {
+			let year_month = "" + sel_year + (sel_month < 10 ? "0" + sel_month : sel_month)
+			return $.ajax({
+				url: 'http://192.168.240.208:8081/api/calender/budget/' + member_id + '/' + year_month,
+				type: 'GET',
+				dataType: 'json',
+				headers: {
+					"Authorization": "Bearer " + getCookie("jwt")
+				},
+				error: function (jqXHR) {
+					if (jqXHR.status == 401) {
+						tokenCall2(false).done(function () {
+							ajax_budget_find(member_id, sel_year, sel_month);
+						});
+					}
+				}
+			});
+		}
+		// 예산 - 특정 유저의 캘린더 예산 수정
+		function ajax_budget_set(send_data) {
+			return $.ajax({
+				url: 'http://192.168.240.208:8081/api/calender/budget',
+				type: 'post',
+				dataType: 'json',
+				contentType: "application/json",
+				data: JSON.stringify(send_data),
+				headers: {
+					"Authorization": "Bearer " + getCookie("jwt")
+				},
+				error: function (jqXHR) {
+					if (jqXHR.status == 401) {
+						tokenCall2(false).done(function () {
+							ajax_budget_set(send_data);
+						});
+					}
+				}
+			});
+		}
+		// 캘린더 카드내역 상세보기 카테고리 변경
+		function ajax_card_industry(values) {
+			return $.ajax({
+				url: 'http://192.168.240.208:8081/api/calender/card/industry',
+				type: 'POST',
+				contentType: "application/json",
+				data: JSON.stringify(values),
+				headers: {
+					"Authorization": "Bearer " + getCookie("jwt")
+				},
+				error: function (jqXHR) {
+					if (jqXHR.status == 401) {
+						tokenCall2(false).done(function () {
+							ajax_card_industry(values);
+						});
+					}
+				}
+			});
+		}
+		// 카드 대출 관련 정보 호출
+		function ajax_loan(member_id, sel_year, sel_month, sel_day){
+			let year_month_day;
+			if(typeof sel_day === "undefined"){
+				year_month_day = "" + sel_year + (sel_month < 10 ? "0" + sel_month : sel_month);
+			} else {
+				year_month_day = "" + sel_year + (sel_month < 10 ? "0" + sel_month : sel_month) + (sel_day < 10 ? "0" + sel_day : sel_day);
+			}
+			return $.ajax({
+				url: 'http://192.168.240.208:8081/api/calender/card/loan/' + member_id + '/' + year_month_day,
+				type: 'GET',
+				contentType: "application/json",
+				dataType: "json",
+				headers: {
+					"Authorization": "Bearer " + getCookie("jwt")
+				},
+				error: function (jqXHR) {
+					if (jqXHR.status == 401) {
+						tokenCall2(false).done(function () {
+							ajax_loan(member_id, sel_year, sel_month, sel_day);
+						});
+					}
+				}
+			});
+		}
+		// 카드 청구 금액 호출
+		function ajax_bills(member_id, sel_year, sel_month, sel_day){
+			let year_month_day;
+			if(typeof sel_day === "undefined"){
+				year_month_day = "" + sel_year + (sel_month < 10 ? "0" + sel_month : sel_month);
+			} else {
+				year_month_day = "" + sel_year + (sel_month < 10 ? "0" + sel_month : sel_month) + (sel_day < 10 ? "0" + sel_day : sel_day);
+			}
+			return $.ajax({
+				url: 'http://192.168.240.208:8081/api/calender/card/bills/' + member_id + '/' + year_month_day,
+				type: 'GET',
+				contentType: "application/json",
+				dataType: "json",
+				headers: {
+					"Authorization": "Bearer " + getCookie("jwt")
+				},
+				error: function (jqXHR) {
+					if (jqXHR.status == 401) {
+						tokenCall2(false).done(function () {
+							ajax_bills(member_id, sel_year, sel_month, sel_day);
+						});
+					}
+				}
+			});
+		}
+		// 통신 요금 청구 내역 호출
+		function ajax_telecom_bills(member_id, sel_year, sel_month, sel_day){
+			let year_month_day;
+			if(typeof sel_day === "undefined"){
+				year_month_day = "" + sel_year + (sel_month < 10 ? "0" + sel_month : sel_month);
+			} else {
+				year_month_day = "" + sel_year + (sel_month < 10 ? "0" + sel_month : sel_month) + (sel_day < 10 ? "0" + sel_day : sel_day);
+			}
+			return $.ajax({
+				url: 'http://192.168.240.208:8081/api/calender/telecom/bills/'+ member_id +'/'+ year_month_day,
+				type: 'GET',
+				contentType: "application/json",
+				dataType: "json",
+				headers: {
+					"Authorization": "Bearer " + getCookie("jwt")
+				},
+				error: function (jqXHR) {
+					if (jqXHR.status == 401) {
+						tokenCall2(false).done(function () {
+							ajax_telecom_bills(member_id, sel_year, sel_month, sel_day);
+						});
+					}
+				}
+			});
+		}
+		// 카드 회사 별 카드 리스트 조회
+		function ajax_card_list(member_id, org_code, sel_year, sel_month){
+			let year_month = "" + sel_year + (sel_month < 10 ? "0" + sel_month : sel_month)
+			return $.ajax({
+				url: "http://192.168.240.208:8081/api/bills/"+member_id+"/"+org_code+"/"+year_month,
+				type: 'GET',
+				contentType: "application/json",
+				dataType: "json",
+				headers: {
+					"Authorization": "Bearer " + getCookie("jwt")
+				},
+				error: function (jqXHR) {
+					if (jqXHR.status == 401) {
+						tokenCall2(false).done(function () {
+							ajax_card_list(member_id, org_code, sel_year, sel_month);
+						});
+					}
+				}
+			})
+		}
+		// [E] ajax 호출 함수
+	</script>
+</body>
+
+</html>

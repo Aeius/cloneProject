@@ -1,0 +1,209 @@
+﻿<!DOCTYPE html>
+<html lang="ko" class="leaf">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>CheckPay</title>
+<meta http-equiv="Cache-Control" content="No-Cache">
+<meta http-equiv="Pragma" content="No-Cache">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<!--<meta name="title" content="">-->
+<meta name="description" content="">
+<!--<meta name="keywords" content="">-->
+<!-- The Open Graph protocol -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="">
+<meta property="og:description" content="">
+<meta property="og:url" content="">
+<meta property="og:image" content=""><!-- [D]리얼경로로 변경하세요 -->
+<!-- //The Open Graph protocol -->
+<link rel="SHORTCUT ICON" href=""><!-- [D]리얼경로로 변경하세요 -->
+<link rel="stylesheet" type="text/css" href="../../css/jquery-ui.min.css">
+<link rel="stylesheet" type="text/css" href="../../css/reset.css">
+<link rel="stylesheet" type="text/css" href="../../css/content.css">
+<link rel="stylesheet" type="text/css" href="../../css/theme_checkpay.css">
+<script type="text/javascript" src="../../js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="../../js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="../../js/jquery.ui.touch-punch.min.js"></script>
+<script type="text/javascript" src="../../js/slide_slick.js"></script>
+<script type="text/javascript" src="../../js/publishing.ui.library.1.0.0.js"></script>
+<script type="text/javascript" src="../../js/cmd.js"></script>
+<script type="text/javascript" src="../../js/common.js"></script>
+</head>
+
+<body>
+
+<!-- wrap -->
+<div class="wrap">
+
+	<!-- header -->
+	<div class="header">
+		<div class="header_inn">
+			<div class="left">
+				<a href="#none" class="btnBack"><span class="blind">Back</span></a>
+			</div>
+			<!--
+			<div class="right">
+                <a href="/invest" class="btnClose"><span class="blind">close</span></a>
+			</div>
+			-->
+		</div>
+	</div>
+	<!-- //header -->
+
+	<!-- container -->
+	<div class="container">
+		<div class="content">
+			<div class="accSetting">
+				<div class="tAccount">
+					<h3 class="tAccTit">()</h3>
+					<p class="tAccDetail">0</p>
+				</div>
+				<div class="topTotal">
+					<!-- [S] 2021-11-30 topTotal 영역 수정 -->
+					<a href="#none" class="link" title="더보기">
+						<span class="itemTit">총 잔고</span>
+						<span class="itemData">
+							<span class="detail"><span class="num">0</span><em class="cur">원</em></span>
+						</span>
+					</a>
+					<!-- [E] 2021-11-30 topTotal 영역 수정 -->
+				</div>
+				<ul class="accDetailList">
+					<li>
+						<span class="itemTit">예수금</span>
+						<span class="itemData"><em class="num">0</em><em class="cur">원</em></span>
+					</li>
+					<li>
+						<span class="itemTit">신용 융자</span>
+						<span class="itemData"><em class="num">0</em><em class="cur">원</em></span>
+					</li>
+					<li>
+						<span class="itemTit">대출금</span>
+						<span class="itemData"><em class="num">0</em><em class="cur">원</em></span>
+					</li>
+					<li>
+						<span class="itemTit">계좌 평가금액</span>
+						<span class="itemData"><em class="num">0</em><em class="cur">원</em></span>
+					</li>
+					<!-- 이익일 경우-->
+					<li>
+						<span class="itemTit">손익률</span>
+						<span class="itemData"><em class="plus">0%</em></span>
+					</li>
+					 
+					<!-- 
+					손해일 경우
+					<li>
+						<span class="itemTit">손익률</span>
+						<span class="itemData"><em class="minus">-40.00%</em></span>
+					</li>
+					0일 경우
+					<li>
+						<span class="itemTit">손익률</span>
+						<span class="itemData"><em class="zero">0.00%</em></span>
+					</li>
+					-->
+					<li>
+						<span class="itemTit">세제혜택 적용여부</span>
+						<span class="itemData"></span>
+					</li>
+					<li>
+						<span class="itemTit">업데이트 기준일(증권사)</span>
+						<span class="itemData"><em class="num">0</em></span>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<!-- //container -->
+
+</div>
+<!-- //wrap -->
+<script>
+	$(document).ready(function(){
+		if (localStorage.getItem('org_code') === null || localStorage.getItem('account_num') === null) {
+			location.href = "/invest"
+		}
+		let values = {
+			"memb_cd": parseJwt(getCookie("jwt")).sub,
+			"org_code": localStorage.getItem('org_code'),
+			"account_num": localStorage.getItem('account_num')
+		}
+
+		ajax_invest_account_detail(values).done(function(response){
+			localStorage.setItem('account_num', response.encrypt_an);
+			localStorage.setItem('account_name', response.account_name);
+			// 종목이름
+			$('.tAccTit').text(response.account_name);
+			// 계좌 번호
+			$('.tAccDetail').text(response.org_name + " " + response.account_num);
+			
+			// 총 잔고
+			$('.topTotal>a>.itemData>.detail>.num').text(response.total_balance.toLocaleString());
+			
+			// 예수금
+			$('.accDetailList>li').eq(0).find('.num').text(response.withholdings_amt.toLocaleString());
+			// 신용 융자
+			$('.accDetailList>li').eq(1).find('.num').text(response.credit_loan_amt.toLocaleString());
+			// 대출금
+			$('.accDetailList>li').eq(2).find('.num').text(response.mortgage_amt.toLocaleString());
+			// 계좌 평가금액
+			$('.accDetailList>li').eq(3).find('.num').text(response.eval_amt.toLocaleString());
+			// 손익률
+			if(response.return_rate > 0){
+				$('.accDetailList>li').eq(4).find('.itemData').html('<em class="plus">+'+response.return_rate.toFixed(2)+'%</em>');
+			} else if (response.return_rate < 0) {
+				$('.accDetailList>li').eq(4).find('.itemData').html('<em class="minus">'+response.return_rate.toFixed(2)+'%</em>');
+			} else {
+				$('.accDetailList>li').eq(4).find('.itemData').html('<em class="zero">'+response.return_rate.toFixed(2)+'%</em>');
+			}
+			// 세제혜택 적용여부
+			$('.accDetailList>li').eq(5).find('.itemData').text(response.is_tax_benefits === "Y" ? '적용' : '미적용');
+			// 업데이트 기준일(증권사)
+			$('.accDetailList>li').eq(6).find('.num').text(year_month_date_dot(new Date(response.base_date)));
+			
+			if(response.currency_code != "KRW"){
+				$('.topTotal>a>.itemData>.detail>.cur').text(response.currency_code);
+				$('.accDetailList>li').eq(0).find('.cur').text(response.currency_code);
+				$('.accDetailList>li').eq(1).find('.cur').text(response.currency_code);
+				$('.accDetailList>li').eq(2).find('.cur').text(response.currency_code);
+				$('.accDetailList>li').eq(3).find('.cur').text(response.currency_code);
+			}
+		})
+		
+		
+		
+	})
+	// 뒤로가기
+	$(document).on('click', '.btnBack', function(){
+		history.back();
+	})
+	// [S] 총 잔고 클릭 시 -> D1110
+	$(document).on('click', '.topTotal>a', function(e){
+		e.preventDefault();
+		location.href="/invest/accountHis"
+	})
+	// [E] 총 잔고 클릭 시
+
+	// ajax 함수
+	function ajax_invest_account_detail(values){
+		return $.ajax({
+			url: 'http://192.168.240.208:8081/api/invest/account/detail',
+			type: 'POST',
+			contentType: 'application/json',
+			dataType: 'json',
+			data: JSON.stringify(values),
+			headers: {
+				"Authorization": "Bearer " + getCookie("jwt")
+			},
+			error: function(jqXHR) {
+				userErrorHandler(jqXHR);
+				ajax_invest_prod(member_id);
+			}
+		})
+	}
+	// ajax 함수
+</script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+.chart-wrap {
+    text-align: center;
+    height: auto;
+    padding: 50px 0px;
+    position: relative;
+}
+
+.chart-wrap select.chart-select{
+	padding: 5px;
+    border: 1px solid #ddd;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+.chart-container {
+    display: inline-block;
+    width: 500px;
+    position: relative;
+}
+
+.chart-container select.chart-select{
+	padding: 5px;
+    border: 1px solid #ddd;
+    position: absolute;
+    top: -50px;
+    right: 15px;
+}

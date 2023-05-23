@@ -1,0 +1,364 @@
+﻿<!DOCTYPE html>
+<html lang="ko" class="leaf">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport"
+		content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+	<title>CheckPay</title>
+	<meta http-equiv="Cache-Control" content="No-Cache">
+	<meta http-equiv="Pragma" content="No-Cache">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<!--<meta name="title" content="">-->
+	<meta name="description" content="">
+	<!--<meta name="keywords" content="">-->
+	<!-- The Open Graph protocol -->
+	<meta property="og:type" content="website">
+	<meta property="og:title" content="">
+	<meta property="og:description" content="">
+	<meta property="og:url" content="">
+	<meta property="og:image" content=""><!-- [D]리얼경로로 변경하세요 -->
+	<!-- //The Open Graph protocol -->
+	<link rel="SHORTCUT ICON" href=""><!-- [D]리얼경로로 변경하세요 -->
+	<link rel="stylesheet" type="text/css" href="../../css/jquery-ui.min.css">
+	<link rel="stylesheet" type="text/css" href="../../css/reset.css">
+	<link rel="stylesheet" type="text/css" href="../../css/content.css">
+	<link rel="stylesheet" type="text/css" href="../../css/theme_checkpay.css">
+	<script type="text/javascript" src="../../js/jquery-1.8.3.min.js"></script>
+	<script type="text/javascript" src="../../js/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="../../js/jquery.ui.touch-punch.min.js"></script>
+	<script type="text/javascript" src="../../js/slide_slick.js"></script>
+	<script type="text/javascript" src="../../js/publishing.ui.library.1.0.0.js"></script>
+	<script type="text/javascript" src="../../js/cmd.js"></script>
+	<script type="text/javascript" src="../../js/common.js"></script>
+</head>
+
+<body>
+
+	<!-- wrap -->
+	<div class="wrap">
+
+		<!-- header -->
+		<div class="header">
+			<div class="header_inn">
+				<div class="left">
+					<a href="#none" class="btnBack"><span class="blind">Back</span></a>
+				</div>
+				<!--
+				<div class="right">
+					<a href="/invest" class="btnClose"><span class="blind">close</span></a>
+				</div>
+				-->
+			</div>
+		</div>
+		<!-- //header -->
+
+		<!-- container -->
+		<div class="container">
+			<div class="content">
+				<div class="tBalance">
+					<h3 class="tBaltit"></h3>
+					<p class="tBalAmount"><em class="amount"></em>원</p>
+					<p class="tBalDetail"></p>
+					<a href="/invest/irp/accountHis" class="btnRef"><span class="blind">새로고침</span></a>
+					<!--<a href="#" class="btnRef ing"><span class="blind">새로고침</span></a>-->
+				</div>
+				<div class="topTotal">
+					<!-- [S] 2021-11-30 topTotal 영역 수정 -->
+					<a href="#none" class="link" title="더보기">
+						<span class="itemTit">개별운용상품 수익조회</span>
+						<span class="itemData">
+							<span class="detail"></span>
+						</span>
+					</a>
+					<!-- [E] 2021-11-30 topTotal 영역 수정 -->
+				</div>
+				<div class="accHistory">
+					<div class="topCtrl">
+						<div class="rangeCtrl">
+							<button class="btnPrev"><span class="blind">이전</span></button>
+							<span class="range">2021</span>
+							<button class="btnNext"><span class="blind">다음</span></button>
+						</div>
+						<a href="#layerFilter" class="btnFilter btn_open_bottom_sheet" role="button"><span class="blind">필터</span></a>
+					</div>
+					<div class="historyList">
+						<!-- 상세 내역 출력 위치 -->
+						<!--
+					<div class="upLoading circleBar">
+						<div class="loader"></div>
+						<p>업데이트 중입니다</p>
+					</div>
+					-->
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- //container -->
+
+	</div>
+	<!-- //wrap -->
+
+	<!-- [S] 필터 모달 -->
+	<div id="layerFilter" class="layer_bottomsheet">
+		<div class="layer_inner">
+			<div class="layer_tit">
+				<strong class="tit"><span class="blind">조회조건선택팝업</span></strong>
+				<button type="button" class="js_pop_close btn_close"><span class="blind">닫기</span></button>
+			</div>
+			<div class="layer_cont">
+				<div class="filterItem">
+					<p class="filterTit">조회기간</p>
+					<ul class="radioTab">
+						<li>
+							<input type="radio" id="radio1" name="radioTab1" class="blind">
+							<label for="radio1">1개월</label>
+						</li>
+						<li>
+							<input type="radio" id="radio2" name="radioTab1" class="blind">
+							<label for="radio2">3개월</label>
+						</li>
+						<li>
+							<input type="radio" id="radio3" name="radioTab1" class="blind">
+							<label for="radio3">6개월</label>
+						</li>
+						<li>
+							<input type="radio" id="radio4" name="radioTab1" class="blind" checked>
+							<label for="radio4">직접입력</label>
+						</li>
+					</ul>
+					<div class="selPeriod">
+						<!-- datepicker data-title 추가 -->
+						<!-- 21.08.31 수정 -->
+						<div class="dateItem">
+							<label for="startDate" class="blind">조회기간 시작일</label>
+							<input type="tel" class="datepicker" id="startDate" autocomplete="off" data-title="시작일"
+								placeholder="YYYY.MM.DD">
+						</div>
+						<span class="unit">-</span>
+						<div class="dateItem">
+							<label for="endDate" class="blind">조회기간 종료일</label>
+							<input type="tel" id="endDate" class="datepicker" autocomplete="off" data-title="종료일"
+								placeholder="YYYY.MM.DD">
+						</div>
+					</div>
+				</div>
+				<div class="filterItem">
+					<p class="filterTit">정렬순</p>
+					<ul class="radioTab">
+						<li>
+							<input type="radio" id="radio8" name="radioTab3" class="blind" checked>
+							<label for="radio8">최신순</label>
+						</li>
+						<li>
+							<input type="radio" id="radio9" name="radioTab3" class="blind">
+							<label for="radio9">과거순</label>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div class="layer_footer">
+				<button type="button" class="js_pop_close btn_confirm"><span>확인</span></button>
+			</div>
+		</div>
+	</div>
+	<!-- [E] 필터 모달 -->
+
+	<script>
+		let values = {
+			"memb_cd": parseJwt(getCookie("jwt")).sub,
+			"account_num": localStorage.getItem('account_num'),
+			"start_day": null,
+			"end_day": null,
+			"sort": "desc"
+		}
+
+		$(document).ready(function () {
+			// 순서대로 접근하지 않았을 경우
+			if (localStorage.getItem('org_code') === null || localStorage.getItem('account_num') === null) {
+				location.href = "/invest"
+			}
+			// IRP 계좌 기본 정보 출력
+			$('.tBaltit').text(localStorage.getItem('account_name'));
+			$('.tBalAmount>.amount').text(localStorage.getItem('eval_amt'));
+			$('.tBalDetail').text(localStorage.getItem('account_full'));
+			$('.range').text(new Date().getFullYear());
+
+			// IRP 계좌 상세 내역
+			ajax_irp_account_trans(values);
+		})
+		
+		// [S] 이동 버튼
+		// 개별운용상품 수익조회 클릭 시
+		$(document).on('click', '.topTotal>a', function (e) {
+			e.preventDefault()
+			location.href = "/invest/irp/products";
+		})
+		// 뒤로가기
+		$(document).on('click', '.btnBack', function () {
+			history.back();
+		})
+		// [E] 이동 버튼
+		
+		// [S] 핕터
+		function setFilterDate(month){
+			let date = new Date();
+			let day = date.getDate();
+			date.setDate(1);
+			date.setMonth(date.getMonth() - month);
+			let last_day = new Date(date.getFullYear(), date.getMonth(), 0).getDate();
+			last_day < day ? date.setDate(last_day) : date.setDate(day);
+			return date;
+		}
+		$('.radioTab>li>input').on('click', function(){
+			switch($(this).parent().find('label').text()){
+				case '1개월':
+					$('#startDate').val(year_month_date_dot(setFilterDate(1)));
+					$('#endDate').val(year_month_date_dot(new Date()));
+					break;
+				case '3개월':
+					$('#startDate').val(year_month_date_dot(setFilterDate(1)));
+					$('#endDate').val(year_month_date_dot(new Date()));
+					break;
+				case '6개월':
+					$('#startDate').val(year_month_date_dot(setFilterDate(1)));
+					$('#endDate').val(year_month_date_dot(new Date()));
+					break;
+				case '직접입력':
+					$('#startDate').val(year_month_date_dot(new Date()));
+					$('#endDate').val(year_month_date_dot(new Date()));
+					break;
+			}
+		});
+
+		$('.js_pop_close.btn_confirm').on('click', function(){
+			values.start_day = $('#startDate').val().replaceAll('.', '');
+			values.end_day = $('#endDate').val().replaceAll('.', '') + "235959";
+			let sort = $('input[name=radioTab3]:checked').parent().find('label').text();
+			if(sort === '최신순') {
+				values.sort = 'desc';
+			} else {
+				values.sort = 'asc';
+			}
+			ajax_irp_account_trans(values);
+			$('.rangeCtrl').html('<span class="range">'+$('#startDate').val() + " ~ " + $('#endDate').val()+'</span>');
+		});
+		// [E] 필터
+		
+		
+		// [S] 날짜 연도 이동
+		$(document).on('click', '.btnPrev', function(){
+			$('.range').text(Number($('.range').text())-1);
+			values.start_day = $('.range').text() + '0101';
+			values.end_day = $('.range').text() + '1232';
+			ajax_irp_account_trans(values);
+		})
+		$(document).on('click', '.btnNext', function(){
+			if($('.range').text() != new Date().getFullYear()){
+				$('.range').text(Number($('.range').text())+1);
+				values.start_day = $('.range').text() + '0101';
+				values.end_day = $('.range').text() + '1232';
+				ajax_irp_account_trans(values)
+			}
+		})
+		// [E] 날짜 연도 이동
+		
+		// ajax 통신
+		function ajax_irp_account_trans(values) {
+			return $.ajax({
+				url: "http://192.168.240.208:8081/api/irp/account/trans",
+				type: "POST",
+				contentType: "application/json",
+				data: JSON.stringify(values),
+				dataType: 'json',
+				headers: {
+					"Authorization": "Bearer " + getCookie("jwt")
+				},
+				error: function (jqXHR) {
+					if (jqXHR.status == 401) {
+						tokenCall2(false).done(function () {
+							ajax_irp_account_trans(values);
+						});
+					}
+				}
+			}).done(function(response){
+				let temp = '';
+				if(response.length != 0){
+					let init_date = month_date_dot(new Date(response[0].trans_dtime));
+					temp+='<span class="date"><span class="num">'+month_date_dot(new Date(response[0].trans_dtime))+'</span> '+toKor_dayOfWeek(new Date(response[0].trans_dtime).getDay())+'</span>';
+					for(result of response){
+						if(init_date != month_date_dot(new Date(result.trans_dtime))){
+							temp+='<span class="date"><span class="num">'+month_date_dot(new Date(result.trans_dtime))+'</span> '+toKor_dayOfWeek(new Date(result.trans_dtime).getDay())+'</span>';
+							init_date = month_date_dot(new Date(result.trans_dtime));
+						}
+						temp+='<ul>'
+							+'	<li>'
+							+'		<div class="left">'
+							+'			<span class="category">'+invest_trans_code(result.trans_type)+'</span>'
+							+'			<span class="time">'+hours_minute_col(new Date(result.trans_dtime))+'</span>'
+							+'		</div>'
+							+'		<div class="right">'
+							+'			<span class="amount"><em class="num">'+result.trans_amt.toLocaleString()+'</em>원</span>'
+							+'		</div>'
+							+'	</li>'
+							+'</ul>'
+	
+					}
+					$('.historyList').html(temp);
+				} else {
+					temp = '<p class="listNone">불러올 내역이 없습니다.</p>'
+					$('.historyList').html(temp);
+				}
+			})
+		}
+		// ajax 통신
+
+		// [S] 바텀시트
+		$(document).on("click", ".btn_open_bottom_sheet", function (e) {
+			e.preventDefault();
+			var $href = $(this).attr('href');
+			layer_bottomsheet($href);
+			$('html').addClass('scroll_lock');
+			// [S] multi layer
+			var dimIdx = $('.dim').index();
+			eval('$focusReturn' + [dimIdx] + '= $(this)');
+			// [E] multi layer
+		});
+		function layer_bottomsheet(el) {
+			var $el = $(el);
+			$el.append("<div class=\"dim\"></div>");
+			isDim ? $('.layer_bottomsheet').show() : $el.show().attr({'tabindex': '0', 'aria-hidden': 'false'}).focus();
+			setTimeout(function () {
+				$el.find('.layer_inner').addClass('on');
+			}, 50);
+			// [S] multi layer
+			var isDim;
+			var dimIdx = $('.dim').index();
+			var thisDim = $el.find('.dim');
+			var thisLyZindex = dimIdx + 4000;
+			$('.dim').css('opacity', '0');
+			thisDim.css('opacity', '.7');
+			thisDim.closest('.layer_bottomsheet, .layer_popup').css('z-index', thisLyZindex);
+			// [E] multi layer
+			$el.find('.js_pop_close').click(function () {
+				$el.find('.layer_inner').removeClass('on');
+				setTimeout(function () {
+					isDim ? $('.layer_bottomsheet').hide() : $el.hide();
+					$('html').removeClass('scroll_lock');
+					$el.attr({'tabindex': '-1', 'aria-hidden': 'true'}).find(".dim").remove();
+					// [S] multi layer
+					if ($('.dim').length == '2') {
+						$('.dim:eq(1)').css('opacity', '.7');
+					} else if ($('.dim').length == '1') {
+						$('.dim').css('opacity', '.7');
+					}
+					// [E] multi layer
+				}, 200);
+				eval('$focusReturn' + [dimIdx]).focus();
+				return false;
+			});
+		}
+		// [E] 바텀시트
+	</script>
+</body>
+</html>

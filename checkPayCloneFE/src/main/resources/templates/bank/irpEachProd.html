@@ -1,0 +1,195 @@
+
+<!DOCTYPE html>
+<html lang="ko" class="leaf">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>CheckPay</title>
+<meta http-equiv="Cache-Control" content="No-Cache">
+<meta http-equiv="Pragma" content="No-Cache">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<!--<meta name="title" content="">-->
+<meta name="description" content="">
+<!--<meta name="keywords" content="">-->
+<!-- The Open Graph protocol -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="">
+<meta property="og:description" content="">
+<meta property="og:url" content="">
+<meta property="og:image" content=""><!-- [D]리얼경로로 변경하세요 -->
+<!-- //The Open Graph protocol -->
+<link rel="SHORTCUT ICON" href=""><!-- [D]리얼경로로 변경하세요 -->
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui.min.css">
+<link rel="stylesheet" type="text/css" href="/css/reset.css">
+<link rel="stylesheet" type="text/css" href="/css/content.css">
+<link rel="stylesheet" type="text/css" href="/css/theme_checkpay.css">
+<script type="text/javascript" src="/js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="/js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="/js/jquery.ui.touch-punch.min.js"></script>
+<script type="text/javascript" src="/js/slide_slick.js"></script>
+<script type="text/javascript" src="/js/publishing.ui.library.1.0.0.js"></script>
+<script type="text/javascript" src="/js/cmd.js"></script>
+<script type="text/javascript" src="../js/common.js"></script>
+</head>
+
+<body>
+
+<!-- wrap -->
+<div class="wrap">
+
+	<!-- header -->
+	<div class="header">
+		<div class="header_inn">
+			<div class="left">
+				<a onclick="window.history.back()" class="btnBack"><span class="blind">Back</span></a>
+			</div>
+			<div class="right">
+                <!-- <a onclick="window.history.back()" class="btnClose"><span class="blind">close</span></a> -->
+			</div>
+		</div>
+	</div>
+	<!-- //header -->
+
+	<!-- container -->
+	<div class="container">
+		<div class="content">
+			<div class="accSetting">
+				<div class="tBalance">
+					<h3 class="tBaltit"></h3>
+					<p class="tBalAmount"><em class="amount"></em>원</p>
+					<a class="btnRef"><span class="blind">새로고침</span></a>
+					<!-- 새로고침중 일때 class에 ing 추가 -->
+					<!-- <a href="#" class="btnRef ing"><span class="blind">새로고침</span></a> -->
+				</div>
+				<h4 class="listTit"><em class="pointColor">개별운용상품</em></h4>
+			</div>
+            <div class="upLoading circleBar">
+                <div class="loader"></div>
+                <p>업데이트 중입니다</p>
+            </div>
+		</div>
+	</div>
+	<!-- //container -->
+</div>
+<!-- //wrap -->
+<script>
+    var token = getCookie("jwt");
+	var memb_cd=parseJwt(getCookie("jwt")).sub;
+	var account_num='[[${bankReqVo.account_num}]]';
+	var org_code='[[${bankReqVo.org_code}]]';
+
+    // [S] irp 개별운용상품 수정중 04.27
+    function bankirpeachproductslist(isBtnRef){
+        request_data={
+            "memb_cd" : memb_cd,
+			"org_code": org_code,
+            "account_num": account_num
+        }
+        $.ajax({
+		url:'http://192.168.240.208:8081/api/irp/account/products',
+		type:'post',
+        dataType: 'json',
+		contentType : 'application/json',
+		data: JSON.stringify(request_data),
+		beforeSend:function(xhr){
+            $('.upLoading').show();
+				if(isBtnRef==true){
+					$('.btnRef').addClass("ing");
+			}
+	        xhr.setRequestHeader("Authorization", "Bearer "+token);
+		},
+		success:function(result){
+            $(result).each(function(index, item){
+                let open_date=item.open_date.substring(0,4)+'.'+item.open_date.substring(5,7)+'.'+item.open_date.substring(8,10);
+                let exp_date=item.exp_date.substring(0,4)+'.'+item.exp_date.substring(5,7)+'.'+item.exp_date.substring(8,10);
+                let arrNum='';
+                if(item.int_rate>0){
+                    arrNum='<em class="num plus">'+(item.int_rate).toFixed(2)+'%</em>';
+                }
+                else if(item.int_rate<0){
+                    arrNum='<em class="num minus">'+item.int_rate.toFixed(2)+'%</em>';
+                }
+                else if(item.int_rate==0){
+                    arrNum='<em class="num zero">'+item.int_rate.toFixed(2)+'%</em>';
+                }
+
+                let arr=    '<div class="instItem">';
+                    arr+=       '<div class="instTotal">';
+                    arr+=           '<p class="itemTit">'+item.irp_name+'</p>';
+                    arr+=           '<p class="itemData"><span class="num">'+numberWithCommas(item.eval_amt)+'</span>원</p>';
+                    arr+=       '</div>';
+                    arr+=       '<ul class="accDetailList">';
+                    arr+=           '<li>';
+                    arr+=               '<span class="itemTit">투자원금</span>';
+                    arr+=               '<span class="itemData"><em class="num">'+numberWithCommas(item.inv_principal)+'</em>원</span>';
+                    arr+=           '</li>';
+                    arr+=           '<li>';
+                    arr+=               '<span class="itemTit">보유좌수</span>';
+                    arr+=               '<span class="itemData"><em class="num">'+numberWithCommas(item.fund_num)+'</em></span>';
+                    arr+=           '</li>';
+                    arr+=           '<li>';
+                    arr+=               '<span class="itemTit">신규일(재예치일)</span>';
+                    arr+=               '<span class="itemData"><em class="num">'+open_date+'</em></span>';
+                    arr+=           '</li>';
+                    arr+=           '<li>';
+                    arr+=               '<span class="itemTit">약정이자율</span>';
+                    arr+=               '<span class="itemData">'+arrNum+'</span>';
+                    arr+=           '</li>';
+                    arr+=           '<li>';
+                    arr+=               '<span class="itemTit">만기일</span>';
+                    arr+=               '<span class="itemData"><em class="num">'+exp_date+'</em></span>';
+                    arr+=           '</li>';
+                    arr+=       '</ul>';
+                    arr+=   '</div>';
+                    $('.accSetting').append(arr);
+            });
+		},error: function (jqXHR) {
+            userErrorHandler(jqXHR);
+	    },complete : function(xhr, status) {
+		    // success와 error 콜백이 호출된 후에 반드시 호출, try - catch - finally의 finally 구문과 동일
+            $('.upLoading').hide();
+			$('.btnRef').removeClass("ing");
+		}
+	    });
+    }
+    // [E] irp 개별운용상품 수정중 04.27
+    
+    function irpdetail(){
+        request_data={
+            "memb_cd" : memb_cd,
+			"org_code": org_code,
+            "account_num": account_num
+        }
+        $.ajax({
+		url:'http://192.168.240.208:8081/api/irp/account/detail/',
+		type:'post',
+        dataType: 'json',
+		contentType : 'application/json',
+		data: JSON.stringify(request_data),
+		beforeSend:function(xhr){
+	        xhr.setRequestHeader("Authorization", "Bearer "+token);
+		},
+		success:function(result){
+			$('.tBaltit').text(result.prod_name);                           // 상품명
+			$('.tBalAmount>.amount').text(numberWithCommas(result.eval_amt));  // 은행이름, 계좌번호
+            
+		},error: function (jqXHR) {
+            userErrorHandler(jqXHR);
+	    },complete : function(xhr, status) {
+		    // success와 error 콜백이 호출된 후에 반드시 호출, try - catch - finally의 finally 구문과 동일
+		}
+	    });
+    }
+    $(document).ready(function(){
+        $('.upLoading').hide();	// 업데이트 애니메이션
+        irpdetail();
+        bankirpeachproductslist(false);
+    });
+    $(document).on("click", ".btnRef", function(e){
+        $('.instItem').remove();
+		bankirpeachproductslist(true);
+	});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,139 @@
+<div class="historyList">
+    <span class="date"><span class="num"></span> </span>
+    <ul>
+        <li>
+            <a href="#" class="link" role="button">
+                <div class="left">
+                    <span class="category"></span>
+                    <span class="time"></span>
+                </div>
+                <div class="right">
+                    <span class="amount"><em class="num"></em>원</span>
+                    <span class="balance"></span>
+                </div>
+            </a>
+        </li>
+        <li>
+            <a href="#" class="link" role="button">
+                <div class="left">
+                    <span class="category"></span>
+                    <span class="time"></span>
+                </div>
+                <div class="right">
+                    <span class="amount"><em class="num"></em>원</span>
+                    <span class="balance"></span>
+                </div>
+            </a>
+        </li>
+    </ul>
+    <span class="date"></span>
+    <ul>
+        <li class="cancel">
+            <a href="#" class="link" role="button">
+                <div class="left">
+                    <span class="category"></span>
+                    <span class="time"></span>
+                </div>
+                <div class="right">
+                    <span class="amount"><em class="num"></em>원</span>
+                    <span class="balance"></span>
+                </div>
+            </a>
+        </li>
+    </ul>
+    <div class="upLoading circleBar">
+        <div class="loader"></div>
+        <p>업데이트 중입니다</p>
+    </div>
+</div>
+
+<script>
+    var msg = '';
+    function success_ajax(data){
+        let arr='';
+
+        if (data.length == 0) {
+			arr += '<p class="listNone">불러올 내역이 없습니다.</p>';
+			$('#all').find('.historyList').html(arr);
+			return;
+		} 
+
+		let today = new Date(data[0].paid_dtime);
+		msg = month_date_dot(today);
+
+		let nowDay = today.getDay();
+		let nowWeek = " " + toKor_dayOfWeek(nowDay);
+
+		arr += '<span class="date">' + msg + nowWeek + '</span>';
+		arr += '<ul>';
+        $(data).each(function(index, item){
+
+			let result = new Date(item.paid_dtime);
+			let dateString = month_date_dot(result); // 월.일
+
+			let day = result.getDay();
+			let weekday = " " + toKor_dayOfWeek(day); // 요일
+
+			if (msg != dateString) {
+				msg = dateString;
+				arr += '</ul>'
+				arr += '<span class="date">' + dateString + weekday + '</span>';
+				arr += '<ul>'
+			}
+
+            if(item.prod_type == '01') {
+				item.prod_type = '일시불'
+			} else if(item.prod_type > '01'){
+				item.prod_type = '할부'
+			}
+
+            arr += '<li>'
+			arr += '<a href="payBillsDetail" class="link" role="button">';
+			arr += '<div class="left">'
+			arr += '<span class="category">' + item.merchant_name + '</span>';
+			arr += '<span class="time">' + hours_minute_col(result) + '</span>';
+			arr += '</div>';
+			arr += '<div class="right">';
+			arr += '<span class="amount"><em class="num">' + numberWithCommas(item.paid_amt) + '</em>원</span>';
+			arr += '<span class="balance">' + item.prod_type + '</span>';
+			arr += '</div>';
+
+			arr += '<div style="display: none" class="paid_dtime">' + item.paid_dtime + '</div>'
+			arr += '<div style="display: none" class="card_name">' + item.card_name + '</div>'
+            arr += '<div style="display: none" class="total_install_cnt">' + item.total_install_cnt + '</div>'
+			arr += '<div style="display: none" class="cur_install_cnt">' + item.cur_install_cnt + '</div>'
+			arr += '<div style="display: none" class="balance_amt">' + item.balance_amt + '</div>'
+			arr += '<div style="display: none" class="credit_fee_amt">' + item.credit_fee_amt + '</div>'
+			arr += '<div style="display: none" class="merchant_regno">' + item.merchant_regno + '</div>'
+
+			arr += '</a>';
+			arr += '</li>';		
+        });
+        $('#all').find('.historyList').html(arr);
+ 
+        
+        $('.link').click(function(){
+
+            const billsDetail = {
+                paid_amt: $(this).find('.amount').find('.num').text(),
+                paid_dtime: $(this).find('.paid_dtime').text(),
+                card_name: $(this).find('.card_name').text(),
+                total_install_cnt: $(this).find('.total_install_cnt').text(),
+                cur_install_cnt: $(this).find('.cur_install_cnt').text(),
+                balance_amt: $(this).find('.balance_amt').text(),
+                credit_fee_amt: $(this).find('.credit_fee_amt').text(),
+                merchant_name: $(this).find('.category').text(),
+                merchant_regno: $(this).find('.merchant_regno').text(),
+                prod_type: $(this).find('.balance').text()
+            }
+            localStorage.setItem("val", JSON.stringify(billsDetail));
+        });
+        
+    }
+    
+    function payBillsAll(){
+        payBillsAll_ajax().done(function(data){
+            success_ajax(data);
+        });
+    }
+</script>

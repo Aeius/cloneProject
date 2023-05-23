@@ -1,0 +1,924 @@
+﻿<!DOCTYPE html>
+<html lang="ko" class="leaf">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport"
+		content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+	<title>CheckPay</title>
+	<meta http-equiv="Cache-Control" content="No-Cache">
+	<meta http-equiv="Pragma" content="No-Cache">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<!--<meta name="title" content="">-->
+	<meta name="description" content="">
+	<!--<meta name="keywords" content="">-->
+	<!-- The Open Graph protocol -->
+	<meta property="og:type" content="website">
+	<meta property="og:title" content="">
+	<meta property="og:description" content="">
+	<meta property="og:url" content="">
+	<meta property="og:image" content=""><!-- [D]리얼경로로 변경하세요 -->
+	<!-- //The Open Graph protocol -->
+	<link rel="SHORTCUT ICON" href=""><!-- [D]리얼경로로 변경하세요 -->
+	<link rel="stylesheet" type="text/css" href="/css/jquery-ui.min.css">
+	<link rel="stylesheet" type="text/css" href="/css/reset.css">
+	<link rel="stylesheet" type="text/css" href="/css/content.css">
+	<link rel="stylesheet" type="text/css" href="/css/theme_checkpay.css">
+	<script type="text/javascript" src="/js/jquery-1.8.3.min.js"></script>
+	<script type="text/javascript" src="/js/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="/js/jquery.ui.touch-punch.min.js"></script>
+	<script type="text/javascript" src="/js/slide_slick.js"></script>
+	<script type="text/javascript" src="/js/publishing.ui.library.1.0.0.js"></script>
+	<script type="text/javascript" src="/js/cmd.js"></script>
+	<script type="text/javascript" src="/js/common.js"></script>
+	<script type="text/javascript">
+		let baseUrl = "http://192.168.240.208:8081";
+		let memb_cd = parseJwt(getCookie("jwt")).sub;
+		let org_code = '[[${efinVo.org_code}]]';
+		let fob_id = '[[${efinVo.fob_id}]]';
+		let sort = 'D';
+
+		//초기 세팅
+		// 업데이트중 문구 안보이게하고 업데이트완료 문구 2초동안 띄우기
+		function toastMsgShow() {
+			$('.toastMsg').show();
+			setTimeout(function () {
+				$('.toastMsg').hide();
+			}, 2000);
+		}
+
+		//250ms에 한번 작동하고, 받은 결과가 0개면 더이상 작동 안하는 스크롤
+		let isBtnRef = true;
+		let scrollTimer;
+		let trans_length = 1;
+		$(function () {
+			$('.upLoading').hide();	// 업데이트 애니메이션
+			$('.toastMsg').hide();	// 업데이트 완료 modal
+
+			$(window).scroll(function () {	// 스크롤 마지막일 경우 데이터 가져오기
+				if (!trans_length) return;
+				if (scrollTimer) {
+					window.clearTimeout(scrollTimer);
+				}
+				scrollTimer = window.setTimeout(function () {
+					// let $window = $(this);
+					let scrollTop = $(this).scrollTop();
+					let windowHeight = $(this).height();
+					let documentHeight = $(document).height();
+					// scrollbar의 thumb가 바닥 전 30px까지 도달 하면 리스트를 가져온다.
+					if (scrollTop + windowHeight + 30 > documentHeight) {
+						tranlist_next(now_start, now_end, sort);
+					}
+				}, 250);
+			});
+		});
+
+		//공유 페이지 초기값
+		let page;
+		let now_start;
+		let now_end;
+
+		//historyListLoad 관련
+		let historyUl;
+		let before_dday = '00000000';
+		function p2100_load() {
+			info_load();
+			new_list_load(now_start, now_end, sort);
+		}
+
+		function new_list_load(start_day, end_day, sort) {
+			page = 0;
+			before_dday = '00000000';
+			list_load(start_day, end_day, sort, page);
+		}
+
+
+		function tranlist_next(start_day, end_day, sort) {
+			list_load(start_day, end_day, sort, ++page);
+		}
+
+		function nowYearMonth() {
+			let y = new Date().getFullYear();
+			let m = (new Date().getMonth() + 1);
+			m = m < 10 ? '0' + m : '' + m;
+			return y + m;
+		}
+
+		function info_load() {
+			var jsonData = {
+				"memb_cd": memb_cd,
+				"org_code": org_code,
+				"fob_id": fob_id,
+			};
+
+			$.ajax({
+				data: JSON.stringify(jsonData),
+				type: "POST",
+				contentType: "application/json",
+				url: baseUrl + "/api/efin/prepaid/info",
+				dataType: "JSON",
+				contentType: "application/json; charset=UTF-8",
+				beforeSend: function (xhr) {
+					$('.upLoading').show();
+					if (isBtnRef == true) {
+						$('.btnRef').addClass("ing");
+					}
+					xhr.setRequestHeader("Authorization", "Bearer " + getCookie("jwt"));
+				},
+				success: function (data) {
+					tBalance_load(data.result);
+				},
+				error: function (jqXHR) {
+					if (jqXHR.status == 401 && jqXHR.responseText == "토큰 기한 만료") {
+						tokenCall2();
+					}
+					else {
+						console.log(jqXHR.status)
+					}
+				}
+			});
+		}
+
+		function tBalance_load(data) {
+			$('.container .tBalance').val(iso4217Interpret(data.currency_code))
+				.find('.tBaltit').text(data.fob_name).end()
+				.find('.tBalAmount').html(function (index, html) {return html.replace('원', iso4217Interpret(data.currency_code))})
+				.find('em').text(numberWithCommas(data.total_balance_amt));
+		}
+
+
+		function list_load(start_day, end_day, sort, page) {
+			var jsonData = {
+				"memb_cd": memb_cd,
+				"org_code": org_code,
+				"fob_id": fob_id,
+				"flag1": sort,
+				"startDt": start_day,
+				"endDt": end_day,
+				"page": page
+			};
+
+			$.ajax({
+				data: JSON.stringify(jsonData),
+				type: "POST",
+				contentType: "application/json",
+				url: baseUrl + "/api/efin/prepaid/transactions",
+				dataType: "JSON",
+				contentType: "application/json; charset=UTF-8",
+				beforeSend: function (xhr) {
+					$('.upLoading').show();
+					if (isBtnRef == true) {
+						$('.btnRef').addClass("ing");
+					}
+					xhr.setRequestHeader("Authorization", "Bearer " + getCookie("jwt"));
+				},
+				success: function (data) {
+					historyListLoad(data.result, page);
+					trans_length = data.result.length;
+				},
+				error: function (jqXHR) {
+					if (jqXHR.status == 401 && jqXHR.responseText == "토큰 기한 만료") {
+						tokenCall2();
+					}
+					else {
+						console.log(jqXHR.status)
+					}
+				},
+				complete: function (xhr, status) {	// ajax 응답 완료시 오류,성공 상관없이 호출됨
+					// success와 error 콜백이 호출된 후에 반드시 호출, try - catch - finally의 finally 구문과 동일
+					$('.upLoading').hide();
+					if (isBtnRef == true) {
+						$('.btnRef').removeClass("ing");
+						toastMsgShow();
+						isBtnRef = false;
+					}
+				}
+			});
+		}
+
+		//historyListLoad 관련
+		function historyListLoad(data, page) {
+			if (!page) $('.container .historyList').find('ul').remove()
+			.end().find('span').remove()
+			.end().find('.listNone').remove();
+
+			if (data.length == 0) {	// 데이터가 없는 경우
+				$('.historyList').prepend('<p class="listNone">불러올 내역이 없습니다.</p>');
+				return;
+			}
+
+			let span;
+			data.forEach(function (row) {
+				let year = row.trans_dtime.substring(0, 4);
+				let month = row.trans_dtime.substring(4, 6);
+				let day = row.trans_dtime.substring(6, 8);
+				let hour = row.trans_dtime.substring(8, 10);
+				let minute = row.trans_dtime.substring(10, 12);
+
+				//for 일자별
+				if (!row.trans_dtime.startsWith(before_dday)) {
+					span = $('<span class="date"><span class="num">' + month + '.' + day + '</span> '
+						+ getDayOfTheWeek(year, month, day) + '요일</span>');
+					historyUl = $('<ul/>');
+				}
+
+				//for 거래내역별
+				let li = $('<li/>').appendTo(historyUl);
+				let a = $('<a href="#layer_P2110" class="link btn_open_bottom_sheet" role="button"/>').val(row).appendTo(li);
+
+				if (row.merchant_name)
+					$('<div class="left"/>')
+						.append('<span class="category">' + row.merchant_name + '</span>')
+						.append('<span class="time"><span class="tx">' + getTransTypeName(row.trans_type) + '</span>' + hour + ':' + minute + '</span>')
+						.appendTo(a);
+				else
+					$('<div class="left"/>')
+						.append('<span class="category">' + getTransTypeName(row.trans_type) + '</span>')
+						.append('<span class="time">' + hour + ':' + minute + '</span>')
+						.appendTo(a);
+
+				$('<div class="right">')
+					.append('<span class="amount"><em class="num">' + getTransTypeFlag(row.trans_type) + numberWithCommas(row.trans_amt) + '</em>' + $('.container .tBalance').val() + '</span>')
+					.append('<span class="balance">잔액 <em class="num">' + numberWithCommas(row.balance_amt) + '</em>' + $('.container .tBalance').val() + '</span>')
+					.appendTo(a);
+
+				cancelIfRedColor(li);
+				$('.container .historyList').append(span).append(historyUl);
+
+				before_dday = row.trans_dtime.substring(0, 8);
+			});
+		}
+
+
+		//li 캔슬 클래스 처리
+		function cancelIfRedColor(li) {
+			let checkFlag1 = $(li).find('.left .tx').text().split('(')[0];
+			let checkFlag2 = $(li).find('.left .category').text().split('(')[0];
+
+			if (checkFlag1 == '결제취소' || checkFlag2 == '결제취소') {
+				$(li).addClass('cancel');
+			}
+		}
+
+		//요일계산
+		let weekdays = ['일', '월', '화', '수', '목', '금', '토'];
+		function getDayOfTheWeek(year, month, day) {
+			// 현재 날짜를 생성합니다.
+			var today = new Date(year + '-' + month + '-' + day);
+
+			// 요일을 계산합니다.
+			return weekdays[today.getDay()];
+		}
+
+
+		//--결제타입 관련 필드 및 메서드
+		let transTypeList1 = ['5101', '5102', '5103', '5104', '5105', '5109', '5221', '5222', '5229', '5211', '5212', '5219', '5301', '5502', '5901', '6201', '6202', '6203', '6204', '6209'];
+		let transTypeList2 = ['5111', '5112', '5113', '5114', '5115', '5119', '5201', '5202', '5209', '5302', '5401', '5501', '5902', '6101', '6102', '6103', '6104', '6109'];
+		let transTypeList3 = transTypeList1.concat(transTypeList2);
+		transTypeList3.sort((a, b) => {return a - b;});
+		let typeNameList = ['충전(카드)', '충전(계좌이체)', '충전(포인트)', '충전(무통장)', '충전(상품권)', '충전(기타)', '충전취소(카드)', '충전취소(계좌이체)', '충전취소(포인트)', '충전취소(무통장)', '충전취소(상품권)', '충전취소(기타)', '송금(계좌송금)', '송금(계정송금)', '송금(기타)', '송금반환(계좌송금)', '송금반환(계정송금)', '송금반환(기타)', '송금수취(계좌송금)', '송금수취(계정송금)', '송금수취(기타)', '적립', '적립취소', '송금수수료', '결제', '결제취소', '기타(입금)', '기타(출금)', '결제(카드)', '결제(계좌이체)', '결제(포인트)', '결제(무통장)', '결제(기타)', '결제취소(카드)', '결제취소(계좌이체)', '결제취소(포인트)', '결제취소(무통장)', '결제취소(기타)'];
+		let typeFlagObj = transTypeList3.reduce(function (acc, key, index) {
+			if (transTypeList1.indexOf(key) !== -1)
+				acc[key] = '';
+			else if (transTypeList2.indexOf(key) !== -1)
+				acc[key] = '-';
+			else
+				acc[key] = '에러값';
+			return acc;
+		}, {});
+		let typeNameObj = transTypeList3.reduce(function (acc, key, index) {
+			acc[key] = typeNameList[index];
+			return acc;
+		}, {});
+
+		//결제타입별 +,-
+		function getTransTypeFlag(typeStr) {
+			return typeFlagObj[typeStr];
+		}
+		//결제타입이름 반환
+		function getTransTypeName(typeStr) {
+			return typeNameObj[typeStr];
+		}
+		//--END
+
+		//가격 반점 찍어주는 
+		function numberWithCommas(x) {
+			return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+		}
+
+		//통화코드 번역 (현재는 한국어만)
+		function iso4217Interpret(currency_code) {
+			if ('KRW' == currency_code) return '원';
+			return currency_code;
+		}
+
+	</script>
+
+</head>
+
+<body>
+
+	<!-- wrap -->
+	<div class="wrap">
+
+		<!-- header -->
+		<div class="header">
+			<div class="header_inn">
+				<div class="left">
+					<a href="#none" th:href="'javascript:window.history.back();'" class="btnBack"><span class="blind">Back</span></a>
+				</div>
+				<div class="right">
+					<!--<a href="#none" th:href="'javascript:window.history.back();'" class="btnClose"><span class="blind">close</span></a>-->
+				</div>
+			</div>
+		</div>
+		<!-- //header -->
+
+		<!-- container -->
+		<div class="container">
+			<div class="content">
+				<div class="tBalance">
+					<h3 class="tBaltit">Pre-i 선불카드</h3>
+					<p class="tBalAmount"><em class="amount">400,000</em>원</p>
+					<a class="btnRef"><span class="blind">새로고침</span></a>
+					<!-- 새로고침중 일때 class에 ing 추가 -->
+					<!-- <a href="#" class="btnRef ing"><span class="blind">새로고침</span></a> -->
+				</div>
+				<div class="accHistory">
+					<div class="topCtrl">
+						<div class="rangeCtrl">
+							<button class="btnPrev"><span class="blind">이전</span></button>
+							<span class="range">2021.09</span>
+							<button class="btnNext"><span class="blind">다음</span></button>
+						</div>
+						<a href="#layerFilter" class="btnFilter  btn_open_bottom_sheet" role="button"><span
+								class="blind">필터</span></a>
+					</div>
+					<div class="historyList">
+						<span class="date"><span class="num">09.25</span> 금요일</span>
+						<ul>
+							<li>
+								<a href="#layer_P2110" class="link btn_open_bottom_sheet"
+									role="button"><!-- 2021-12-23 개별 거래내역 버튼, 바텀시트 오픈 추가 -->
+									<div class="left">
+										<span class="category">우리은행</span>
+										<span class="time"><span class="tx">충전</span>15:30</span>
+									</div>
+									<div class="right">
+										<span class="amount"><em class="num">140,000</em>원</span>
+										<span class="balance">잔액 <em class="num">400,000</em>원</span>
+									</div>
+								</a>
+							</li>
+							<li>
+								<a href="#layer_P2110" class="link btn_open_bottom_sheet"
+									role="button"><!-- 2021-12-23 개별 거래내역 버튼, 바텀시트 오픈 추가 -->
+									<div class="left">
+										<span class="category">스타벅스코리아</span>
+										<span class="time"><span class="tx">결제</span>14:10</span>
+									</div>
+									<div class="right">
+										<span class="amount"><em
+												class="num">-400,000</em>원</span><!-- 결제 금액 앞 '-' 부호 추가 -->
+										<span class="balance">잔액 <em class="num">160,000</em>원</span>
+									</div>
+								</a>
+							</li>
+						</ul>
+						<span class="date"><span class="num">09.24</span> 목요일</span>
+						<ul>
+							<li class="cancel"><!-- 2022-09-28 결제취소 영역 클래스 'cancel' 추가 -->
+								<a href="#layer_P2110" class="link btn_open_bottom_sheet"
+									role="button"><!-- 2021-12-23 개별 거래내역 버튼, 바텀시트 오픈 추가 -->
+									<div class="left">
+										<span class="category">(주)우아한형제들</span>
+										<span class="time"><span class="tx">결제취소</span>12:06</span>
+									</div>
+									<div class="right">
+										<span class="amount"><em class="num">50,000</em>원</span>
+										<span class="balance">잔액 <em class="num">200,000</em>원</span>
+									</div>
+								</a>
+							</li>
+							<li>
+								<a href="#layer_P2110" class="link btn_open_bottom_sheet"
+									role="button"><!-- 2021-12-23 개별 거래내역 버튼, 바텀시트 오픈 추가 -->
+									<div class="left">
+										<span class="category">(주)우아한형제들</span>
+										<span class="time"><span class="tx">결제</span>12:06</span>
+									</div>
+									<div class="right">
+										<span class="amount"><em
+												class="num">-50,000</em>원</span><!-- 결제 금액 앞 '-' 부호 추가 -->
+										<span class="balance">잔액 <em class="num">200,000</em>원</span>
+									</div>
+								</a>
+							</li>
+						</ul>
+						<div class="upLoading circleBar type4">
+							<div class="loader"></div>
+							<p class="tx">업데이트 중입니다</p>
+						</div>
+						<div class="toastMsg">
+							<p class="tx">업데이트가 완료되었습니다</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- //container -->
+
+	</div>
+	<!-- //wrap -->
+
+	<!-- [S] layer P2110 내용 -->
+	<div id="layer_P2110" class="layer_bottomsheet">
+		<div class="layer_inner">
+			<div class="layer_tit">
+				<strong class="tit"><span>선불카드 거래상세</span></strong>
+				<button type="button" class="js_pop_close btn_close"><span class="blind">닫기</span></button>
+			</div>
+			<div class="layer_cont">
+				<!-- [S] P2110 -->
+				<div class="accSetting type_history">
+					<div class="tAccount">
+						<h3 class="tAccTit">우리은행</h3>
+						<p class="tAccDetail">충전</p>
+					</div>
+					<h4 class="listTit"><em class="pointColor">요약</em></h4>
+					<ul class="accDetailList">
+						<!-- 2022-09-29 거래유형 항목 추가 -->
+						<li>
+							<span class="itemTit">거래유형</span>
+							<span class="itemData">충전</span>
+						</li>
+						<li>
+							<span class="itemTit">금액</span>
+							<span class="itemData"><em class="num">140,000</em>원</span>
+						</li>
+						<li>
+							<span class="itemTit">잔액</span><!-- 2022-09-28 거래 후 잔액 >> 잔액 -->
+							<span class="itemData"><em class="num">400,000</em>원</span>
+						</li>
+						<li>
+							<span class="itemTit">일시</span>
+							<span class="itemData"><em class="num">2021.09.25 15:30</em></span>
+						</li>
+						<li>
+							<span class="itemTit">거래수단</span>
+							<span class="itemData">우리은행<br>000-0000-0000-00</span>
+						</li>
+					</ul>
+				</div>
+				<!-- [E] P2110 -->
+			</div>
+		</div>
+	</div>
+	<!-- [E] layer P2110 내용 -->
+
+	<!-- //wrap -->
+	<div id="layerFilter" class="layer_bottomsheet">
+		<div class="layer_inner">
+			<div class="layer_tit">
+				<strong class="tit"><span class="blind">조회조건선택팝업</span></strong>
+				<button type="button" class="js_pop_close btn_close"><span class="blind">닫기</span></button>
+			</div>
+			<div class="layer_cont">
+				<div class="filterItem">
+					<p class="filterTit">조회기간</p>
+					<ul class="radioTab">
+						<li>
+							<input type="radio" id="radio1" name="radioTab1" class="blind">
+							<label for="radio1">1개월</label>
+						</li>
+						<li>
+							<input type="radio" id="radio2" name="radioTab1" class="blind">
+							<label for="radio2">3개월</label>
+						</li>
+						<li>
+							<input type="radio" id="radio3" name="radioTab1" class="blind">
+							<label for="radio3">6개월</label>
+						</li>
+						<li>
+							<input type="radio" id="radio4" name="radioTab1" class="blind">
+							<label for="radio4">직접입력</label>
+						</li>
+					</ul>
+					<div class="selPeriod">
+						<!-- datepicker data-title 추가 -->
+						<!-- 21.08.31 수정 -->
+						<div class="dateItem">
+							<label for="startDate" class="blind">조회기간 시작일</label>
+							<input type="tel" class="datepicker" id="startDate" autocomplete="off" data-title="시작일"
+								placeholder="YYYY.MM.DD">
+						</div>
+						<span class="unit">-</span>
+						<div class="dateItem">
+							<label for="endDate" class="blind">조회기간 종료일</label>
+							<input type="tel" id="endDate" class="datepicker" autocomplete="off" data-title="종료일"
+								placeholder="YYYY.MM.DD">
+						</div>
+					</div>
+				</div>
+				<!-- 2023-04-28 페이에선 사용하지 않는 탭
+					<div class="filterItem">
+					<p class="filterTit">조회내용</p>
+					<ul class="radioTab">
+						<li>
+							<input type="radio" id="radio5" name="radioTab2" class="blind">
+							<label for="radio5">전체</label>
+						</li>
+						<li>
+							<input type="radio" id="radio6" name="radioTab2" class="blind">
+							<label for="radio6">입금</label>
+						</li>
+						<li>
+							<input type="radio" id="radio7" name="radioTab2" class="blind">
+							<label for="radio7">출금</label>
+						</li>
+					</ul>
+				</div>
+				 -->
+				<div class="filterItem">
+					<p class="filterTit">정렬순</p>
+					<ul class="radioTab">
+						<li>
+							<input type="radio" id="radio8" name="radioTab3" class="blind">
+							<label for="radio8">최신순</label>
+						</li>
+						<li>
+							<input type="radio" id="radio9" name="radioTab3" class="blind">
+							<label for="radio9">과거순</label>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div class="layer_footer">
+				<button type="button" class="js_pop_close btn_confirm"><span>확인</span></button>
+			</div>
+		</div>
+	</div>
+
+
+	<script>
+		$(document).ready(function () {
+			$('.upLoading').hide();	// 업데이트 애니메이션
+			$('.toastMsg').hide();	// 업데이트 완료 modal
+
+			$(window).scroll(function () {	// 스크롤 마지막일 경우 데이터 가져오기
+				if (!trans_length) return;
+				if (scrollTimer) {
+					window.clearTimeout(scrollTimer);
+				}
+				scrollTimer = window.setTimeout(function () {
+					// let $window = $(this);
+					let scrollTop = $(this).scrollTop();
+					let windowHeight = $(this).height();
+					let documentHeight = $(document).height();
+					// scrollbar의 thumb가 바닥 전 30px까지 도달 하면 리스트를 가져온다.
+					if (scrollTop + windowHeight + 30 > documentHeight) {
+						tranlist_next(now_start, now_end, sort);
+					}
+				}, 250);
+			});
+
+			//은행,카드,기타 선택 탭
+			$(".tabInter").tabs({
+				wrapClass: ".tabInter",
+				clickClass: ".js_tabclickDp1",
+				showClass: ".tab_cntDp1",
+				animate: false,
+				contentWidthFull: false,//effect when animate:true
+				animateBorder: ["false", ".tabs_header"],//show border in class .
+				fade: false,
+				speed: 500
+			});
+
+			//--아래부터 필터 바텀 시트 관련 시작
+			// 날짜 디폴트값 현재 날 1일부터 마지막날까지
+			var date = new Date();
+			now_start =  nowYearMonth() + '01';
+			now_end =  nowYearMonth() + '99';
+
+			p2100_load();
+
+			// [S] 날짜 이벤트 코드
+			let today = new Date();
+			let year = today.getFullYear();
+			let month = ('0' + (today.getMonth() + 1)).slice(-2);
+			let day = ('0' + (today.getDay())).slice(-2);
+			let dateString = year + '.' + month
+
+			$(".range").eq(0).text(dateString);	// 오늘 날짜 텍스트 셋팅
+
+
+			// 새로고침 클릭 시 데이터 새로 받아오기
+			$(document).on("click", ".btnRef", function (e) {
+				isBtnRef = true;
+				p2100_load();
+			});
+
+
+			let nextMonthFirstDate;
+			let nextMonthLastDate;
+			let count = 1;
+			$(".btnPrev").click(function () { // 이전 버튼
+				today = new Date(); 	//현재날짜
+				count = count + 1;		//현재 카운트 에서 +1
+				nextMonthFirstDate = new Date(today.getFullYear(), today.getMonth() + 1, 1);// 현재 날짜
+				nextMonthFirstDate.setMonth(nextMonthFirstDate.getMonth() - count);	// 누른만큼 차감한 날짜
+				nextMonthLastDate = new Date(nextMonthFirstDate.getFullYear(), nextMonthFirstDate.getMonth() + 1, 0);// 누른만큼의 날짜를 다시 뉴데이트로 생성?
+				year = nextMonthLastDate.getFullYear();	//새로생성한 년
+				month = ('0' + (nextMonthLastDate.getMonth() + 1)).slice(-2); // 새로생성한 달
+				day = ('0' + (nextMonthLastDate.getDay())).slice(-2);		// 새로생성한 날
+				dateString = year + '.' + month
+				$(".range").eq(0).text(dateString);
+				// api 불러서 거래내역 보여주는 함수
+				now_start = year + month + '01';
+				now_end = year + month + '99';
+				new_list_load(now_start, now_end, sort);
+			});
+			$(".btnNext").click(function (e) { // 다음 버튼
+				today = new Date();
+				count = count - 1;
+				nextMonthFirstDate = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+				nextMonthFirstDate.setMonth(nextMonthFirstDate.getMonth() - count);
+				nextMonthLastDate = new Date(nextMonthFirstDate.getFullYear(), nextMonthFirstDate.getMonth() + 1, 0);
+				year = nextMonthLastDate.getFullYear();
+				month = ('0' + (nextMonthLastDate.getMonth() + 1)).slice(-2);
+				day = ('0' + (nextMonthLastDate.getDay())).slice(-2);		// 새로생성한 날
+				if (Number(today.getFullYear()) == year
+					&& Number(today.getMonth() + 1) < Number(month)) {// 현재날짜보다 앞선다면 초기화 및 이동 금지
+					count = 1;
+					return false;
+				}
+				dateString = year + '.' + month	// 계산한 날짜를 포맷에 맞춰서 입력
+				$(".range").eq(0).text(dateString);
+				// api 불러서 거래내역 보여주는 함수
+				now_start = year + month + '01';
+				now_end = year + month + '99';
+				new_list_load(now_start, now_end, sort);
+			});
+			// [E] 날짜 이벤트 코드
+
+			// [S] 개월 수 (윤년 포함) 계산 함수
+			function minusMonth(date, month) {
+				// month달 후의 1일
+				let addMonthFirstDate = new Date(date.getFullYear(), date.getMonth() - month, 1);
+				// month달 후의 말일
+				let addMonthLastDate = new Date(addMonthFirstDate.getFullYear(), addMonthFirstDate.getMonth() + 1, 0);
+				let result = addMonthFirstDate;
+				if (date.getDate() > addMonthLastDate.getDate()) {
+					result.setDate(addMonthLastDate.getDate());
+				} else {
+					result.setDate(date.getDate());
+				}
+				return result;
+			}
+			// [E] 개월 수 계산 함수
+
+			// [S] 1,3,6 개월 조회기간 값 변환
+			$('input:radio[id="radio1"]').change(function () {
+				var date_1 = minusMonth(today, 1)
+				year = date_1.getFullYear();
+				month = ('0' + (date_1.getMonth() + 1)).slice(-2);
+				date = ('0' + (date_1.getDate())).slice(-2);
+				dateString = year + '.' + month + '.' + date;
+				$('#startDate').val(dateString);
+			});
+			$('input:radio[id="radio2"]').change(function () {
+				var date_3 = minusMonth(today, 3)
+				year = date_3.getFullYear();
+				month = ('0' + (date_3.getMonth() + 1)).slice(-2);
+				date = ('0' + (date_3.getDate())).slice(-2);
+				dateString = year + '.' + month + '.' + date;
+				$('#startDate').val(dateString);
+			});
+			$('input:radio[id="radio3"]').change(function () {
+				var date_6 = minusMonth(today, 6)
+				year = date_6.getFullYear();
+				month = ('0' + (date_6.getMonth() + 1)).slice(-2);
+				date = ('0' + (date_6.getDate())).slice(-2);
+				dateString = year + '.' + month + '.' + date;
+				$('#startDate').val(dateString);
+			});
+			// [E] 개월 수 별로 이벤트 구현 코드
+
+			// [S] 디폴트(직접입력, 전체, 최신순)
+			$('#radio4').trigger("click");
+			$('#radio5').trigger("click");
+			// [N] 디폴트 작업
+
+			// [S] 달력을 클릭시 '직접입력'으로 전환
+			$(".ui-datepicker-trigger").click(function () {
+				$('#radio4').trigger("click");
+			});
+			// [N] 달력을 클릭시 '직접입력'으로 전환
+
+			// [S] 최신순, 과거순 클릭시 정렬순서값 설정
+			$('#radio8').click(function () {
+				sort = "D";
+			});
+			$('#radio9').click(function () {
+				sort = "A";
+			});
+			$('#radio8').trigger("click");
+			// [E] 최신순, 과거순 클릭시 정렬순서값 설정
+
+			// [S] 필터 이벤트 코드 : (필터 이벤트 영역)
+			$(".btn_confirm").click(function () {
+				$('.btnPrev').hide(); // 날짜 왼쪽 화살표 숨기기
+				$('.btnNext').hide(); // 날짜 오른쪽 화살표 숨기기
+				$('.btnFilter').hide(); // 필터 색없는거 숨기기
+
+				// 필터 색 있는거 생성
+				$('.topCtrl').append("<a href='#layerFilter' class='btnFilter on btn_open_bottom_sheet' role='button'><span class='blind'>" + "필터" + "</span></a>");
+
+				// 시작일, 종료일 값 불러오기
+				var startDate = $('#startDate').val().slice(2);
+				var endDate = $('#endDate').val().slice(2);
+				var dateString = startDate + '~' + endDate;
+				$(".range").html(dateString);
+
+				let startDate2 = $('#startDate').val();
+				let endDate2 = $('#endDate').val();
+				now_start = startDate2.replaceAll('.', '-');
+				now_end = endDate2.replaceAll('.', '-');
+
+				// api 처리하기
+				new_list_load(startDate2.replaceAll('.', ''), endDate2.replaceAll('.', ''), sort);
+
+				// 탭 분류 , 검색은 비동기로 하자, 정렬
+			});
+			//--필터 바텀 시트 관현 끝
+		});
+		// [S] 바텀시트
+		$(document).on("click", ".btn_open_bottom_sheet", function (e) {
+			e.preventDefault();
+			var $href = $(this).attr('href');
+			layer_bottomsheet($href);
+			$('html').addClass('scroll_lock');
+			// [S] multi layer
+			var dimIdx = $('.dim').index();
+			eval('$focusReturn' + [dimIdx] + '= $(this)');
+			// [E] multi layer
+
+			//데이터 로드 작업
+			if ($(this).attr('href') == '#layer_P2110') dtail_on_bottom_sheet($(this).val());
+		});
+
+		function dtail_on_bottom_sheet(rk) {
+
+			let jsonData = {
+				memb_cd: rk.memb_cd,
+				org_code: rk.org_code,
+				fob_id: rk.fob_id,
+				account_id: rk.account_id,
+				trans_type: rk.trans_type,
+				trans_dtime: rk.trans_dtime,
+				trans_no: rk.trans_no,
+				trans_dt: rk.trans_dt,
+				seq: rk.seq
+			}
+
+			$.ajax({
+				data: JSON.stringify(jsonData),
+				type: "POST",
+				contentType: "application/json",
+				url: baseUrl + "/api/efin/prepaid/transactions/detail",
+				dataType: "JSON",
+				contentType: "application/json; charset=UTF-8",
+				beforeSend: function (xhr) {
+					$('.upLoading').show();
+					if (isBtnRef == true) {
+						$('.btnRef').addClass("ing");
+					}
+					xhr.setRequestHeader("Authorization", "Bearer " + getCookie("jwt"));
+				},
+				success: function (data) {
+					detail_load(data);
+				},
+				error: function (jqXHR) {
+					if (jqXHR.status == 401 && jqXHR.responseText == "토큰 기한 만료") {
+						tokenCall2();
+					}
+					else {
+						console.log(jqXHR.status)
+					}
+				},
+				complete: function (xhr, status) {	// ajax 응답 완료시 오류,성공 상관없이 호출됨
+					// success와 error 콜백이 호출된 후에 반드시 호출, try - catch - finally의 finally 구문과 동일
+					$('.upLoading').hide();
+					if (isBtnRef == true) {
+						$('.btnRef').removeClass("ing");
+						toastMsgShow();
+						isBtnRef = false;
+					}
+				}
+			});
+		}
+
+		function detail_load(data) {
+			let type_history = $('#layer_P2110 .type_history').empty();
+
+			//layer_tit 세팅
+			$('#layer_P2110 .layer_tit').find('strong>span').text('페이 거래상세');
+
+			//tAccount 세팅
+			let tAccount = $('<div class="tAccount"><h3 class="tAccTit"/><p class="tAccDetail"/></div>').appendTo(type_history);
+
+			if (data.merchant_name) {
+				tAccount
+					.find('.tAccTit').text(data.merchant_name).end()
+					.find('.tAccDetail').text(getTransTypeName(data.trans_type));
+			} else {
+				tAccount
+					.find('.tAccTit').text(getTransTypeName(data.trans_type));
+			}
+
+			//h4 세팅
+			$('<h4 class="listTit"><em class="pointColor">요약</em></h4>').appendTo(type_history);
+
+			//DetailList 세팅
+			let accDetailList = $('<ul class="accDetailList"/>').appendTo(type_history);
+
+			console.log(data.pay_method_name);
+			console.log(data.pay_method);
+
+			let cunrrency = $('.container .tBalance').val();
+			let trans_amt = data.trans_amt.toLocaleString() + cunrrency;
+			let balance_amt = data.balance_amt.toLocaleString() + cunrrency;
+			let transDtime = strLengthToArray(data.trans_dtime, 2);
+			transDtime = transDtime[1] + '.' + transDtime[2] + '.' + transDtime[3] + ' ' + transDtime[4] + ':' + transDtime[5];
+			let arrItemTit;
+			let arrItemData;
+			
+			if(data.trans_type < '5300' || data.trans_type == '5401'){
+				//결제수단
+				let pay_m = getTransTypeName(data.trans_type)+'<br>'+data.trans_org_name + (data.trans_pay_name == '' ? '' : ' ' + data.trans_pay_name);
+				if(data.trans_type.substring(1) == '4') pay_m = '-';
+				
+				arrItemTit = ['금액','잔액','일시','상품명','결제방법','거래수단'];
+				arrItemData = [trans_amt,balance_amt,transDtime,data.trans_title,data.pay_method_name,pay_m];
+			}else{
+				 arrItemTit = ['금액', '잔액', '일시', '상품명',
+				'결제방법', '가맹점명', '카테고리', '거래수단'];
+				arrItemData = [trans_amt, balance_amt, transDtime, data.trans_title,
+				data.pay_method_name, data.merchant_name, data.catg_name, getTransTypeName(data.trans_type)];
+			}
+				
+			arrItemTit.forEach((item, idx) => {
+				let li = $('<li/>').appendTo(accDetailList);
+				$('<span class="itemTit">' + item + '</span>').appendTo(li);
+				let ItemData = arrItemData[idx] ? arrItemData[idx] : '-';
+				$('<span class="itemData">' + ItemData + '</span>').appendTo(li);
+			});
+		}
+
+		function strLengthToArray(str, len) {
+			const arr = [];
+			for (let i = 0; i < str.length; i += len) {
+				arr.push(str.substring(i, i + len));
+			}
+			return arr;
+		}
+
+		function layer_bottomsheet(el) {
+			var $el = $(el);
+			$el.append("<div class=\"dim\"></div>");
+			isDim ? $('.layer_bottomsheet').show() : $el.show().attr({'tabindex': '0', 'aria-hidden': 'false'}).focus();
+			setTimeout(function () {
+				$el.find('.layer_inner').addClass('on');
+			}, 50);
+			// [S] multi layer
+			var isDim;
+			var dimIdx = $('.dim').index();
+			var thisDim = $el.find('.dim');
+			var thisLyZindex = dimIdx + 4000;
+			$('.dim').css('opacity', '0');
+			thisDim.css('opacity', '.7');
+			thisDim.closest('.layer_bottomsheet, .layer_popup').css('z-index', thisLyZindex);
+			// [E] multi layer
+			$el.find('.js_pop_close').click(function () {
+				$el.find('.layer_inner').removeClass('on');
+				setTimeout(function () {
+					isDim ? $('.layer_bottomsheet').hide() : $el.hide();
+					$('html').removeClass('scroll_lock');
+					$el.attr({'tabindex': '-1', 'aria-hidden': 'true'}).find(".dim").remove();
+					// [S] multi layer
+					if ($('.dim').length == '2') {
+						$('.dim:eq(1)').css('opacity', '.7');
+					} else if ($('.dim').length == '1') {
+						$('.dim').css('opacity', '.7');
+					}
+					// [E] multi layer
+				}, 200);
+				eval('$focusReturn' + [dimIdx]).focus();
+				return false;
+			});
+		}
+// [E] 바텀시트
+	</script>
+</body>
+
+</html>

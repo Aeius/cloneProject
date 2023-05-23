@@ -1,0 +1,219 @@
+﻿<!DOCTYPE html>
+<html lang="ko" class="leaf">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>CheckPay</title>
+<meta http-equiv="Cache-Control" content="No-Cache">
+<meta http-equiv="Pragma" content="No-Cache">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<!--<meta name="title" content="">-->
+<meta name="description" content="">
+<!--<meta name="keywords" content="">-->
+<!-- The Open Graph protocol -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="">
+<meta property="og:description" content="">
+<meta property="og:url" content="">
+<meta property="og:image" content=""><!-- [D]리얼경로로 변경하세요 -->
+<!-- //The Open Graph protocol -->
+<link rel="SHORTCUT ICON" href=""><!-- [D]리얼경로로 변경하세요 -->
+<link rel="stylesheet" type="text/css" href="../../css/jquery-ui.min.css">
+<link rel="stylesheet" type="text/css" href="../../css/reset.css">
+<link rel="stylesheet" type="text/css" href="../../css/content.css">
+<link rel="stylesheet" type="text/css" href="../../css/theme_checkpay.css">
+<script type="text/javascript" src="../../js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="../../js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="../../js/jquery.ui.touch-punch.min.js"></script>
+<script type="text/javascript" src="../../js/slide_slick.js"></script>
+<script type="text/javascript" src="../../js/publishing.ui.library.1.0.0.js"></script>
+<script type="text/javascript" src="../../js/cmd.js"></script>
+<script type="text/javascript" src="../../js/common.js"></script>
+
+<!-- thymeleaf -->
+<html xmlns:th="http://www.thymeleaf.org">
+</head>
+
+<body>
+
+<!-- wrap -->
+<div class="wrap">
+
+	<!-- header -->
+	<div class="header">
+		<div class="header_inn">
+			<div class="left">
+				<a href="javascript:history.back();" class="btnBack"><span class="blind">Back</span></a>
+			</div>
+			<div class="center">
+				<h2 class="tit_h2">카드 할부</h2>
+			</div>
+			<!-- <div class="right">
+                <a href="#" class="btnClose"><span class="blind">close</span></a>
+			</div> -->
+		</div>
+	</div>
+	<!-- //header -->
+
+	<!-- container -->
+	<div class="container">
+		<div class="content">
+			<div class="accSetting">
+				<div class="tAccount">
+					<h3 class="tAccTit"></h3>
+					<p class="tAmount"><span class="num"></span>원</p>
+					<a class="btnRef"><span class="blind">새로고침</span></a>
+				</div>
+				<h4 class="listTit"><em class="pointColor">할부내역</em></h4>
+				<div class="aa">
+					<div class="instItem">
+						<div class="instTotal">
+							<p class="itemTit"></p>
+							<p class="itemData"><span class="num"></span>원</p>
+						</div>
+						<ul class="accDetailList">
+							<li>
+								<span class="itemTit">카드</span>
+								<span class="itemData"></span>
+							</li>
+							<li>
+								<span class="itemTit">전체 할부회차</span>
+								<span class="itemData"><span class="num"></span>개월 할부</span>
+							</li>
+							<li>
+								<span class="itemTit">현재 할부회차</span>
+								<span class="itemData"><span class="num"></span>회차</span>
+							</li>
+							<li>
+								<span class="itemTit">결제 후 원금잔액</span>
+								<span class="itemData"><span class="num"></span>원</span>
+							</li>
+							<li>
+								<span class="itemTit">수수료</span>
+								<span class="itemData"><span class="num"></span>원</span>
+							</li>
+						</ul>
+					</div>
+					<div class="instItem">
+						<div class="instTotal">
+							<p class="itemTit"></p>
+							<p class="itemData"><span class="num"></span>원</p>
+						</div>
+						<ul class="accDetailList">
+							<li>
+								<span class="itemTit">카드</span>
+								<span class="itemData"></span>
+							</li>
+							<li>
+								<span class="itemTit">전체 할부회차</span>
+								<span class="itemData"><span class="num"></span>개월 할부</span>
+							</li>
+							<li>
+								<span class="itemTit">현재 할부회차</span>
+								<span class="itemData"><span class="num"></span>회차</span>
+							</li>
+							<li>
+								<span class="itemTit">결제 후 원금잔액</span>
+								<span class="itemData"><span class="num"></span>원</span>
+							</li>
+							<li>
+								<span class="itemTit">수수료</span>
+								<span class="itemData"><span class="num"></span>원</span>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="toastMsg" id="update_complete">
+			<p class="tx">업데이트가 완료되었습니다</p>
+		</div>
+	</div>
+	<!-- //container -->
+
+</div>
+<!-- //wrap -->
+
+<script>
+	let year_month='[[${cardbills.paid_out_date}]]';
+	let org_code='[[${cardbills.org_code}]]';
+	let member_id = parseJwt(getCookie("jwt")).sub;
+
+	function billsHal(){
+		return $.ajax({
+			// url: 'http://localhost:8081/api/bills/'+ member_id + '/' + org_code +'/02/'+ year_month,
+			url: 'http://192.168.240.208:8081/api/bills/'+ member_id + '/' + org_code +'/02/'+ year_month,
+			type: 'GET',
+			dataType: 'json',
+			headers: {
+				"Authorization" : "Bearer " + getCookie("jwt")
+			},
+			error: function(jqXHR) {
+				if(jqXHR.status == 401) {
+					userErrorHandler(jqXHR);
+				}
+			}
+		})
+		.done(function(data){
+			let sum =0;
+			let arr ='';
+			$(data).each(function(index, item){
+				var paid_amt = Number(item.paid_amt);
+				sum += paid_amt;
+				$('.tAccTit').text(item.org_name + ' 할부');
+				$('.tAmount').find('.num').text(numberWithCommas(sum));
+
+				arr += '<div class="instItem">';
+				arr +=	'<div class="instTotal">';
+				arr +=		'<p class="itemTit">'+item.merchant_name+'</p>';
+				arr +=		'<p class="itemData"><span class="num">'+numberWithCommas(item.paid_amt)+'</span>원</p>';
+				arr +=	'</div>';
+				arr +=	'<ul class="accDetailList">';
+				arr +=	'<li>';
+				arr +=		'<span class="itemTit">카드</span>';
+				arr +=		'<span class="itemData">'+item.card_name+'</span>';
+				arr +=	'</li>';
+				arr +=	'<li>';
+				arr +=		'<span class="itemTit">전체 할부회차</span>';
+				arr +=		'<span class="itemData"><span class="num">'+item.total_install_cnt+'</span>개월 할부</span>';
+				arr +=	'</li>';
+				arr +=	'<li>';
+				arr +=		'<span class="itemTit">현재 할부회차</span>';
+				arr +=		'<span class="itemData"><span class="num">'+item.cur_install_cnt+'</span>회차</span>';
+				arr +=	'</li>';
+				arr +=	'<li>';
+				arr +=		'<span class="itemTit">결제 후 원금잔액</span>';
+				arr +=		'<span class="itemData"><span class="num">'+item.balance_amt+'</span>원</span>';
+				arr +=	'</li>';
+				arr +=	'<li>';
+				arr +=		'<span class="itemTit">수수료</span>';
+				arr +=		'<span class="itemData"><span class="num">'+numberWithCommas(item.credit_fee_amt)+'</span>원</span>';
+				arr +=	'</li>';
+				arr +=	'</ul>';
+				arr +='</div>';
+			});
+			$('.aa').html(arr);
+		});
+	}
+
+	function toastMsgShow(){	
+		$('#update_complete').show();
+		$('.btnRef').addClass("ing");
+		setTimeout(function(){
+			$('#update_complete').hide();
+			$('.btnRef').removeClass("ing");
+		},1200);
+	}
+
+	$(document).ready(function(){
+		$('#update_complete').hide();
+		
+		$(document).on("click", ".btnRef", function(){
+			toastMsgShow();
+			billsHal();
+		});
+		billsHal();
+	})
+</script>
+</body>
+</html>

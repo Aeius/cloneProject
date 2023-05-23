@@ -1,0 +1,300 @@
+﻿<div class="historyList">
+	<span class="date"><span class="num"></span> </span>
+	<ul>
+		<li>
+			<a href="#layer_B1120" class="link btn_open_bottom_sheet" role="button"><!-- 2021-12-23 개별 거래내역 버튼, 바텀시트 오픈 추가 -->
+				<div class="left">
+					<span class="category"></span>
+					<span class="time"></span>
+				</div>
+				<div class="right">
+					<span class="amount"><em class="num"></em></span>
+					<span class="balance"></span>
+				</div>
+			</a>
+		</li>
+		<li>
+	</ul>
+	<div class="upLoading circleBar">
+		<div class="loader"></div>
+		<p>업데이트 중입니다</p>
+	</div>
+</div>
+<div class="btnMore" id="more3">
+	<a class="btn" id="default3"></a>
+	<!-- <a class="btn" id="filter3"></a> -->
+</div>
+<!-- //wrap -->
+<script>
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	///																															 ///
+	///			   									* 기본 디폴트 api 호출 (offset = 0) *										  ///
+	///																															 ///
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	var msg = '';
+	let arr2 = '';
+	// 통신 성공후 함수
+	function success_ajax3(data) {
+		let arr = '';
+		if (data.length ==0) {
+			arr += '<p class="listNone">불러올 내역이 없습니다.</p>';
+			$('#hal').find('.historyList').html(arr);
+			return;
+		} 
+		if(data.length == 10 ){
+			arr2 =	'내역 더보기';
+			$('#default3').text(arr2);
+		}else {
+			$('#more3').hide();
+		}
+
+		let today = new Date(data[0].approved_dtime);
+		msg = month_date_dot(today);
+
+		let nowDay = today.getDay();
+		let nowWeek = " " + toKor_dayOfWeek(nowDay);
+
+		arr += '<span class="date">' + msg + nowWeek + '</span>';
+		arr += '<ul>';
+
+		$(data).each(function (index, item) {
+
+			let result = new Date(item.approved_dtime);
+			let dateString = month_date_dot(result); // 월.일
+
+			let day = result.getDay();
+			let weekday = " " + toKor_dayOfWeek(day); // 요일
+
+			if (msg != dateString) {
+				msg = dateString;
+				arr += '</ul>';
+				arr += '<span class="date">' + dateString + weekday + '</span>';
+				arr += '<ul>';
+			}
+
+			if (item.status == '01') {
+				item.status = '승인';
+			} else if (item.status == '02') {
+				item.status = '취소';
+				item.total_install_cnt="승인취소";
+			} else if (item.status == '03') {
+				item.status = '정정';
+			}
+			
+			if(item.total_install_cnt == 0) {
+				item.total_install_cnt = '일시불';
+			} else if(item.total_install_cnt > 0){
+				item.total_install_cnt = '할부';
+			}
+
+			if(item.status =='취소'){
+				arr += '<li class="cancel">';
+				arr += '<a href="#layer_B1120_2" class="link btn_open_bottom_sheet" role="button">';
+			}
+			else if(item.status =='정정'){
+				arr += '<li>';
+				arr += '<a href="#layer_B1120_3" class="link btn_open_bottom_sheet" role="button">';
+			}
+			else{					
+				arr += '<li>';
+				arr += '<a href="#layer_B1120_1" class="link btn_open_bottom_sheet" role="button">';
+			}	
+
+			arr += '<div class="left">'
+			arr += '<span class="category">' + item.merchant_name + '</span>';
+			arr += '<span class="time">' + hours_minute_col(result) + '</span>';
+			arr += '</div>';
+			arr += '<div class="right">';
+
+			if(item.status == '취소'){
+				arr += '<span class="amount"><em class="num">' + '-' + numberWithCommas(item.approved_amt) + '</em>원</span>';
+			} 
+			else if(item.status == '정정'){
+				arr += '<span class="amount"><em class="num">' + numberWithCommas(item.modified_amt) + '</em>원</span>'
+			}
+			else{
+				arr += '<span class="amount"><em class="num">' + numberWithCommas(item.approved_amt) + '</em>원</span>';
+			}
+
+			arr += '<span class="balance">' + item.total_install_cnt + '</span>';
+			arr += '</div>';
+			arr += '<div style="display: none" class="pay_num">' + item.approved_num + '</div>'
+			arr += '<div style="display: none" class="approved_amt">' + item.approved_amt + '</div>'
+			arr += '<div style="display: none" class="merchant_regno">' + item.merchant_regno + '</div>'
+			arr += '<div style="display: none" class="state">' + item.status + '</div>'
+			arr += '<div style="display: none" class="approved_dtime">' + item.approved_dtime + '</div>'
+			arr += '<div style="display: none" class="trans_dtime">' + item.trans_dtime + '</div>'
+			arr += '<div style="display: none" class="industry">' + item.catg_nm + '</div>'
+			arr += '<div style="display: none" class="update_price">' + item.modified_amt + '</div>'
+			arr += '</a>';
+			arr += '</li>';			
+		});
+		$('#hal').find('.historyList').html(arr);
+	}
+	
+	function payInfoHal(member_id, year, month, offset) {
+		payInfoHal_ajax(member_id, year, month, offset).done(function(data){
+			success_ajax3(data);
+		});
+	}
+
+	function payInfoHalFilter(startDate, endDate, sort, keywords, offset){
+		payInfoHalFilter_ajax(startDate, endDate, sort, keywords, offset).done(function(data){
+			success_ajax3(data);
+		});
+	}
+
+	function payInfoHalStateFilter(state, startDate, endDate, sort, keywords, offset){
+		payInfoHalStateFilter_ajax(state, startDate, endDate, sort, keywords, offset).done(function(data){
+			success_ajax3(data);
+		});
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	///																															 ///
+	///			   									* 10개씩 불러오기 api 호출 (offset+= 10) *									  ///
+	///																															 ///
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	var isEnd3 = false;
+	// api 호출 성공 후 함수 (page 처리 offset += 10)
+	function success_ajax3_page(data){
+		offset += 10;
+		if (data.length ==0) {
+			isEnd3= true;
+			return;
+		}
+		if(data.length == 10 ){
+			arr2 =	'내역 더보기';
+			$('#default3').text(arr2);
+		} else {
+			$('#more3').hide();
+		}
+		let arr = '';
+
+		let today = new Date(data[0].approved_dtime);
+		msg = month_date_dot(today);
+
+		let isData=false;
+		let nowDay = today.getDay();
+		let nowWeek = " " + toKor_dayOfWeek(nowDay);
+
+		arr += '<span class="date">' + msg + nowWeek + '</span>';
+		arr += '<ul>'
+		$(data).each(function (index, item) {
+			let result = new Date(item.approved_dtime);
+			isData=true;
+			let dateString = month_date_dot(result); // 월.일
+
+			let day = result.getDay();
+			let weekday = " " + toKor_dayOfWeek(day); // 요일
+
+			if(msg != dateString && index==0){
+				msg = dateString;
+				arr += '<span class="date"><span class="num">'+dateString+'</span> '+weekday+'</span>';
+				arr += '<ul>';
+			}
+			else if(msg != dateString ){
+				msg = dateString;
+				arr += '</ul>';
+				arr += '<span class="date"><span class="num">'+dateString+'</span> '+weekday+'</span>';
+				arr += '<ul>';
+			}
+
+			if (item.status == '01') {
+				item.status = '승인';
+			} else if (item.status == '02') {
+				item.status = '취소';
+				item.total_install_cnt="승인취소";
+			} else if (item.status == '03') {
+				item.status = '정정';
+			}
+
+			if(item.total_install_cnt == 0) {
+				item.total_install_cnt = '일시불';
+			} else if(item.total_install_cnt > 0){
+				item.total_install_cnt = '할부';
+			}
+
+			if(item.status =='취소'){
+				arr += '<li class="cancel">';
+				arr += '<a href="#layer_B1120_2" class="link btn_open_bottom_sheet" role="button">';
+			}
+			else if(item.status =='정정'){
+				arr += '<li>';
+				arr += '<a href="#layer_B1120_3" class="link btn_open_bottom_sheet" role="button">';
+			}
+			else{					
+				arr += '<li>';
+				arr += '<a href="#layer_B1120_1" class="link btn_open_bottom_sheet" role="button">';
+			}	
+
+			arr += '<div class="left">'
+			arr += '<span class="category">' + item.merchant_name + '</span>';
+			arr += '<span class="time">' + hours_minute_col(result) + '</span>';
+			arr += '</div>';
+			arr += '<div class="right">';
+
+			if(item.status == '취소'){
+				arr += '<span class="amount"><em class="num">' + '-' + numberWithCommas(item.approved_amt) + '</em>원</span>';
+			} 
+			else if(item.status == '정정'){
+				arr += '<span class="amount"><em class="num">' + numberWithCommas(item.modified_amt) + '</em>원</span>'
+			}
+			else{
+				arr += '<span class="amount"><em class="num">' + numberWithCommas(item.approved_amt) + '</em>원</span>';
+			}
+
+			arr += '<span class="balance">' + item.total_install_cnt + '</span>';
+			arr += '</div>';
+			arr += '<div style="display: none" class="pay_num">' + item.approved_num + '</div>'
+			arr += '<div style="display: none" class="approved_amt">' + item.approved_amt + '</div>'
+			arr += '<div style="display: none" class="merchant_regno">' + item.merchant_regno + '</div>'
+			arr += '<div style="display: none" class="state">' + item.status + '</div>'
+			arr += '<div style="display: none" class="approved_dtime">' + item.approved_dtime + '</div>'
+			arr += '<div style="display: none" class="trans_dtime">' + item.trans_dtime + '</div>'
+			arr += '<div style="display: none" class="industry">' + item.catg_nm + '</div>'
+			arr += '<div style="display: none" class="update_price">' + item.modified_amt + '</div>'
+			arr += '</a>';
+			arr += '</li>';			
+		});
+		if(isData==true){
+			arr +='</ul>';
+		}
+		$('#hal').find('.historyList').append(arr);
+	}
+
+	function payInfoHal_page(member_id, year, month, offset) {
+		if(isEnd3 == true) return;
+		payInfoHal_ajax_page(member_id, year, month, offset).done(function(data){
+			success_ajax3_page(data);
+		});
+	}
+	
+	function payInfoHalFilter_page(startDate, endDate, sort, keywords, offset) {
+		if(isEnd3 == true) return;
+		payInfoHalFilter_ajax_page(startDate, endDate, sort, keywords, offset).done(function(data){
+			success_ajax3_page(data);
+		});
+	}
+	
+	function payInfoHalStateFilter_page(state, startDate, endDate, sort, keywords, offset) {
+		if(isEnd3 == true) return;
+		payInfoHalStateFilter_ajax_page(state, startDate, endDate, sort, keywords, offset).done(function(data){
+			success_ajax3_page(data);
+		});
+	}
+
+	$('#default3').click(function(){
+		payInfoHal_page(member_id, year, month, offset);
+		if(state == 'all'){
+			payInfoHalFilter_page(replcae_startDate, replcae_endDate, sort, keywords, offset);	
+		} else {
+			payInfoHalStateFilter_page(state, replcae_startDate, replcae_endDate, sort, keywords, offset);			
+		}
+	});
+
+</script>
+</body>
+</html>

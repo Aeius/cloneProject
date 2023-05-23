@@ -1,0 +1,167 @@
+﻿<!DOCTYPE html>
+<html lang="ko" class="leaf">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport"
+		content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+	<title>CheckPay</title>
+	<meta http-equiv="Cache-Control" content="No-Cache">
+	<meta http-equiv="Pragma" content="No-Cache">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<!--<meta name="title" content="">-->
+	<meta name="description" content="">
+	<!--<meta name="keywords" content="">-->
+	<!-- The Open Graph protocol -->
+	<meta property="og:type" content="website">
+	<meta property="og:title" content="">
+	<meta property="og:description" content="">
+	<meta property="og:url" content="">
+	<meta property="og:image" content=""><!-- [D]리얼경로로 변경하세요 -->
+	<!-- //The Open Graph protocol -->
+	<link rel="SHORTCUT ICON" href=""><!-- [D]리얼경로로 변경하세요 -->
+	<link rel="stylesheet" type="text/css" href="../../css/jquery-ui.min.css">
+	<link rel="stylesheet" type="text/css" href="../../css/reset.css">
+	<link rel="stylesheet" type="text/css" href="../../css/content.css">
+	<link rel="stylesheet" type="text/css" href="../../css/theme_checkpay.css">
+	<script type="text/javascript" src="../../js/jquery-1.8.3.min.js"></script>
+	<script type="text/javascript" src="../../js/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="../../js/jquery.ui.touch-punch.min.js"></script>
+	<script type="text/javascript" src="../../js/slide_slick.js"></script>
+	<script type="text/javascript" src="../../js/publishing.ui.library.1.0.0.js"></script>
+	<script type="text/javascript" src="../../js/cmd.js"></script>
+	<script type="text/javascript" src="../../js/common.js"></script>
+</head>
+
+<body>
+
+	<!-- wrap -->
+	<div class="wrap">
+
+		<!-- header -->
+		<div class="header">
+			<div class="header_inn">
+				<div class="left">
+					<a href="#none" class="btnBack"><span class="blind">Back</span></a>
+				</div>
+				<!--
+				<div class="right">
+					<a href="/invest" class="btnClose"><span class="blind">close</span></a>
+				</div>
+				-->
+			</div>
+		</div>
+		<!-- //header -->
+
+		<!-- container -->
+		<div class="container">
+			<div class="content">
+				<div class="accSetting">
+					<div class="tBalance">
+						<h3 class="tBaltit"></h3>
+						<p class="tBalAmount"><em class="amount"></em>원</p>
+						<p class="tBalDetail"></p>
+						<a href="" class="btnRef"><span class="blind">새로고침</span></a>
+						<!-- 새로고침중 일때 class에 ing 추가 -->
+						<!-- <a href="#" class="btnRef ing"><span class="blind">새로고침</span></a> -->
+					</div>
+					<h4 class="listTit"><em class="pointColor">개별운용상품</em></h4>
+					<div class="wrap_items">
+						<!-- 개별 운용 상품 출력 위치 -->
+					</div>
+					<!--
+				<div class="upLoading circleBar">
+					<div class="loader"></div>
+					<p>업데이트 중입니다</p>
+				</div>
+				-->
+				</div>
+			</div>
+		</div>
+		<!-- //container -->
+
+	</div>
+	<!-- //wrap -->
+	<script>
+		$(document).ready(function () {
+			// 순서대로 접근하지 않았을 경우
+			if (localStorage.getItem('org_code') === null || localStorage.getItem('account_num') === null) {
+				location.href = "/invest"
+			}
+			
+			$('.tBaltit').text(localStorage.getItem('account_name'));
+			$('.tBalAmount>.amount').text(localStorage.getItem('eval_amt'));
+			$('.tBalDetail').text(localStorage.getItem('account_full'));
+
+			let values = {
+				"memb_cd": parseJwt(getCookie("jwt")).sub,
+				"org_code": localStorage.getItem('org_code'),
+				"account_num": localStorage.getItem('account_num')
+			}
+			ajax_irp_acc_products(values).done(function (response) {
+				let temp = '';
+				for (result of response) {
+					temp += '<div class="instItem">'
+						+ '	<div class="instTotal">'
+						+ '		<p class="itemTit">' + result.irp_name + '</p>'
+						+ '		<p class="itemData"><span class="num">' + result.eval_amt.toLocaleString() + '</span>원</p>'
+						+ '	</div>'
+						+ '	<ul class="accDetailList">'
+						+ '		<li>'
+						+ '			<span class="itemTit">투자원금</span>'
+						+ '			<span class="itemData"><em class="num">' + result.inv_principal.toLocaleString() + '</em>원</span>'
+						+ '		</li>'
+						+ '		<li>'
+						+ '			<span class="itemTit">보유좌수</span>'
+						+ '			<span class="itemData"><em class="num">' + result.fund_num.toLocaleString() + '</em></span>'
+						+ '		</li>'
+						+ '		<li>'
+						+ '			<span class="itemTit">신규일(재예치일)</span>'
+						+ '			<span class="itemData"><em class="num">' + year_month_date_dot(new Date(result.open_date)) + '</em></span>'
+						+ '		</li>'
+						+ '		<li>'
+						+ '			<span class="itemTit">약정이자율</span>'
+					if (result.int_rate < 0) {
+						temp += '<span class="itemData"><em class="num minus">' + result.int_rate + '%</em></span>'
+					} else if (result.int_rate > 0) {
+						temp += '<span class="itemData"><em class="num plus">' + result.int_rate + '%</em></span>'
+					} else {
+						temp += '<span class="itemData"><em class="num">' + result.int_rate + '%</em></span>'
+
+					}
+					temp += '		</li>'
+						+ '		<li>'
+						+ '			<span class="itemTit">만기일</span>'
+						+ '			<span class="itemData"><em class="num">' + year_month_date_dot(new Date(result.exp_date)) + '</em></span>'
+						+ '		</li>'
+						+ '	</ul>'
+						+ '</div>'
+				}
+				$('.wrap_items').html(temp);
+			})
+		})
+		// 뒤로가기
+		$(document).on('click', '.btnBack', function () {
+			history.back();
+		})
+		// ajax function
+		function ajax_irp_acc_products(values) {
+			return $.ajax({
+				url: 'http://192.168.240.208:8081/api/irp/account/products',
+				type: 'POST',
+				contentType: 'application/json',
+				data: JSON.stringify(values),
+				dataType: 'json',
+				headers: {
+					"Authorization": "Bearer " + getCookie("jwt")
+				},
+				error: function (jqXHR) {
+					userErrorHandler(jqXHR);
+					ajax_irp_acc_products(values);
+				}
+			})
+		}
+	</script>
+</body>
+
+</html>

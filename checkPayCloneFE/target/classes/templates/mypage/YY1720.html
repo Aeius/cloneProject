@@ -1,0 +1,294 @@
+﻿<!DOCTYPE html>
+<html lang="ko" class="leaf">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>CheckPay</title>
+<meta http-equiv="Cache-Control" content="No-Cache">
+<meta http-equiv="Pragma" content="No-Cache">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<!--<meta name="title" content="">-->
+<meta name="description" content="">
+<!--<meta name="keywords" content="">-->
+<!-- The Open Graph protocol -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="">
+<meta property="og:description" content="">
+<meta property="og:url" content="">
+<meta property="og:image" content=""><!-- [D]리얼경로로 변경하세요 -->
+<!-- //The Open Graph protocol -->
+<link rel="SHORTCUT ICON" href=""><!-- [D]리얼경로로 변경하세요 -->
+<link rel="stylesheet" type="text/css" href="../css/jquery-ui.min.css">
+<link rel="stylesheet" type="text/css" href="../css/reset.css">
+<link rel="stylesheet" type="text/css" href="../css/content.css">
+<link rel="stylesheet" type="text/css" href="../css/theme_checkpay.css">
+</head>
+
+<body>
+
+<!-- wrap -->
+<div class="wrap">
+
+	<!-- header -->
+	<div class="header setup"><!-- 2021-10-07 마이페이지 클래스 'setup' 추가 -->
+		<div class="header_inn">
+			<div class="left">
+				<a href="/mypage/" class="btnBack"><span class="blind">Back</span></a>
+			</div>
+			<div class="center">
+				<h2 class="tit_h2">고객센터</h2>
+			</div>
+			<div class="right">
+				<!--<a href="#none" class="btnClose"><span class="blind">close</span></a>-->
+			</div>
+		</div>
+	</div>
+	<!-- //header -->
+
+	<!-- container -->
+	<div class="container">
+		<div class="content">
+			<div class="servTerm">
+				<h3 class="termTit">자산관리 서비스 사용 문의</h3>
+				<p>자산관리 서비스(체크페이)</p>
+				<p>고객센터 : 1522-1904</p>
+				<p class="description">평일 09:00 ~ 18:00 토요일, 공휴일 제외</p>
+			</div>
+			<hr class="hr_div"></hr>
+
+			<!-- [S] FAQ -->
+			<div class="wrap_faq">
+				<h3 class="tit_h3">FAQ</h3>
+
+				<!-- [S] 검색 -->
+				<div class="wrap_search">
+					<input type="text" id="search" class="inp_search js_tx_val" placeholder="궁금한 점을 검색해보세요."/>
+					<button type="button" class="btn_val_reset js_bt_val_reset"><span class="blind">검색어 삭제</span></button>
+					<button type="button" class="btn_search"><span class="blind">검색</span></button>
+				</div>
+				<!-- [E] 검색 -->
+
+				<!-- [S] 검색결과 영역  -->
+				<div class="faq_section">
+					<div class="search_result">
+
+						<!-- [S] 검색결과 없음 -->
+						<div class="msgResult"></div>
+						
+						<!-- [E] 검색결과 없음 -->
+
+						<!-- [S] 검색결과 내용 -->
+						<div class="faq_cont">
+							<!-- 검색결과 -->
+						</div>
+						<!-- [E] 검색결과 내용 -->
+					</div>
+				</div>
+				<!-- [E] 검색결과 영역 -->
+
+				<!-- 더보기 FAQ -->
+				<div class="btn_wrap type_faq">
+					<div class="btnGroup">
+						<p><a href="#" class="btnBl4" role="button"><span class="tx">더보기 <span class="num">(10/32)</span></span><span class="ico_sel_down mgl5"></span></a></p>
+					</div>
+				</div>
+			</div>
+			<!-- [E] FAQ -->
+		</div>
+	</div>
+	<!-- //container -->
+</div>
+<!-- //wrap -->
+</body>
+<script type="text/javascript" src="../js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="../js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="../js/jquery.ui.touch-punch.min.js"></script>
+<script type="text/javascript" src="../js/slide_slick.js"></script>
+<script type="text/javascript" src="../js/publishing.ui.library.1.0.0.js"></script>
+<script type="text/javascript" src="../js/cmd.js"></script>
+<script type="text/javascript" src="../js/common.js"></script>
+<script type="text/javascript">
+	
+	$(document).ready(function(){
+		
+		var url_href = window.location.href;
+		var url = new URL(url_href);
+		var word = url.searchParams.get("search");
+
+		var input = $("#search");
+		input.val("");
+		input.val(input.val() + word);
+	
+		$('#search').append(word);
+		$('.btnGroup').hide();
+
+		var listhtml = "";
+		var searchhtml = "";
+		var cnt = 0; 
+		var current = 10;
+		
+		
+		$.ajax({
+                type : "GET",
+                url : "http://192.168.240.208:8081/api/mypage/faq",
+                headers: {
+				           "Authorization" : "Bearer " + getCookie("jwt")
+				        },
+				success : function(data){
+					
+					// 엔터키로 검색 가능하도록
+					$("#search").keydown(function(keyNum){
+						if(keyNum.keyCode == 13){
+						var word = $('#search').val();
+			            var expText = /[`~!@#$%^&*|\\\'\";:\/<>]/gi;
+				           	if(expText.test(word) == true){
+				            	return false;
+				            }
+				          	else $(".btn_search").click();
+				          	current = 10;
+						}
+					})
+
+					$('.btn_search').click(function(){
+						history.pushState(null, null, 'search')
+						// 공백 입력 시 retrun
+						if($("#search").val().trim()==""){
+							return;
+						}
+						
+						// 특수문자 있으면 retrun
+						var word = $('#search').val();
+						var expText = /[`~!@#$%^&*|\\\'\";:\/<>?]/gi;
+						if(expText.test(word) == true){
+							return;
+						}
+						
+						cnt = 0;
+						listhtml = "";
+						searchhtml = "";
+						var data1 = "";
+						current = 10;
+
+						var word = $('#search').val();
+						$('.msgResult').hide();
+						$('.msgResult').empty();
+						$('.faq_cont').empty();
+						
+						$.each(data, function(idx, val) {
+							// 검색어가 포함되어 있을 경우
+							if((val.title).includes(word)){
+								if(val.catg_cd!='01'){
+									cnt++;
+									listhtml +="<div class='faq_list'>";
+									listhtml +="<div class='tit_wrap'>";
+									listhtml +="<button class='btnFolding faq' data-target='#search_result_000"+(idx+1)+"' aria-expanded='false'>";
+									listhtml +="<span class='tx'>"+val.title+"</span></button></div>";
+									listhtml +='<div class="folding_cont" id="search_result_000'+(idx+1)+'">'+val.cntns+'</div>';
+									listhtml +='</div>';
+	
+									$('.faq_cont').append(listhtml);
+									listhtml="";
+									idx++;
+								}
+							}
+						});
+	
+					// 로딩 후 10개만 출력되도록
+						$('.faq_cont .faq_list').not(':lt(10)').hide();
+						cnt = cnt;
+						showbtn(cnt, word);
+					
+					// 리스트 애니메이션
+					$('.btnFolding').each(function(){
+						var $self = $(this);
+						var target = $($self.attr('data-target'));
+						if($self.hasClass('show')){
+							$self.children('.blind').html('닫힘');
+							$self.attr('aria-expanded','true');
+						}else {
+							$self.children('.blind').html('펼침');
+							$self.attr('aria-expanded','false');
+						}
+						$self.on('click', function(){
+							if($self.hasClass('faq')){
+								$self.closest('.faq_list').siblings('.faq_list').find('.folding_cont').slideUp(0);
+								$self.closest('.faq_list').siblings('.faq_list').find('.faq').removeClass('show').attr('aria-expanded','false');
+								var clickBtnOffsetTop = $self.offset().top;
+								$('html, body').animate({scrollTop: clickBtnOffsetTop}, 500);
+							}
+							if($self.hasClass('show')){
+								target.slideUp(200);
+								$self.removeClass('show');
+								$self.attr('aria-expanded','false');
+								$self.children('.blind').html('펼침');
+								$self.closest('.asList').removeClass('expanded');
+							}else{
+								$self.addClass('show');
+								$self.attr('aria-expanded','true');
+								target.slideDown(200);
+								$self.children('.blind').html('닫힘');
+								$self.closest('.asList').addClass('expanded');
+							}
+						})
+					})
+				});
+				$('.btn_search').trigger('click');
+
+					// 버튼 총 카운트 출력
+					function showbtn(total, word){
+						$('.btnGroup').show();
+						if(current>total){
+							$('.num').html(current+'/'+total);
+							$('.btnGroup').hide();
+						}  else $('.num').html(current+'/'+total);
+						
+						// 입력 값 없으면 실행 
+						if(total == 0){
+							$('.msgResult').show();
+							searchhtml +="<p><em class='keyword pointColor'>"+'&quot;'+word+'&quot;'+"</em>에 대한 검색 결과가 없습니다.</p>";
+							$('.msgResult').append(searchhtml);
+							$('.btnGroup').hide();
+						
+						// "키워드" 검색결과
+						}else{
+							searchhtml +="<p class='faq_cate_tit'><span class='tx'><em class='keyword pointColor'>"+'&quot;'+word+'&quot;'+"</em>검색결과</span></p>";
+							$('.faq_cont').prepend(searchhtml);
+						}
+					}		
+				},
+                error: function (jqXHR) {
+		            if (jqXHR.status == 401 && msg == "토큰 기한 만료") {
+						tokenCall2();
+		            }
+		            else if(jqXHR.status == 401 && msg == "jwt claims 비어있음"){
+						console.log("jwt claims 비어있음");
+					}
+					else if(jqXHR.status == 401 && msg == "유효하지 않은 서명"){
+						console.log("유효하지 않은 서명");
+					}
+					else if(jqXHR.status == 401 && msg == "유효하지 않은 토큰"){
+						console.log("유효하지 않은 토큰");
+					}
+					else if(jqXHR.status == 401  && msg == "지원되지 않는 토큰"){
+						console.log("지원되지 않는 토큰");
+					}
+					else{
+						console.log("권한 없음");
+					}
+	            }
+            });
+
+			// 버튼 클릭 시 리스트 더 나오게
+			$(document).on('click','.btnGroup',function(e){
+				current +=10;
+				$('.faq_cont .faq_list').show().not(':lt('+current+')').hide();
+
+				if(current>=cnt){
+					$('.num').html(current+'/'+cnt);
+					$('.btnGroup').hide();
+				} else $('.num').html(current+'/'+cnt);
+			});
+		});
+
+</script>
+</html>

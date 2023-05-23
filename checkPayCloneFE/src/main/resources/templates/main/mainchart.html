@@ -1,0 +1,433 @@
+﻿<!DOCTYPE html>
+<html lang="ko" class="leaf">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>CheckPay</title>
+<meta http-equiv="Cache-Control" content="No-Cache">
+<meta http-equiv="Pragma" content="No-Cache">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<!--<meta name="title" content="">-->
+<meta name="description" content="">
+<!--<meta name="keywords" content="">-->
+<!-- The Open Graph protocol -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="">
+<meta property="og:description" content="">
+<meta property="og:url" content="">
+<meta property="og:image" content=""><!-- [D]리얼경로로 변경하세요 -->
+<!-- //The Open Graph protocol -->
+<link rel="SHORTCUT ICON" href=""><!-- [D]리얼경로로 변경하세요 -->
+<link rel="stylesheet" type="text/css" href="../../css/jquery-ui.min.css">
+<link rel="stylesheet" type="text/css" href="../../css/reset.css">
+<link rel="stylesheet" type="text/css" href="../../css/content.css">
+<link rel="stylesheet" type="text/css" href="../../css/theme_checkpay.css">
+<script type="text/javascript" src="../../js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="../../js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="../../js/jquery.ui.touch-punch.min.js"></script>
+<script type="text/javascript" src="../../js/slide_slick.js"></script>
+<script type="text/javascript" src="../../js/publishing.ui.library.1.0.0.js"></script>
+<script type="text/javascript" src="../../js/cmd.js"></script>
+<script src="../../js/common.js"></script>
+
+<!-- [S] chart -->
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+<!-- [E] chart -->
+<!-- thymeleaf -->
+	<html xmlns:th="http://www.thymeleaf.org">
+
+</head>
+<th:block th:with="
+	bank1000Size=${bankAccList1000.size},
+	bank2000Size=${bankAccList2000.size},
+	bank3000Size=${bankAccList3000.size},
+	bankIrpListSize=${bankIrpList.size},
+	cardListSize=${cardIdList.size},
+	cardloanSize=${cardloanList.size},
+	capitalSize=${capitalList.size+capitalForignList.size},
+	capforsize=${capitalForignList.size},
+	investListSize=${investList.size},
+	bank1000Val=${bank1000Size}==0?0:${#aggregates.sum(bankAccList1000.?[currency_code=='KRW'].![balance_amt])},
+	bank2000Val=${bank2000Size}==0?0:${#aggregates.sum(bankAccList2000.?[currency_code=='KRW'].![balance_amt])},
+	bank3000Val=${bank3000Size}==0?0:${#aggregates.sum(bankAccList3000.?[currency_code=='KRW'].![balance_amt])},
+	bankIrpListVal=${bankIrpListSize}==0?0:${#aggregates.sum(bankIrpList.![eval_amt])},
+	cardVal=${cardListSize}==0?0:${#aggregates.sum(cardIdList.![price_sum])},
+	cardLongVal=${cardloanList}==0?0:${#aggregates.sum(cardloanList.![balance_amt])},
+	efinList_size=${efinList.size},
+	efinList_val=${efinList_size}==0?0:${#aggregates.sum(efinList.?[currency_code=='KRW'].![total_balance_amt])},
+	investListVal=${investListSize}==0?0:${#aggregates.sum(investList.?[currency_code=='원'].![eval_amt])}
+">
+
+<body>
+<!-- wrap -->
+<div class="wrap">
+
+	<!-- header -->
+	<div class="header">
+		<div class="header_inn">
+			 <div class="left">
+				<a onclick="window.history.back()" class="btnBack"><span class="blind">Back</span></a>
+			</div> 
+		</div>
+	</div>
+	<!-- //header -->
+
+	<!-- container -->
+	<div class="container">
+		<div class="content">
+
+            <div class="asset_noti" th:with="amt=${bank1000Val+bank2000Val+bankIrpListVal-bank3000Val-cardVal-cardLongVal-capitalKrwSum+efinList_val+investListVal}">
+                <h2 class="tit_h2">
+                    <span id="member_name">BNK 고객님!</span><br>
+                    고객님의 총 자산이<br>
+                    <span class="asset highlighter" th:if="${amt-assetSum}<0">
+					<em class="num" th:utext="${#numbers.formatInteger(assetSum-amt, 0, 'COMMA')}">36,000,876</em>원</span> <span th:if="${amt-assetSum}<0">감소하였습니다.</span>
+                    <span class="asset highlighter" th:if="${amt-assetSum}>0">
+					<em class="num" th:utext="${#numbers.formatInteger(amt-assetSum, 0, 'COMMA')}">36,000,876</em>원</span> <span th:if="${amt-assetSum}>0">증가하였습니다.</span>
+                </h2>
+            </div>
+
+            <!-- [S] 자산 현황 -->
+            <div class="wrap_assets">
+                <div class="asGroup type_chart">
+                    <div class="asList">
+                        <!-- [S] 차트 파이 타입 -->
+                        <div class="wrap_chart type_main">
+                            <figure class="highcharts-figure" role="img" aria-labelledby="chartLabelId" aria-describedby="chartDescId">
+                                <div id="chart_pie_main"></div>
+                            </figure>
+							<!-- 접근성 -->
+							<div class="chart_disable blind">
+                                <p id="chartLabelId">종목별 자산현황</p>
+								<table class="info_tbl" id="chartDescId">
+									<caption>대출, 카드대금, 계좌현금</caption>
+<!--										, pay, 투자의 자산현황</caption>-->
+									<colgroup>
+										<col /><col />
+									</colgroup>
+									<thead>
+										<tr>
+											<th scope="col">종목</th>
+											<th scope="col">비율</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<th scope="row"><div>대출</div></th>
+											<td><div><span class="rate_loan"></span></div></td>
+										</tr>
+										<tr>
+											<th scope="row"><div>카드대금</div></th>
+											<td><div><span class="rate_card"></span></div></td>
+										</tr>
+										<tr>
+											<th scope="row"><div>계좌현금</div></th>
+											<td><div><span class="rate_acc"></span></div></td>
+										</tr>
+										<tr>
+											<th scope="row"><div>pay</div></th>
+											<td><div><span class="rate_pay"></span></div></td>
+										</tr>
+										<tr>
+											<th scope="row"><div>증권</div></th>-->
+											<td><div><span class="rate_stock"></span></div></td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+                        </div>
+                        <!-- [E] 차트 파이 타입 -->
+                        <!-- [S] 차트 자산 영역 -->
+                        <div class="wrap_ratio">
+							<div class="inner">
+								<h4 class="tit_h4">자산비율</h4>
+								<div class="graph">
+									<p class="acc"><span class="blind"></span></p><!-- 자산비율 width, 하단 js(차트 자산 영역) -->
+									<p class="dept"><span class="blind"></span></p><!-- 부채비율 width, 하단 js(차트 자산 영역) -->
+								</div>
+								<div class="asset">
+									<p class="acc">
+										<span class="tit">자산</span>
+										<span class="price"><em class="num" th:utext="${#numbers.formatInteger(bank1000Val+bank2000Val+bankIrpListVal+efinList_val+investListVal, 0, 'COMMA')}">3,000,000</em>원</span>
+									</p>
+									<p class="debt">
+										<span class="tit">부채</span>
+										<span class="price"><em class="num" th:utext="${#numbers.formatInteger(bank3000Val+cardVal+cardLongVal+capitalKrwSum, 0, 'COMMA')}">7,000,000</em>원</span>
+									</p>
+								</div>
+							</div>
+						</div>
+                        <!-- [E] 차트 자산 영역 -->
+                    </div>
+                </div>
+            </div>
+            <!-- [E] 자산 현황 -->
+
+            <!-- [S] 자산, 부채 금액 -->
+            <ul class="asset_my_list">
+                <li class="asset_li">
+                    <p class="cate">
+                        <span class="tit">자산</span>
+                        <span class="price"><span class="num" th:utext="${#numbers.formatInteger(bank1000Val+bank2000Val+bankIrpListVal+efinList_val+investListVal, 0, 'COMMA')}">3,000,000</span>원</span>
+                    </p>
+                    <div class="link">
+                        <span class="tit">현금자산<em class="num pointColor" th:utext="${bank1000Size+bankIrpListSize}">5</em></span>
+                        <span class="price"><span class="num" th:utext="${#numbers.formatInteger(bank1000Val+bank2000Val+bankIrpListVal, 0, 'COMMA')}">1,000,000</span>원</span>
+                    </div>
+                    <div class="link">
+                        <span class="tit">Pay<em class="num pointColor" th:utext="${efinList_size}">5</em></span>
+                        <span class="price"><span class="num" th:utext="${#numbers.formatInteger(efinList_val, 0, 'COMMA')}">1,000,000</span>원</span>
+                    </div>
+                    <div class="link">
+                        <span class="tit">증권<em class="num pointColor" th:utext="${investListSize}">3</em></span>
+                        <span class="price"><span class="num" th:utext="${#numbers.formatInteger(investListVal, 0, 'COMMA')}">1,000,000</span>원</span>
+                    </div>
+                   
+                </li>
+                <li class="asset_li">
+                    <p class="cate">
+                        <span class="tit">부채</span>
+                        <span class="price"><span class="num" th:utext="${#numbers.formatInteger(bank3000Val+cardVal+cardLongVal+capitalKrwSum, 0, 'COMMA')}">7,000,000</span>원</span>
+                    </p>
+                    <div class="link">
+                        <span class="tit">카드<em class="num pointColor" th:utext="${cardListSize}">2</em></span>
+                        <span class="price"><span class="num" th:utext="${#numbers.formatInteger(cardVal, 0, 'COMMA')}">3,000,000</span>원</span>
+                    </div>
+                    <div class="link">
+                        <span class="tit">대출<em class="num pointColor" th:utext="${bank3000Size+cardloanSize+capitalSize}">2</em></span>
+                        <span class="price"><span class="num" th:utext="${#numbers.formatInteger(bank3000Val+cardLongVal+capitalKrwSum, 0, 'COMMA')}">4,000,000</span>원</span>
+                    </div>
+                </li>
+            </ul>
+            <!-- [E] 자산, 부채 금액 -->
+
+
+		</div>
+	</div>
+	<!-- //container -->
+</div>
+<!-- //wrap -->
+
+<script th:inline="javascript">
+		var card_data = /*[[(${cardIdList.size}==0?0:${#aggregates.sum(cardIdList.![price_sum])})]]*/ 0;
+		var bank1000_data = /*[[(${bankAccList1000.size}==0?0:${#aggregates.sum(bankAccList1000.?[currency_code=='KRW'].![balance_amt])})]]*/ 0;
+		var bank2000_data = /*[[(${bankAccList2000.size}==0?0:${#aggregates.sum(bankAccList2000.?[currency_code=='KRW'].![balance_amt])})]]*/ 0;
+		var bankIRP_data = /*[[(${bankIrpList.size}==0?0:${#aggregates.sum(bankIrpList.![eval_amt])})]]*/ 0;
+		var bank3000_data = /*[[(${bankAccList3000.size}==0?0:${#aggregates.sum(bankAccList3000.?[currency_code=='KRW'].![balance_amt])})]]*/ 0;
+		var cardLoan_data = /*[[${cardLongVal}]]*/ 0;
+		var capitalKrwSum_data= /*[[${capitalKrwSum}]]*/0;
+		var investList_data = /*[[${investListSize}==0?0:${#aggregates.sum(investList.?[currency_code=='원'].![eval_amt])}]]*/0;
+		var efin_data = /*[[${efinList_size}==0?0:${#aggregates.sum(efinList.?[currency_code=='KRW'].![total_balance_amt])}]]*/0;
+		var sum = card_data + bank1000_data + bank2000_data + bankIRP_data + bank3000_data +cardLoan_data+capitalKrwSum_data+efin_data+investList_data;
+$(document).ready(function(){
+	
+	var token = getCookie("jwt");
+	
+	$.ajax({
+            type : "GET",
+            url : "http://192.168.240.208:8081/api/member/auth",
+            headers: {
+                       "Authorization" : "Bearer " + getCookie("jwt")
+                    },
+            success : function(data){
+               $('#member_name').text(data.member_name+ '고객님!');
+               
+            },
+            error : function(XMLHttpRequest, textStatus, errorThrown){
+               tokenCall2();
+            }
+         });
+
+
+    /* [S] 차트 파이 타입 */
+    Highcharts.chart('chart_pie_main', {
+        title: {text: ''},// 타이틀 숨김
+        exporting: { enabled: false },// 우측상단 햄버거메뉴 숨김
+            credits: {enabled: false},// highchart 워터마크 숨김
+        tooltip:  { enabled: false },// 하이차트 기본툴팁 숨김
+        chart: {
+            plotBackgroundColor: null,
+            plotBorderWidth: null,
+            plotShadow: false,
+            type: 'pie',
+        },
+        plotOptions: {
+            pie: {
+                allowPointSelect: true, // 선택모션
+                slicedOffset: 10, // 슬라이스간격
+                cursor: 'pointer',
+                colors: ['#7b97fd', '#63aff8', '#ff677c', '#ff8b67', '#e970f1'], // 색상지정 [대출, 카드대금, 계좌현금, pay, 투자]
+                colorByPoint: true, // 색상지정
+                point: {
+                    events: {
+                        click: function () {
+                            //말풍선 카테고리 정보
+                            $('.highcharts-data-label').css({'opacity':'1','transition':'all .5s ease'});
+                            $('.highcharts-data-label .highcharts-label-box').css({'stroke-width':'1px','transition':'all 1s ease'});
+                            //말풍선 개별 설정
+                            if(this.name === '대출'){
+                                $('.highcharts-data-label').hide();
+                                $('.highcharts-data-label-color-0').show();//대출
+                                if( this.selected === false){
+                                    $('.highcharts-data-label-color-0 .highcharts-label-box').css({'stroke-width':'3px'});
+                                }else{
+                                    $('.highcharts-data-label:not(.highcharts-data-label-color-0)').show();
+                                }
+                            }
+                            else if(this.name === '카드대금'){
+                                $('.highcharts-data-label').hide();
+                                $('.highcharts-data-label-color-1').show();//카드대금
+                                if( this.selected === false){
+                                    $('.highcharts-data-label-color-1 .highcharts-label-box').css({'stroke-width':'3px'});
+                                }else{
+                                    $('.highcharts-data-label:not(.highcharts-data-label-color-1)').show();
+                                }
+                            }
+                            else if(this.name === '현금자산'){
+                                $('.highcharts-data-label').hide();
+                                $('.highcharts-data-label-color-2').show();//현금자산
+                                if( this.selected === false){
+                                    $('.highcharts-data-label-color-2 .highcharts-label-box').css({'stroke-width':'3px'});
+                                }else{
+                                    $('.highcharts-data-label:not(.highcharts-data-label-color-2)').show();
+                                }
+                            }
+                            else if(this.name === 'Pay'){
+                                $('.highcharts-data-label').hide();
+                                $('.highcharts-data-label-color-3').show();//pay
+                                if( this.selected === false){
+                                    $('.highcharts-data-label-color-3 .highcharts-label-box').css({'stroke-width':'3px'});
+                                }else{
+                                    $('.highcharts-data-label:not(.highcharts-data-label-color-3)').show();
+                                }
+                            }
+                            else if(this.name === '증권'){
+                                $('.highcharts-data-label').hide();
+                                $('.highcharts-data-label-color-4').show();//투자
+                                if( this.selected === false){
+                                    $('.highcharts-data-label-color-4 .highcharts-label-box').css({'stroke-width':'3px'});
+                                }else{
+                                    $('.highcharts-data-label:not(.highcharts-data-label-color-4)').show();
+                                }
+                            }
+                        }// click
+                    }// events
+                },// point
+            },// pie
+        },// plotOptions
+        series: [{
+            //innerSize: '10%', //도넛모양
+            size: '58%',// 크기
+            startAngle: 90,// 각도 시작
+            endAngle: 470,// 각도 끝
+            center: ['50%', '24%'], //pie 위치
+            dataLabels: {// 말풍선 설정
+                distance: 1, //말풍선과 그래프의 간격
+                color: '#000',
+                backgroundColor: '#fff',
+                connectorPadding: -30,
+                borderWidth: 1,
+                borderRadius: 15,
+                overflow: 'inherit',
+                style : {
+                        fontFamily: 'notoSans',
+                        fontSize: '12px',
+                        fontWeight: '700',
+                },
+            },
+            //말풍선 개별 설정
+            data: [{
+                name: '대출',
+                y: bank3000_data+cardLoan_data+capitalKrwSum_data ? bank3000_data+cardLoan_data+capitalKrwSum_data : null,// 100퍼센트 비율
+                sliced: false,
+                selected: false,
+                dataLabels: {
+                    useHTML: true,
+                    format: '<p class="chart_label_box rate_loan"><b> {point.name}</b> <b style="color:#7b97fd;"> {point.percentage:1.0f}% </b> </p>',
+                    borderColor: '#7b97fd',
+                    
+                },
+            }, {
+                name: '카드대금',
+                y: card_data ? card_data : null,// 100퍼센트 비율
+                sliced: false,
+                selected: false,
+                dataLabels: {
+                    useHTML: true,
+                    format: '<p class="chart_label_box rate_card"><b> {point.name}</b> <b style="color:#63aff8;"> {point.percentage:1.0f}% </b> </p>',
+                    borderColor: '#63aff8',
+                },
+            }, {
+                name: '현금자산',
+                y: (bank1000_data+bank2000_data+bankIRP_data) ? (bank1000_data+bank2000_data+bankIRP_data) : null,// 100퍼센트 비율
+                sliced: false,
+                selected: false,
+                dataLabels: {
+                    useHTML: true,
+                    format: '<p class="chart_label_box rate_acc"><b> {point.name}</b> <b style="color:#ff677c;"> {point.percentage:1.0f}% </b> </p>',
+                    borderColor: '#ff677c',
+                },
+            }
+            
+            , {
+                name: 'Pay',
+                y: efin_data ? efin_data : null,// 100퍼센트 비율
+                sliced: false,
+                selected: false,
+                dataLabels: {
+                    useHTML: true,
+                    format: '<p class="chart_label_box rate_pay"><b> {point.name}</b> <b style="color:#ff8b67;"> {point.percentage:1.0f}% </b> </p>',
+                    borderColor: '#ff8b67',
+                },
+            }
+            , 
+            {
+                name: '증권',
+                y: investList_data ? investList_data : null,// 100퍼센트 비율
+                sliced: false,
+                selected: false,
+                dataLabels: {
+                    useHTML: true,
+                    format: '<p class="chart_label_box rate_stock"><b> {point.name}</b> <b style="color:#ff677c;"> {point.percentage:1.0f}% </b> </p>',
+                    borderColor: '#fe97a6',
+                },
+            }
+            
+            ]// data
+        }]// series
+    });
+    //접근성
+    $('.chart_disable .rate_loan').text($('.chart_label_box.rate_loan b:last-child').html());
+    $('.chart_disable .rate_card').text($('.chart_label_box.rate_card b:last-child').html());
+    $('.chart_disable .rate_acc').text($('.chart_label_box.rate_acc b:last-child').html());
+    $('.chart_disable .rate_pay').text($('.chart_label_box.rate_pay b:last-child').html());
+    $('.chart_disable .rate_stock').text($('.chart_label_box.rate_stock b:last-child').html());
+    /* [E] 차트 파이 타입 */
+	// ((bank1000_data+bank2000_data) /sum)
+	// ((bank3000_data+card_data) /sum)
+    /* [S] 차트 자산 영역 */
+    // 차트 비율 출력용
+    // console.log(((bank1000_data+bank2000_data) /sum))
+    // console.log(((bank3000_data+card_data) /sum))
+    
+    if($('.wrap_ratio').length){
+        $('.wrap_ratio .graph .acc').animate({'width':((bank1000_data+bank2000_data+bankIRP_data+efin_data+investList_data) /sum)*100+'%'});//자산비율 예시
+        $('.wrap_ratio .graph .dept').animate({'width':((bank3000_data+card_data+cardLoan_data+capitalKrwSum_data) /sum)*100+'%'});//부채비율 예시
+        //접근성
+        setTimeout(function() {
+            var ratioAccWidth = document.querySelector('.wrap_ratio .graph .acc').style.width;
+            var deptAccWidth = document.querySelector('.wrap_ratio .graph .dept').style.width;
+            $('.wrap_ratio .graph .acc').find('.blind').text('자산비율'+ratioAccWidth);
+            $('.wrap_ratio .graph .dept').find('.blind').text('부채비율'+deptAccWidth);
+        }, 1500);
+    }
+    /* [E] 차트 자산 영역 */
+
+});
+</script>
+</body>
+</th:block>
+</html>

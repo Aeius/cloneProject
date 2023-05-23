@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="ko" class="leaf">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport"
+		content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+	<title></title>
+	<meta http-equiv="Cache-Control" content="No-Cache">
+	<meta http-equiv="Pragma" content="No-Cache">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<!--<meta name="title" content="">-->
+	<meta name="description" content="">
+	<!--<meta name="keywords" content="">-->
+	<!-- The Open Graph protocol -->
+	<meta property="og:type" content="website">
+	<meta property="og:title" content="">
+	<meta property="og:description" content="">
+	<meta property="og:url" content="">
+	<meta property="og:image" content=""><!-- [D]리얼경로로 변경하세요 -->
+	<!-- //The Open Graph protocol -->
+	<link rel="SHORTCUT ICON" href=""><!-- [D]리얼경로로 변경하세요 -->
+	<link rel="stylesheet" type="text/css" href="../css/jquery-ui.min.css">
+	<link rel="stylesheet" type="text/css" href="../css/reset.css">
+	<link rel="stylesheet" type="text/css" href="../css/content.css">
+	<link rel="stylesheet" type="text/css" href="../css/theme_checkpay.css">
+	<style>
+		.date{
+			margin: 15px 0 15px 0;
+		}
+	</style>
+</head>
+
+<body>
+
+	<!-- wrap -->
+	<div class="wrap">
+
+		<!-- header -->
+		<div class="header">
+			<div class="header_inn">
+				<div class="left">
+					<a onclick="window.history.back()" class="btnBack"><span class="blind">Back</span></a>
+				</div>
+			</div>
+		</div>
+		<!-- //header -->
+
+		<!-- container -->
+		<div class="container">
+			<div class="content">
+				<div class="tBalance">
+					<h3 class="tBaltit"></h3>
+					<!--<a href="#" class="btnRef"><span class="blind">새로고침</span></a>-->
+					<ul class="tel_prd">
+						<!--
+					<li class="prd">
+						<div class="left">
+							<span class="name">휴대폰<em class="pointColor">2</em></span>
+						</div>
+						<div class="right">
+							<p class="info_li"><span class="label_txt sm orange"><em class="txt">고객정지</em></span><span class="info_tx client">0105****234</span></p>
+							<p class="info_li"><span class="label_txt sm green"><em class="txt">연체정지</em></span><span class="info_tx overdue">0105****567</span></p>
+						</div>
+					</li>
+					
+					<li class="prd">
+						<div class="left">
+							<span class="name">휴대폰<em class="pointColor">2</em></span>
+						</div>
+						<div class="right">
+							<p class="info_li"><span class="label_txt sm orange"><em class="txt">고객정지</em></span><span class="info_tx client">0105****234</span></p>
+							<p class="info_li"><span class="label_txt sm green"><em class="txt">연체정지</em></span><span class="info_tx overdue">0105****567</span></p>
+						</div>
+					</li>
+					-->
+					</ul>
+				</div>
+				<div class="accHistory">
+
+					<div class="tabs_wrap tabInter">
+						<div class="tabs_header type2">
+							<ul class="cboth">
+								<li class="js_tabclickDp1 on"><a title="선택됨"><span>청구내역</span></a></li>
+								<!-- 선택시 title="선택됨" 추가 -->
+								<li class="js_tabclickDp1"><a><span>소액결제</span></a></li>
+							</ul>
+						</div>
+						<div class="tabs_body_wrap">
+							<div class="tabs_body cboth">
+								<!-- 납부내역 -->
+								<div class="tab_cntDp1" style="display: block;">
+									<div class="topCtrl">
+										<div class="rangeCtrl">
+											<span class="range"></span>
+										</div>
+										<a href="#layerFilter" class="btnFilter btn_open_bottom_sheet"
+											role="button"><span class="blind">필터</span></a>
+									</div>
+									<div class="historyList" id="historyList1">
+									
+										<div class="upLoading circleBar">
+											<div class="loader"></div>
+											<p>업데이트 중입니다</p>
+										</div>
+									</div>
+									<div class="toastMsg">
+										<p class="tx">업데이트가 완료되었습니다</p>
+									</div>
+								</div>
+								<!-- //납부내역 -->
+
+								<!-- 소액결제 -->
+								<div class="tab_cntDp1" style="display: none;">
+									<div class="topCtrl">
+										<div class="rangeCtrl">
+											<span class="range"></span>
+										</div>
+										<a href="#layerFilter" class="btnFilter btn_open_bottom_sheet"
+											role="button"><span class="blind">필터</span></a>
+									</div>
+									<div class="historyList" id="historyList2">
+										<!--<span class="date"><span class="num">09.25</span> 목요일</span>-->
+										
+										
+										<div class="upLoading circleBar">
+											<div class="loader"></div>
+											<p>업데이트 중입니다</p>
+										</div>
+									</div>
+									<div class="toastMsg">
+										<p class="tx">업데이트가 완료되었습니다</p>
+									</div>
+								</div>
+								<!-- //소액결제 -->
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+		<!-- //container -->
+	</div>
+	<!-- //wrap -->
+
+	<div id="layerFilter" class="layer_bottomsheet">
+		<div class="layer_inner">
+			<div class="layer_tit">
+				<strong class="tit"><span class="blind">조회조건선택팝업</span></strong>
+				<button type="button" class="js_pop_close btn_close"><span class="blind">닫기</span></button>
+			</div>
+			<div class="layer_cont">
+				<div class="filterItem">
+					<p class="filterTit">조회기간</p>
+					<ul class="radioTab">
+						<li>
+							<input type="radio" id="radio1" name="radioTab1" class="blind">
+							<label for="radio1">1개월</label>
+						</li>
+						<li>
+							<input type="radio" id="radio2" name="radioTab1" class="blind">
+							<label for="radio2">3개월</label>
+						</li>
+						<li>
+							<input type="radio" id="radio3" name="radioTab1" class="blind">
+							<label for="radio3">6개월</label>
+						</li>
+						<li>
+							<input type="radio" id="radio4" name="radioTab1" class="blind">
+							<label for="radio4">직접입력</label>
+						</li>
+					</ul>
+					<div class="selPeriod">
+						<!-- datepicker data-title 추가 -->
+						<!-- 21.08.31 수정 -->
+						<div class="dateItem">
+							<label for="startDate" class="blind">조회기간 시작일</label>
+							<input type="tel" class="datepicker" id="startDate" autocomplete="off" data-title="시작일"
+								placeholder="YYYY.MM.DD">
+						</div>
+						<span class="unit">-</span>
+						<div class="dateItem">
+							<label for="endDate" class="blind">조회기간 종료일</label>
+							<input type="tel" id="endDate" class="datepicker" autocomplete="off" data-title="종료일"
+								placeholder="YYYY.MM.DD">
+						</div>
+					</div>
+				</div>
+				<div class="filterItem">
+					<p class="filterTit">정렬순</p>
+					<ul class="radioTab">
+						<li>
+							<input type="radio" id="radio8" name="radioTab3" class="blind">
+							<label for="radio8">최신순</label>
+						</li>
+						<li>
+							<input type="radio" id="radio9" name="radioTab3" class="blind">
+							<label for="radio9">과거순</label>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div class="layer_footer">
+				<button type="button" class="js_pop_close btn_confirm"><span>확인</span></button>
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript" src="../js/jquery-1.8.3.min.js"></script>
+	<script type="text/javascript" src="../js/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="../js/jquery.ui.touch-punch.min.js"></script>
+	<script type="text/javascript" src="../js/slide_slick.js"></script>
+	<script type="text/javascript" src="../js/publishing.ui.library.1.0.0.js"></script>
+	<script type="text/javascript" src="../js/cmd.js"></script>
+	<script type="text/javascript" src="../js/common.js"></script>
+	<script>
+
+		let id = parseJwt(getCookie("jwt")).sub;
+		var token = getCookie("jwt");
+		
+		let sort ='desc'; // 최신순, 과거순
+		let today = new Date();
+		
+		// 고정 필터 날짜
+		var filter_date = ('[[${org_name_abb1.charge_date}]]');
+		
+		// filter_end_date (마지막 일자) yyyy-mm-dd
+		filter_end_date = filter_date.substr(0, 10);
+
+		// yy.mm.dd - 마지막일자
+		get_filter_date = new Date(filter_date);
+		end_date = year_month_date_dot(get_filter_date).substr(2, 8);
+		
+		// yy.mm.dd - 시작일자
+		var month_ago = new Date(get_filter_date.setMonth(get_filter_date.getMonth() - 2));
+		start_date = year_month_date_dot(month_ago);
+
+		// filter_start_date (시작 일자) yyyy-mm-dd
+		filter_start_date = start_date.replaceAll('.', '-');
+		start_date = year_month_date_dot(month_ago).substr(2, 8);
+		
+		filter_text = start_date + ' ~ ' + end_date;
+		$('.range').append(filter_text);
+		
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	///																															 ///
+	///			   									* 탭 전환 *										                             ///
+	///																															 ///
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+	let sel_tab = '';
+	$('.js_tabclickDp1').on('click', function() {
+		offset = 0;
+		sel_tab = $(this).find('span').text();
+	});
+
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	///																															 ///
+	///			   									* 필터 *										                                 ///
+	///																															 ///
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+		
+		// 필터 팝업창에서 사용하는 디폴트 날짜
+	    startDate = filter_start_date.replaceAll('-', '.');
+		endDate = filter_end_date.replaceAll('-', '.');
+		
+		// layer filter 띄우기
+		$(document).on("click", ".btn_open_bottom_sheet", function (e) {
+			e.preventDefault();
+			var $href = $(this).attr('href');
+			layer_bottomsheet($href);
+			$('html').addClass('scroll_lock');//2021-10-28 html 스크롤 잠금 수정
+			$focusReturn = $(this);
+		});
+
+		function layer_bottomsheet(el) {
+			var $el = $(el);
+			$el.append("<div class=\"dim\"></div>");
+			isDim ? $('.layer_bottomsheet').show() : $el.show().attr({'tabindex': '0', 'aria-hidden': 'false'}).focus();
+			setTimeout(function () {
+				$el.find('.layer_inner').addClass('on');
+			}, 50);
+
+			var isDim = $el.siblings().hasClass('dim');
+
+			$el.find('.js_pop_close').click(function () {
+				$el.find('.layer_inner').removeClass('on');
+				setTimeout(function () {
+					isDim ? $('.layer_bottomsheet').hide() : $el.hide();
+					$('html').removeClass('scroll_lock');//2021-10-28 html 스크롤 잠금 수정
+					$el.attr({'tabindex': '-1', 'aria-hidden': 'true'}).find(".dim").remove();
+				}, 200);
+				$focusReturn.focus();
+				return false;
+			});
+		}
+		
+		function minusMonth(date, month) {
+			// month달 후의 1일
+			let addMonthFirstDate = new Date(date.getFullYear(),date.getMonth() - month, 1);
+			// month달 후의 말일
+			let addMonthLastDate = new Date(addMonthFirstDate.getFullYear(),addMonthFirstDate.getMonth() + 1, 0);
+			let result = addMonthFirstDate;
+			if(date.getDate() > addMonthLastDate.getDate()) {
+				result.setDate(addMonthLastDate.getDate());
+			} else {
+				result.setDate(date.getDate());
+			} return result;
+		}
+		
+		// 필터 - 1, 3, 6 개월 
+		$('input:radio[id="radio1"]').change(function(){
+			var date_1 = minusMonth(today,1)
+			year = date_1.getFullYear();
+			month = ('0' + (date_1.getMonth()+1)).slice(-2);
+			date = ('0' + (date_1.getDate())).slice(-2);
+			dateString =  year + '.' + month + '.' + date;
+			$('#startDate').val(dateString);
+		});
+
+		$('input:radio[id="radio2"]').change(function(){
+			var date_3 = minusMonth(today,3)
+			year = date_3.getFullYear();
+			month = ('0' + (date_3.getMonth()+1)).slice(-2);
+			date = ('0' + (date_3.getDate())).slice(-2);
+			dateString =  year + '.' + month + '.' + date;
+			$('#startDate').val(dateString);
+		});
+		
+		$('input:radio[id="radio3"]').change(function(){
+			var date_6 = minusMonth(today,6)
+			year = date_6.getFullYear();
+			month = ('0' + (date_6.getMonth()+1)).slice(-2);
+			date = ('0' + (date_6.getDate())).slice(-2);
+			dateString =  year + '.' + month + '.' + date;
+			$('#startDate').val(dateString);
+		});
+		
+		// 직접입력, 전체, 최신순
+		$('#radio4').trigger("click");
+		$('#radio8').trigger("click");
+
+		// 달력을 클릭시 '직접입력'으로 전환
+		$(".ui-datepicker-trigger").click(function(){
+			$('#radio4').trigger("click");
+		}); 
+	
+		// 최신순, 과거순 클릭시 정렬순서값 설정
+		$('#radio8').click(function(){
+			sort = 'desc';
+		});
+		$('#radio9').click(function(){
+			sort = 'asc';
+		});
+		
+		/* 업데이트중 문구 안보이게하고 업데이트완료 문구 2초동안 띄우기
+		function toastMsgShow() {
+			$('.toastMsg').show();
+			setTimeout(function () {
+				$('.toastMsg').hide();
+			}, 1500);
+		}*/
+		
+	
+	$(".btn_confirm").click(function(){
+		$('.btnFilter').hide(); // 필터 색없는거 숨기기
+
+		// 필터 색 있는거 생성
+		$('.topCtrl').append("<a href='#layerFilter' class='btnFilter on btn_open_bottom_sheet' role='button'><span class='blind'>"+"필터"+"</span></a>");
+
+		// 시작일, 종료일 값 불러오기
+		var startDate = $('#startDate').val().slice(2); 
+		var endDate = $('#endDate').val().slice(2);
+		var dateString =  startDate + ' ~ ' + endDate;
+		$(".range").html(dateString);
+
+		let startDate2 = $('#startDate').val();
+		let endDate2 = $('#endDate').val();
+		now_start = startDate2.replaceAll('.', '-');
+		now_end = endDate2.replaceAll('.', '-');
+
+		// api 처리하기
+		DetailFirst_ajax(false, id, now_start, now_end, sort);
+		Payment_ajax(false, id, now_start, now_end, sort);
+	});
+		
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	///																															 ///
+	///			   									* 새로고침 *										                             ///
+	///																															 ///
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				
+		/* 새로고침 클릭 시 데이터 새로 받아오기
+		$(document).on("click", ".btnRef", function(e){
+			DetailFirst_ajax(true, id, filter_start_date, filter_end_date, sort);
+			Payment_ajax(true, id, filter_start_date, filter_end_date, sort);
+		});*/
+		
+		$(function () {
+			$('.upLoading').hide();	// 업데이트 애니메이션
+			$('.toastMsg').hide();	// 업데이트 완료 modal
+			$(window).scroll(function () {	// 스크롤 마지막일 경우 데이터 가져오기
+				// let $window = $(this);
+				let scrollTop = $(this).scrollTop();
+				let windowHeight = $(this).height();
+				let documentHeight = $(document).height();
+				// scrollbar의 thumb가 바닥 전 30px까지 도달 하면 리스트를 가져온다.
+				if (scrollTop + windowHeight + 30 > documentHeight) {
+					//console.log('다음꺼 추가 실행');
+					
+				}
+			});
+		});
+	
+	    /* API 호출 시 필요 변수 */
+		let msg = '';
+		
+		$(document).ready(function () {
+		
+			/* 필터 초기값 설정 */
+			$('#startDate').val(startDate);
+			$('#endDate').val(endDate);
+	
+	        /* API 호출 */
+			DetailTop_ajax(id);
+			DetailFirst_ajax(true, id, filter_start_date, filter_end_date, sort);
+	        Payment_ajax(true, id, filter_start_date, filter_end_date, sort);
+	
+			/* 탭 변경 */
+			$(".tabInter").tabs({
+				wrapClass:".tabInter",
+				clickClass:".js_tabclickDp1",
+				showClass:".tab_cntDp1",
+				animate:false,
+				contentWidthFull:false,//effect when animate:true
+				animateBorder:["false",".tabs_header"],//show border in class .
+				fade:false,
+				speed:500
+			});
+		});
+		
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		///																															 ///
+		///			   									* 1. 상단 조회 API *										                     ///
+		///																															 ///
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				
+		let count = [0, 0, 0];
+		let count_name = ['휴대폰', '인터넷', '집전화', '고객정지'];
+		let phone = [];
+		let internet = [];
+		let hometel = [];
+		let stop_phone = [];
+		
+		function DetailTop_ajax(id) {
+			return $.ajax({
+				type: "GET",
+				url: "http://192.168.240.208:8081/api/telecom/detialtop/"+ id + "/",
+				headers: {
+					"Authorization": "Bearer " + getCookie("jwt")
+				},
+				error: function (jqXHR) {
+			            userErrorHandler(jqXHR);
+		            },
+				success: function(data) {
+					$('.tBaltit').html();
+					$(data).each(function (index, item) {
+
+						if ('[[${org_name_abb1.org_name_abb}]]' == item.org_name_abb) {
+							
+							if(item.status != "고객정지"){
+								
+								// 휴대폰/인터넷/집전화별 카운트
+								if (data[index].type == "휴대폰") {
+									phone[index] = item.telecom_num;
+									count[0]++;
+								}
+								else if (data[index].type == "인터넷") {
+									internet[index] = item.telecom_num;
+									count[1]++;
+								}
+								else if (data[index].type == "집전화") {
+									hometel[index] = item.telecom_num;
+									count[2]++;
+								}
+								
+							 // 고객정지일때	
+							}else{
+								stop_phone[0] = item.telecom_num;
+								count[0]++;
+							}	
+						}
+					});
+
+					let cag = "";
+					for (var i = 0; i < data.length; i++) {
+
+						if (count[i] != 0 && count[i] != undefined) {
+							cag += "<li class='prd'><div class='left'>";
+							cag += "<span class='name'>" + count_name[i] + "<em class='pointColor'>" + count[i] + "</em></span></div>";
+							cag += "<div class='right'>";
+								
+							if (count_name[i] == "휴대폰") {
+								for (let i = 0; i < phone.length; i++) {
+									if (phone[i] != null)
+									cag += "<p class='info_li'><span class='info_tx'>" + phone[i] + "</span></p>";
+								}
+							}
+
+							if (count_name[i] == "인터넷") {
+								for (let i = 0; i < internet.length; i++) {
+									if (internet[i] != null)
+										cag += "<p class='info_li'><span class='info_tx'>" + internet[i] + "</span></p>";
+								}
+							}
+
+							if (count_name[i] == "집전화") {
+								for (let i = 0; i < hometel.length; i++) {
+									if (hometel[i] != null)
+										cag += "<p class='info_li'><span class='info_tx'>" + hometel[i] + "</span></p>";
+								}
+							}
+							
+							// 정지된 폰이 있으면
+							if (stop_phone[i] != 0 && stop_phone[i]!= undefined) {
+								for (let i = 0; i < stop_phone.length; i++) {								
+									if (stop_phone[i] != null)
+									cag += "<p class='info_li'><span class='label_txt sm orange'><em class='txt'>고객정지</em></span><span class='info_tx client'>" + stop_phone[i] + "</span></p>";
+								}
+							}
+							
+							cag += "</div></li>";
+						}
+					}
+
+					$('.tel_prd').append(cag);
+					$('.tBaltit').html('[[${org_name_abb1.org_name_abb}]]');
+				}
+			});
+		}
+		
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		///																															 ///
+		///			   									* 2. 청구내역 조회 API *										                 ///
+		///																															 ///
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				
+
+		function DetailFirst_ajax(isBtnRef, id, filter_start_date, filter_end_date, sort) {
+			
+			offset = 0;
+			isEnd = false;
+			
+			return $.ajax({
+				type: "GET",
+				url: "http://192.168.240.208:8081/api/telecom/detailBill/" + id + "/" + filter_start_date + "/" + filter_end_date + "/"+ sort +"/0",
+				headers: {
+					"Authorization": "Bearer " + getCookie("jwt")
+				},
+				dataType: 'json',
+				contentType : 'application/json',
+				beforeSend:function(xhr){	// ajax 요청하기전에 실행
+					$('.upLoading').show();
+					if(isBtnRef == true){
+						$('.btnRef').addClass("ing");
+					}
+		        	xhr.setRequestHeader("Authorization", "Bearer "+token);
+				},
+				success: function (data) {
+					let arrUl = '';
+					let isData = false;
+				
+					let chk_null = 0; // 값 여부 체크					
+					let init;
+					
+					let charge = 0;
+					let curnt;
+					let pre2;
+					
+					$(data).each(function (index, item) {
+
+						if ('[[${org_name_abb1.org_name_abb}]]' == item.org_name_abb) {
+							
+							let month_chk = new Date(item.charge_date);
+							month_chk = year_month_dot(month_chk);
+							
+							let now = new Date();
+							now = year_month_dot(now);
+						
+							
+							// 타입이 휴대폰
+							if(item.type == "휴대폰"){
+								
+								// 당월이면
+								if(month_chk == now){
+									charge = Number(item.charge_amt) + Number(item.crnt_month);
+								}
+								
+								// 전월이면
+								else if(month_chk=='2023.04'){
+									charge = Number(item.charge_amt) + Number(item.pre_month);
+								}
+								
+								// 전전월이면
+								else if(month_chk=='2023.03'){
+									charge = Number(item.charge_amt) + Number(item.pre2_month);
+								}
+								
+								else charge = item.charge_amt;
+								
+							} else charge = item.charge_amt;
+							
+						
+							/* 처음 1번만 실행 */
+							// 기관명으로 걸러진 데이터들 중 첫번째 값의 날짜 말풍선 생성
+							if(chk_null == 0){
+								let today = new Date(item.charge_date);
+								init = month_date_dot(today);
+								
+								let nowDayNum = today.getDay(); 
+								let nowDay = " " + toKor_dayOfWeek(nowDayNum);
+																						
+								arrUl += '<span class="date"><span class="num">' + init + '</span>' + nowDay + '</span>';
+							}
+							
+							/* 2번째부터 작동됨 */
+							// 처음 값이 아니면 말풍선 새로 생성 
+							let today = new Date(item.charge_date);
+							msg = month_date_dot(today);
+							
+							let nowDayNum = today.getDay(); 
+							let nowDay = " " + toKor_dayOfWeek(nowDayNum);
+							
+							if(init != msg){
+								arrUl += '<span class="date"><span class="num">' + msg + '</span>' + nowDay + '</span>';
+								init = msg;
+							}
+							
+							// 데이터가 들어있는지 체크하기 위해 chk_null 증가
+						    chk_null++;
+							
+							let result = new Date(item.charge_date);
+							let arrLi = '';
+							isData = true;
+
+							// 날짜 포맷팅 
+							let dateString = month_date_dot(result);
+							let day = result.getDay();
+							let weekday = toKor_dayOfWeek(day);
+													
+							var date_time = new Date(item.trans_date);				
+							var time = hours_minute_col(date_time);
+
+							let amt_html = '';							
+							arrLi += '<li>'
+							amt_html += '<span class="amount"><em class="num">' + numberWithCommas(charge) + '</em>원</span>';
+
+							arrLi += '<div class="left">';
+							arrLi += '<span class="category">' + item.type + '</span>';
+							arrLi += '<span class="time"><span class="tx">' + item.telecom_num + '</span>';
+							arrLi += '</div>';
+							arrLi += '<div class="right">';
+							arrLi += amt_html;
+							arrLi += '<span class="balance">' + item.paid + '</span>';
+							arrLi += '</div>';
+							arrLi += '</li>';
+							arrUl += arrLi;
+						}
+					});
+					
+					if (isData == true) {	// 데이터가 있었다면 ul 닫아주기
+						arrUl += '</ul>';
+					}
+					$('#historyList1').html(arrUl);
+				},
+				error: function (jqXHR) {
+			            userErrorHandler(jqXHR);
+		            },
+			});
+		}
+		
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		///																															 ///
+		///			   									* 3. 소액결제내역 조회 API *										                 ///
+		///																															 ///
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				
+		
+		function Payment_ajax(isBtnRef, id, filter_start_date, filter_end_date, sort) {
+			
+			offset = 0;
+			isEnd = false;
+			
+			return $.ajax({
+				type: "GET",
+				url: "http://192.168.240.208:8081/api/telecom/Micropayment/" + id + "/" + filter_start_date + "/" + filter_end_date + "/"+ sort +"/0",
+				headers: {
+					"Authorization": "Bearer " + getCookie("jwt")
+				},
+				dataType: 'json',
+				contentType : 'application/json',
+				success: function (data) {
+					
+					let arrUl = '';
+					let isData = false;
+					let chk_null = 0; // 값 여부 체크					
+					let init;
+					$(data).each(function (index, item) {
+						
+						// 기관명이 같은지 확인
+						if ('[[${org_name_abb1.org_name_abb}]]' == item.org_name_abb) {
+							
+							/* 처음 1번만 실행 */
+							// 기관명으로 걸러진 데이터들 중 첫번째 값의 날짜 말풍선 생성
+							if(chk_null == 0){
+								let today = new Date(item.trans_date);
+								init = month_date_dot(today);
+								
+								let nowDayNum = today.getDay(); 
+								let nowDay = " " + toKor_dayOfWeek(nowDayNum);
+																						
+								arrUl += '<span class="date"><span class="num">' + init + '</span>' + nowDay + '</span>';
+							}
+							
+							/* 2번째부터 작동됨 */
+							// 처음 값이 아니면 말풍선 새로 생성 
+							let today = new Date(item.trans_date);
+							msg = month_date_dot(today);
+							
+							let nowDayNum = today.getDay(); 
+							let nowDay = " " + toKor_dayOfWeek(nowDayNum);
+							
+							if(init != msg){
+								arrUl += '<span class="date"><span class="num">' + msg + '</span>' + nowDay + '</span>';
+								init = msg;
+							}
+							
+							// 데이터가 들어있는지 체크하기 위해 chk_null 증가
+						    chk_null++;
+							
+							let result = new Date(item.trans_date);
+							let arrLi = '';
+							isData = true;
+
+							// 날짜 포맷팅 
+							let dateString = month_date_dot(result);
+							let day = result.getDay();
+							let weekday = toKor_dayOfWeek(day);
+													
+							var date_time = new Date(item.trans_date);				
+							var time = hours_minute_col(date_time);
+							
+							let amt_html = '';
+
+							if(item.trans_amt < 0){ // 마이너스 금액이면 빨간색으로 표시되게끔
+								arrLi += '<li class="cancel">';
+							}else arrLi += '<li>';
+							
+							amt_html += '<span class="amount"><em class="num">' + numberWithCommas(item.trans_amt) + '</em>원</span>';
+							arrLi += '<div class="left">';
+							arrLi += '<span class="category">' + item.merchant_name + '</span>';
+							arrLi += '<span class="time"><span class="tx">' + time + '</span>';
+							arrLi += '</div>';
+							arrLi += '<div class="right">';
+							arrLi += amt_html;
+							arrLi += '<span class="balance">' + item.summary + '</span>';
+							arrLi += '</div>';
+							arrLi += '</li>';
+							arrUl += arrLi;
+						}
+					});
+					
+					if(chk_null == 0){	// 데이터가 없는 경우
+						arrUl += '<p class="listNone">불러올 내역이 없습니다.</p>';
+						$('#historyList2').html(arrUl);
+					}
+					
+					if (isData == true) {	// 데이터가 있었다면 ul 닫아주기
+						arrUl += '</ul>';
+					}
+					$('#historyList2').html(arrUl);
+				},
+				error: function (jqXHR) {
+			            userErrorHandler(jqXHR);
+		            },
+			});
+		}
+		
+		
+		
+		
+	</script>
+</body>
+
+</html>

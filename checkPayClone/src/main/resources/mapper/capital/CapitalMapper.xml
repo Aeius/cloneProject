@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bit.checkpayclone.capital.model.CapitalMapper">
+
+	<select id="selectUserCapital" resultType="com.bit.checkpayclone.capital.model.CapitalVo">
+		select  
+			data_decrypt(a.account_num) as account_num,
+			a.org_code,
+			b.org_name,
+			c.last_offered_rate,
+			a.currency_code,
+			a.balance_amt,
+			d.prod_name
+
+		from tb_a_capital_loan_detail a
+		inner join tb_a_mydata_orgs b on a.org_code = b.org_code
+		inner join tb_a_capital_loan_basic c on a.account_num = c.account_num and a.memb_cd = c.memb_cd and a.org_code = c.org_code
+		inner join tb_a_capital_accounts d on a.account_num = d.account_num and a.memb_cd = d.memb_cd and a.org_code = d.org_code
+		
+		where a.memb_cd = #{id}
+	</select>
+	
+	<select id="selectUserCapitalDetail" resultType="com.bit.checkpayclone.capital.model.CapitalVo">
+		select  
+			d.prod_name,
+			b.org_name ,
+			data_decrypt(a.account_num) as account_num,
+			a.balance_amt ,
+			a.currency_code ,
+			c.last_offered_rate ,
+			a.next_repay_date ,
+			a.loan_principal ,
+			c.repay_method ,
+			c.issue_date ,
+			c.exp_date ,
+			c.repay_date 
+
+		from tb_a_capital_loan_detail a
+		inner join tb_a_mydata_orgs b on a.org_code = b.org_code
+		inner join tb_a_capital_loan_basic c on a.account_num = c.account_num and a.memb_cd = c.memb_cd and a.org_code = c.org_code
+		inner join tb_a_capital_accounts d on a.account_num = d.account_num and a.memb_cd = d.memb_cd and a.org_code = d.org_code
+
+		where a.memb_cd = #{id}
+		and a.org_code = #{org_code}
+		and data_decrypt(a.account_num) = #{account_num}
+	</select>
+	
+	<select id="selectCapitalTransDetail" resultType="com.bit.checkpayclone.capital.model.CapitalTransVo">
+		select 
+			d.prod_name,
+			b.org_name,data_decrypt(a.account_num) as account_num,
+			a.currency_code ,
+			case 
+				when a.trans_type = '01' then '실행'
+				when a.trans_type = '02' then '상환'
+				when a.trans_type = '03' then '정정'
+				when a.trans_type = '99' then '기타'
+			end as trans_type,
+			to_timestamp(a.trans_dtime,'YYYYMMDDHH24MIss') as trans_dtime,
+			a.trans_amt,
+			a.balance_amt,
+			a.principal_amt,
+			a.int_amt,
+			a.ret_int_amt,
+			case 
+				when c.int_type = '01' then '정상이자'
+				when c.int_type = '02' then '지연이자'
+				when c.int_type = '03' then '잔액연체이자'
+				when c.int_type = '99' then '기타'
+			end as int_type,
+			c.int_rate,
+			c.int_start_date,
+			c.int_end_date
+			
+		from tb_a_capital_loan_trans a
+		inner join tb_a_mydata_orgs b on a.org_code = b.org_code
+		inner join tb_a_capital_loan_trans_list c on a.account_num = c.account_num and a.org_code =c.org_code and a.memb_cd = c.memb_cd and a.trans_dtime =c.trans_dtime 
+		inner join tb_a_capital_accounts d on a.account_num = d.account_num and a.memb_cd = d.memb_cd and a.org_code = d.org_code
+			
+		where a.memb_cd = #{id}
+		and a.org_code = #{org_code}
+		and data_decrypt(a.account_num) = #{account_num}
+		AND to_date(a.trans_dtime, 'YYYYMMDDHH24MIss') between #{start_date}  and #{end_date}
+		<if test='sort != null and sort.equals("desc")'>
+			order by a.trans_dtime desc
+		</if>
+		<if test='sort != null and sort.equals("asc")'>
+			order by a.trans_dtime asc
+		</if>
+		LIMIT 10 offset #{offset};
+	</select>
+	
+</mapper>

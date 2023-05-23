@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bit.checkpayclone.member.model.MemberMapper">
+
+	<insert id="join" parameterType="com.bit.checkpayclone.member.model.MemberVo"> 
+		<![CDATA[ 
+		insert into tb_member(memb_cd, memb_nm, email, memb_pwd, gndr, reg_dttm, ph_no, ci) 
+		values(#{memb_cd}, data_encrypt(#{member_name}), data_encrypt(#{member_email}), #{member_password}, #{member_gender}, to_char(now(),'YYYYMMDDHHIISS'), data_encrypt(#{member_tel}), #{memb_cd})
+		]]>
+	</insert> 	
+	
+ 	<select id="memberInfo" resultType="com.bit.checkpayclone.member.model.MemberVo">
+	<![CDATA[ 
+		select 
+		memb_cd,
+		data_decrypt(email) as member_email, 
+		data_decrypt(memb_nm) as member_name, 
+		data_decrypt(ph_no) as member_tel,
+		memb_pwd as member_password,
+		gndr as member_gender,
+		leave_yn
+		from tb_member 
+		where 1=1 
+		]]>	
+		<choose>
+			<when test='(column.equals("email"))'>
+				<![CDATA[ 
+				and ${column}=data_encrypt(#{pk})
+				]]>
+			</when>
+			<otherwise>
+				<![CDATA[ 
+				and ${column}=#{pk}
+				]]>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<update id="updateMember" parameterType="com.bit.checkpayclone.member.model.MemberVo">
+		update member set member_name=#{member_name}, member_email=#{member_email} where memb_cd=#{memb_cd}
+	</update>
+	
+	<delete id="deleteMember" parameterType="com.bit.checkpayclone.member.model.MemberVo">
+		delete from member where memb_cd=#{pk}
+	</delete>
+	<select id="isExistsMember" resultType="boolean">
+		<![CDATA[ 
+		select exists(
+				select * from tb_member where email=data_encrypt(#{member_email})
+			)
+		]]>
+	</select>
+	
+	<!-- 2023.04.18 tb_member 테이블 관련 업데이트 추가-->
+	<update id="updateMember2" parameterType="com.bit.checkpayclone.member.model.MemberVo">
+		  UPDATE tb_member
+	    	<set>
+				<if test="email != null">email = data_encrypt(#{email}),</if>
+				<if test="memb_nm != null">memb_nm = data_encrypt(#{memb_nm}),</if>
+				<if test="brt_dt != null">brt_dt = data_encrypt(#{brt_dt}),</if>
+				<if test="gndr != null">gndr = #{gndr},</if>
+				<if test="in_frn_tp != null">in_frn_tp = #{in_frn_tp},</if>
+				<if test="ci != null">ci = #{ci},</if>
+				<if test="di != null">di = #{di},</if>
+				<if test="pwd_yn != null">pwd_yn = #{pwd_yn},</if>
+				<if test="trx_pwd_yn != null">trx_pwd_yn = #{trx_pwd_yn},</if>
+				<if test="memb_st != null">memb_st = #{memb_st},</if>
+				<if test="conn_cnt != null">conn_cnt = #{conn_cnt},</if>
+				<if test="fin_conn_ver != null">fin_conn_ver = #{fin_conn_ver},</if>
+				<if test="fin_conn_dt != null">fin_conn_dt = #{fin_conn_dt},</if>
+				<if test="pwd_fail_cnt != null">pwd_fail_cnt = #{pwd_fail_cnt},</if>
+				<if test="trx_pwd_fail_cnt != null">trx_pwd_fail_cnt = #{trx_pwd_fail_cnt},</if>
+				<if test="pwd_chng_dt != null">pwd_chng_dt = #{pwd_chng_dt},</if>
+				<if test="trx_pwd_chng_dt != null">trx_pwd_chng_dt = #{trx_pwd_chng_dt},</if>
+				<if test="reg_dttm != null">reg_dttm = #{reg_dttm},</if>
+				<if test="upd_dttm != null">upd_dttm = to_char(now(), 'YYYYMMDDHH24MISS'),</if>
+				<if test="auth_yn != null">auth_yn = #{auth_yn},</if>
+				<if test="fin_upd_dttm != null">fin_upd_dttm = #{fin_upd_dttm},</if>
+				<if test="cp_memb_no != null">cp_memb_no = #{cp_memb_no},</if>
+				<if test="ph_no != null">ph_no = data_encrypt(#{ph_no}),</if>
+				<if test="tele_corp != null">tele_corp = #{tele_corp},</if>
+				<if test="nick_nm != null">nick_nm = #{nick_nm},</if>
+				<if test="api_final_upd_dttm != null">api_final_upd_dttm = #{api_final_upd_dttm},</if>
+				<if test="update_init_yn != null">update_init_yn = #{update_init_yn},</if>
+				<if test="admin_yn != null">admin_yn = #{admin_yn},</if>
+				<if test="eml_cycle_yn != null">eml_cycle_yn = #{eml_cycle_yn},</if>
+				<if test="eml_cycle_dttm != null">eml_cycle_dttm = #{eml_cycle_dttm},</if>
+				<if test="memb_pwd != null">memb_pwd = #{memb_pwd},</if>
+				<if test="leave_yn != null">leave_yn = #{leave_yn},</if>
+				<if test="role != null">role = #{role},</if>
+		         memb_cd = memb_cd
+    		</set>
+    		WHERE memb_cd = #{memb_cd}
+	</update>
+	
+	<!-- 2023.04.11 tb_member_fin 테이블 관련 매퍼 추가-->
+	<insert id="finInsertIfNotExist">
+		INSERT INTO tb_member_fin (memb_cd, reg_dttm)
+		  	SELECT #{pk}, to_char(now(), 'YYYYMMDDHH24MISS')
+			  	WHERE NOT EXISTS ( select 1 from tb_member_fin where memb_cd = #{pk}) 
+	</insert>
+	
+	<update id="finInfoSetting" parameterType="com.bit.checkpayclone.member.model.MemberVo">
+		  UPDATE tb_member_fin
+	    	<set>
+				<if test="fin_no != null">fin_no = #{fin_no},</if>
+				<if test="fin_no_fail_cnt != null">fin_no_fail_cnt = #{fin_no_fail_cnt},</if>
+				<if test="fin_no_fail_cnt != null || eml_fail_cnt != null">fail_timestamp = now(),</if>
+				<if test="auth_yn != null">auth_yn = #{auth_yn},</if>
+				
+				<if test="eml_req_dt != null">eml_req_dt = to_char(now(), 'YYYYMMDD'),</if>
+				<if test="eml_auth_no != null">eml_auth_no = #{eml_auth_no},</if>
+				<if test="eml_auth_cnt != null">eml_auth_cnt = #{eml_auth_cnt},</if>
+				<if test="eml_fail_cnt != null">eml_fail_cnt = #{eml_fail_cnt},</if>
+				<if test="upd_dttm != null">upd_dttm = to_char(now(), 'YYYYMMDDHH24MISS'),</if>
+		         memb_cd = memb_cd
+    		</set>
+    		WHERE memb_cd = #{memb_cd}
+	</update>
+	
+	<select id="finInfoSelectOne" resultType="com.bit.checkpayclone.member.model.MemberVo">
+		select
+		A.memb_cd, A.email, A.memb_nm, A.brt_dt, A.gndr, A.eml_cycle_yn, A.eml_cycle_dttm
+		,B.fin_no, B.fin_no_fail_cnt ,B.fail_timestamp ,B.auth_yn ,B.eml_req_dt ,B.eml_auth_no ,B.eml_auth_cnt ,B.eml_fail_cnt ,B.reg_dttm ,B.upd_dttm
+		FROM tb_member A
+		INNER JOIN tb_member_fin B  ON A.memb_cd  = B.memb_cd
+		WHERE A.memb_cd= #{pk}
+	</select>
+	
+	<select id="memberEmailCount" resultType="java.lang.Integer">
+    	SELECT count(*) FROM tb_member WHERE email = data_encrypt(#{email})
+	</select>
+	
+	
+</mapper>

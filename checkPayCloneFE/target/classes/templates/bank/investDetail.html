@@ -1,0 +1,164 @@
+
+<!DOCTYPE html>
+<html lang="ko" class="leaf">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>CheckPay</title>
+<meta http-equiv="Cache-Control" content="No-Cache">
+<meta http-equiv="Pragma" content="No-Cache">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<!--<meta name="title" content="">-->
+<meta name="description" content="">
+<!--<meta name="keywords" content="">-->
+<!-- The Open Graph protocol -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="">
+<meta property="og:description" content="">
+<meta property="og:url" content="">
+<meta property="og:image" content=""><!-- [D]리얼경로로 변경하세요 -->
+<!-- //The Open Graph protocol -->
+<link rel="SHORTCUT ICON" href=""><!-- [D]리얼경로로 변경하세요 -->
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui.min.css">
+<link rel="stylesheet" type="text/css" href="/css/reset.css">
+<link rel="stylesheet" type="text/css" href="/css/content.css">
+<link rel="stylesheet" type="text/css" href="/css/theme_checkpay.css">
+<script type="text/javascript" src="/js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="/js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="/js/jquery.ui.touch-punch.min.js"></script>
+<script type="text/javascript" src="/js/slide_slick.js"></script>
+<script type="text/javascript" src="/js/publishing.ui.library.1.0.0.js"></script>
+<script type="text/javascript" src="/js/cmd.js"></script>
+<script type="text/javascript" src="../js/common.js"></script>
+</head>
+
+<body>
+
+<!-- wrap -->
+<div class="wrap">
+
+	<!-- header -->
+	<div class="header">
+		<div class="header_inn">
+			<div class="left">
+				<a onclick="window.history.back()" class="btnBack"><span class="blind">Back</span></a>
+			</div>
+			<div class="right">
+                <!-- <a onclick="window.history.back()" class="btnClose"><span class="blind">close</span></a> -->
+			</div>
+		</div>
+	</div>
+	<!-- //header -->
+
+	<!-- container -->
+	<div class="container">
+		<div class="content">
+			<div class="accSetting">
+				<div class="tAccount">
+					<h3 class="tAccTit"></h3>
+					<p class="tAccDetail"></p>
+				</div>
+				<div class="topTotal">
+					<!-- [S] 2021-11-30 topTotal 영역 수정 -->
+					<a class="link" title="더보기">
+						<span class="itemTit">잔액</span>
+						<span class="itemData">
+							<span class="detail"><span class="num"></span>원</span>
+						</span>
+					</a>
+					<!-- [E] 2021-11-30 topTotal 영역 수정 -->
+				</div>
+				<ul class="accDetailList">
+					<li>
+						<span class="itemTit">계좌 평가금액</span>
+						<span class="itemData"><em class="num"></em>원</span>
+					</li>
+                    <li>
+						<span class="itemTit">손익률</span>
+						<span class="itemData"></span>
+					</li>
+					<li>
+						<span class="itemTit">투자원금</span>
+						<span class="itemData"><em class="num"></em>원</span>
+					</li>
+					<li>
+						<span class="itemTit">납입유형</span>
+						<span class="itemData">적립식</span>
+					</li>
+					<li>
+						<span class="itemTit">만기일</span>
+						<span class="itemData"><em class="num"></em></span>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<!-- //container -->
+</div>
+<!-- //wrap -->
+</body>
+<script>
+    var token = getCookie("jwt");
+	var memb_cd=parseJwt(getCookie("jwt")).sub;
+	var account_num='[[${bankReqVo.account_num}]]';
+	var org_code='[[${bankReqVo.org_code}]]';
+
+    // [S] 투자상품 상세 조회 수정중 04.24
+    function investdetail(){
+        $.ajax({
+		url:'http://192.168.240.208:8081/api/bank/investDetail/'+memb_cd+'/'+account_num,
+		type:'get',
+		beforeSend:function(xhr){
+	        xhr.setRequestHeader("Authorization", "Bearer "+token);
+		},
+		success:function(result){
+			console.log(result.length);
+			if(result.length==0){	// 데이터 없을시
+				return ;
+			}
+            let profit=((result.eval_amt-result.inv_principal)/result.inv_principal).toFixed(2);
+            let arr ='';
+            let paid_in_type='';
+            let date=result.exp_date.substring(0,4)+'.'+result.exp_date.substring(4,6)+'.'+result.exp_date.substring(6,8);
+            if((profit)==0.00){     // 손익률 0
+                arr +='<em class="zero">'+profit+'%</em>';
+            }else if(profit>0){     // 손익률 0 이상
+                arr +='<em class="plus">'+profit+'%</em>';
+            }else if(profit<0){     // 손익률 0 이하
+                arr +='<em class="minus">'+profit+'%</em>';
+            }
+            if(result.paid_in_type=='01') paid_in_type='임의식';
+            else if(result.paid_in_type=='02') paid_in_type='적립식';
+            else if(result.paid_in_type=='03') paid_in_type='거치식';
+
+			if(result.org_name.includes('주식회사')){
+				result.org_name=result.org_name.replace('주식회사', '');
+			}else if(result.org_name.includes('(주)')){
+				result.org_name=result.org_name.replace('(주)', '');
+			}
+			$('.tAccTit').text(result.prod_name);
+			$('.tAccDetail').text(result.org_name+" "+account_num);
+
+			$('.topTotal').eq(0).find('.link').attr("onclick", "detailmove('/bank/investtrans','org_code',org_code,'account_num',account_num);");
+            $('.itemData>.detail>.num').text(numberWithCommas(result.balance_amt));             // 잔액
+            $('.accDetailList>li').eq(0).find('.num').text(numberWithCommas(result.eval_amt )); // 계좌 평가금액
+            $('.accDetailList>li').eq(1).find('.itemData').append(arr);                         // 손익률
+            $('.accDetailList>li').eq(2).find('.num').text(numberWithCommas(result.inv_principal )); // 투자원금
+            $('.accDetailList>li').eq(3).find('.itemData').text(paid_in_type);
+            $('.accDetailList>li').eq(4).find('.num').text(date);
+            
+		},error: function (jqXHR) {
+            if (jqXHR.status == 401 && jqXHR.responseText=="토큰 기한 만료") {
+            	tokenCall2();
+            }
+	    },complete : function(xhr, status) {
+		    // success와 error 콜백이 호출된 후에 반드시 호출, try - catch - finally의 finally 구문과 동일
+		}
+	    });
+    }
+    // [E] 투자상품 상세 조회 수정중 04.24
+	$(document).ready(function(){
+        investdetail();
+    })
+</script>
+</html>

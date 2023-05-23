@@ -1,0 +1,546 @@
+﻿<!DOCTYPE html>
+<html lang="ko" class="leaf">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport"
+		content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+	<title>CheckPay</title>
+	<meta http-equiv="Cache-Control" content="No-Cache">
+	<meta http-equiv="Pragma" content="No-Cache">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<!--<meta name="title" content="">-->
+	<meta name="description" content="">
+	<!--<meta name="keywords" content="">-->
+	<!-- The Open Graph protocol -->
+	<meta property="og:type" content="website">
+	<meta property="og:title" content="">
+	<meta property="og:description" content="">
+	<meta property="og:url" content="">
+	<meta property="og:image" content=""><!-- [D]리얼경로로 변경하세요 -->
+	<!-- //The Open Graph protocol -->
+	<link rel="SHORTCUT ICON" href=""><!-- [D]리얼경로로 변경하세요 -->
+	<link rel="stylesheet" type="text/css" href="../../css/jquery-ui.min.css">
+	<link rel="stylesheet" type="text/css" href="../../css/reset.css">
+	<link rel="stylesheet" type="text/css" href="../../css/content.css">
+	<link rel="stylesheet" type="text/css" href="../../css/theme_checkpay.css">
+	<script type="text/javascript" src="../../js/jquery-1.8.3.min.js"></script>
+	<script type="text/javascript" src="../../js/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="../../js/jquery.ui.touch-punch.min.js"></script>
+	<script type="text/javascript" src="../../js/slide_slick.js"></script>
+	<script type="text/javascript" src="../../js/publishing.ui.library.1.0.0.js"></script>
+	<script type="text/javascript" src="../../js/cmd.js"></script>
+	<script type="text/javascript" src="../../js/common.js"></script>
+</head>
+
+<body>
+
+	<!-- wrap -->
+	<div class="wrap">
+
+		<!-- header -->
+		<div class="header">
+			<div class="header_inn">
+				<div class="left">
+					<a href="#none" class="btnBack"><span class="blind">Back</span></a>
+				</div>
+				<!--
+				<div class="right">
+					<a href="/invest" class="btnClose"><span class="blind">close</span></a>
+				</div>
+				-->
+			</div>
+		</div>
+		<!-- //header -->
+
+		<!-- container -->
+		<div class="container">
+			<div class="content">
+				<div class="tBalance">
+					<h3 class="tBaltit"></h3>
+					<p class="tBalAmount"><em class="amount">0</em><em>원</em></p>
+					<p class="tBalDetail"></p>
+					<a href="#" class="btnRef"><span class="blind">새로고침</span></a>
+					<!-- 새로고침중 일때 class에 ing 추가 -->
+					<!-- <a href="#" class="btnRef ing"><span class="blind">새로고침</span></a> -->
+				</div>
+				<div class="accHistory">
+
+					<div class="tabs_wrap tabInter">
+						<div class="tabs_header type2">
+							<ul class="cboth">
+								<li class="js_tabclickDp1 on"><a title="선택됨"><span>투자종목</span></a></li>
+								<!-- 선택시 title="선택됨" 추가 -->
+								<li class="js_tabclickDp1"><a><span>거래내역</span></a></li>
+							</ul>
+						</div>
+						<div class="tabs_body_wrap">
+							<div class="tabs_body cboth">
+								<!-- 투자종목 -->
+								<div class="tab_cntDp1 stock" style="display: block;">
+									<div class="investList">
+										<ul>
+											<!-- 투자 종목 출력 위치 -->
+										</ul>
+									</div>
+								</div>
+								<!-- //투자종목 -->
+
+								<!-- 거래내역 -->
+								<div class="tab_cntDp1 history" style="display: none;">
+									<div class="topCtrl">
+										<div class="rangeCtrl">
+											<button class="btnPrev"><span class="blind">이전</span></button>
+											<span class="range"></span>
+											<button class="btnNext"><span class="blind">다음</span></button>
+										</div>
+										<a href="#layerFilter" class="btnFilter  btn_open_bottom_sheet"
+											role="button"><span class="blind">필터</span></a>
+									</div>
+									<div class="historyList">
+										<!-- 거래 내역 출력 위치 -->
+									</div>
+								</div>
+								<!-- //거래내역 -->
+								<!--
+								<div class="upLoading circleBar">
+									<div class="loader"></div>
+									<p>업데이트 중입니다</p>
+								</div>
+								-->
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- //container -->
+
+	</div>
+	<!-- //wrap -->
+
+	<!-- [S] layer D1130 내용 -->
+	<div id="layer_D1130" class="layer_bottomsheet">
+		<div class="layer_inner">
+			<div class="layer_tit">
+				<strong class="tit"><span>투자 거래 상세</span></strong>
+				<button type="button" class="js_pop_close btn_close"><span class="blind">닫기</span></button>
+			</div>
+			<div class="layer_cont">
+				<!-- [S] D1130 -->
+				<div class="accSetting type_history">
+					<div class="tAccount">
+						<h3 class="tAccTit">매수</h3>
+						<p class="tAccDetail">쿠콘</p>
+					</div>
+					<h4 class="listTit"><em class="pointColor">요약</em></h4>
+					<ul class="accDetailList">
+						<li>
+							<span class="itemTit">거래 종류</span>
+							<span class="itemData">매수</span>
+						</li>
+						<li>
+							<span class="itemTit">거래 단가</span>
+							<span class="itemData"><span class="num">0</span><em>원</em></span>
+						</li>
+						<li>
+							<span class="itemTit">거래 수량</span>
+							<span class="itemData"><span class="num">30</span></span>
+						</li>
+						<!--
+						<li>
+							<span class="itemTit">상품 종류</span>
+							<span class="itemData">국내주식</span>
+						</li>
+						-->
+						<li>
+							<span class="itemTit">정산 금액</span>
+							<span class="itemData"><span class="num">0</span><em>원</em></span>
+						</li>
+					</ul>
+				</div>
+				<!-- [E] D1130 -->
+			</div>
+		</div>
+	</div>
+	<!-- [E] layer D1130 내용 -->
+
+	<!-- [S] 필터 모달 -->
+	<div id="layerFilter" class="layer_bottomsheet">
+		<div class="layer_inner">
+			<div class="layer_tit">
+				<strong class="tit"><span class="blind">조회조건선택팝업</span></strong>
+				<button type="button" class="js_pop_close btn_close"><span class="blind">닫기</span></button>
+			</div>
+			<div class="layer_cont">
+				<div class="filterItem">
+					<p class="filterTit">조회기간</p>
+					<ul class="radioTab">
+						<li>
+							<input type="radio" id="radio1" name="radioTab1" class="blind">
+							<label for="radio1">1개월</label>
+						</li>
+						<li>
+							<input type="radio" id="radio2" name="radioTab1" class="blind">
+							<label for="radio2">3개월</label>
+						</li>
+						<li>
+							<input type="radio" id="radio3" name="radioTab1" class="blind">
+							<label for="radio3">6개월</label>
+						</li>
+						<li>
+							<input type="radio" id="radio4" name="radioTab1" class="blind" checked>
+							<label for="radio4">직접입력</label>
+						</li>
+					</ul>
+					<div class="selPeriod">
+						<!-- datepicker data-title 추가 -->
+						<!-- 21.08.31 수정 -->
+						<div class="dateItem">
+							<label for="startDate" class="blind">조회기간 시작일</label>
+							<input type="tel" class="datepicker" id="startDate" autocomplete="off" data-title="시작일"
+								placeholder="YYYY.MM.DD">
+						</div>
+						<span class="unit">-</span>
+						<div class="dateItem">
+							<label for="endDate" class="blind">조회기간 종료일</label>
+							<input type="tel" id="endDate" class="datepicker" autocomplete="off" data-title="종료일"
+								placeholder="YYYY.MM.DD">
+						</div>
+					</div>
+				</div>
+				<div class="filterItem">
+					<p class="filterTit">정렬순</p>
+					<ul class="radioTab">
+						<li>
+							<input type="radio" id="radio8" name="radioTab3" class="blind" checked>
+							<label for="radio8">최신순</label>
+						</li>
+						<li>
+							<input type="radio" id="radio9" name="radioTab3" class="blind">
+							<label for="radio9">과거순</label>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div class="layer_footer">
+				<button type="button" class="js_pop_close btn_confirm"><span>확인</span></button>
+			</div>
+		</div>
+	</div>
+	<!-- [E] 필터 모달 -->
+
+	<script>
+		let his_values = {
+			"memb_cd": parseJwt(getCookie("jwt")).sub,
+			"account_num": localStorage.getItem('account_num'),
+			"org_code": localStorage.getItem('org_code'),
+			"start_day": null,
+			"end_day": null,
+			"sort": "desc"
+		}
+		$(document).ready(function () {
+			// 탭 선택 메서드
+			$(".tabInter").tabs({
+				wrapClass: ".tabInter",
+				clickClass: ".js_tabclickDp1",
+				showClass: ".tab_cntDp1",
+				animate: false,
+				contentWidthFull: false,//effect when animate:true
+				animateBorder: ["false", ".tabs_header"],//show border in class .
+				fade: false,
+				speed: 500
+			});
+			let values = {
+				"memb_cd": parseJwt(getCookie("jwt")).sub,
+				"org_code": localStorage.getItem('org_code'),
+				"account_num": localStorage.getItem('account_num')
+			}
+			// 투자 종목
+			ajax_invest_account_product(values).done(function(response){
+				// 계좌명
+				$('.tBaltit').text(localStorage.getItem('account_name'));
+				// 잔액
+				$('.tBalAmount>.amount').text(response[0].kr_eval_amt_sum.toLocaleString());
+				$('.tBalAmount>em').eq(1).text(response[0].currency_code === "KRW" ? "원" : response[0].currency_code);
+				// 계좌 번호
+				$('.tBalDetail').text(response[0].org_name + " " + response[0].account_num);
+
+				let stock_temp = '';
+				if(response.length != 0){
+					for(result of response){
+						let currency = result.currency_code === 'KRW' ? "원" : result.currency_code
+						stock_temp+='<li>'
+									+'	<a href="#none" class="link">'
+									+'		<div class="left">'
+									+'			<span class="prdName">'+result.prod_name+'</span>'
+									+'			<span class="stock">'+result.holding_num.toLocaleString()+'주</span>'
+									+'		</div>'
+						if(result.return_rate < 0){
+							stock_temp+='		<div class="right minus">'
+										+'			<span class="amount"><em class="num">'+result.eval_amt.toLocaleString()+'</em>'+currency+'</span>'
+										+'			<span class="profit"><em class="num">'+result.diffrerence.toLocaleString()+'</em>'+currency+'</span>'
+										+'			<span class="rate">'+result.return_rate.toFixed(2)+'%</span>'
+						} else if (result.return_rate > 0){
+							stock_temp+='		<div class="right plus">'
+										+'			<span class="amount"><em class="num">'+result.eval_amt.toLocaleString()+'</em>'+currency+'</span>'
+										+'			<span class="profit"><em class="num">'+result.diffrerence.toLocaleString()+'</em>'+currency+'</span>'
+										+'			<span class="rate">+'+result.return_rate.toFixed(2)+'%</span>'
+						} else {
+							stock_temp+='		<div class="right zero">'
+										+'			<span class="amount"><em class="num">'+result.eval_amt.toLocaleString()+'</em>'+currency+'</span>'
+										+'			<span class="profit"><em class="num">'+result.diffrerence.toLocaleString()+'</em>'+currency+'</span>'
+										+'			<span class="rate">'+result.return_rate.toFixed(2)+'%</span>'
+						}
+						stock_temp+='			</div>'
+									+'	<div class="prod_type" style="display:none;">'+result.prod_type+'</div>'
+									+'	<div class="seq" style="display:none;">'+result.seq+'</div>'
+									+'	</a>'
+									+'</li>'
+					}
+					
+				} else {
+					stock_temp = '<p class="listNone">불러올 내역이 없습니다.</p>';
+				}
+				$('.investList>ul').html(stock_temp);
+			})
+			$('.range').text(year_month_dot(new Date()))
+			ajax_invest_account_his(his_values);
+		});
+
+		// 뒤로가기
+		$(document).on('click', '.btnBack', function () {
+			history.back();
+		})
+
+		// [S] 투자 종목 클릭 시 -> D1300
+		$(document).on('click', '.stock>.investList>ul>li', function (e) {
+			e.preventDefault();
+			localStorage.setItem('stock_name', $(this).find('.prdName').text());
+			localStorage.setItem('org_code', localStorage.getItem('org_code'));
+			localStorage.setItem('account_num', localStorage.getItem('account_num'));
+			localStorage.setItem('profit', $(this).find('.profit').text());
+			localStorage.setItem('prod_type', $(this).find('.prod_type').text());
+			localStorage.setItem('seq', $(this).find('.seq').text());
+			location.href = "/invest/stock"
+		})
+		// [E] 투자 종목 클릭 시
+
+		// [S] 거래 내역 클릭 시
+		$(document).on('click', '.link.btn_open_bottom_sheet', function (e) {
+			e.preventDefault();
+
+			// 투자 거래 명
+			$('.accSetting.type_history').find('.tAccTit').text($(this).find('.category').text());
+			// 종목 명
+			$('.accSetting.type_history').find('.tAccDetail').text($(this).find('.time').text());
+
+			// 거래 종류
+			$('.accDetailList').find('li').eq(0).find('.itemData').text(invest_trans_code($(this).find('.trans_type').text()));
+			// 거래 단가
+			$('.accDetailList').find('li').eq(1).find('.itemData>.num').text(Number($(this).find('.base_amt').text()).toLocaleString());
+			$('.accDetailList').find('li').eq(1).find('.itemData>em').text($(this).find('.currency').text());
+			// 거래 수량
+			$('.accDetailList').find('li').eq(2).find('.itemData').text($(this).find('.trans_num').text());
+			// 상품 종류
+			//$('.accDetailList').find('li').eq(3).find('.itemData').text(invest_products_type($(this).find('.prod_code').text()));
+			// 정산 금액
+			$('.accDetailList').find('li').eq(3).find('.itemData>.num').text($(this).find('.amount>.num').text().toLocaleString());
+			$('.accDetailList').find('li').eq(3).find('.itemData>em').text($(this).find('.currency').text());
+			
+		})
+		// [E] 거래 내역 클릭 시
+
+		// [S] 핕터
+		function setFilterDate(month){
+			let date = new Date();
+			let day = date.getDate();
+			date.setDate(1);
+			date.setMonth(date.getMonth() - month);
+			let last_day = new Date(date.getFullYear(), date.getMonth(), 0).getDate();
+			last_day < day ? date.setDate(last_day) : date.setDate(day);
+			return date;
+		}
+		$('.radioTab>li>input').on('click', function(){
+			switch($(this).parent().find('label').text()){
+				case '1개월':
+					$('#startDate').val(year_month_date_dot(setFilterDate(1)));
+					$('#endDate').val(year_month_date_dot(new Date()));
+					break;
+				case '3개월':
+					$('#startDate').val(year_month_date_dot(setFilterDate(3)));
+					$('#endDate').val(year_month_date_dot(new Date()));
+					break;
+				case '6개월':
+					$('#startDate').val(year_month_date_dot(setFilterDate(6)));
+					$('#endDate').val(year_month_date_dot(new Date()));
+					break;
+				case '직접입력':
+					$('#startDate').val(year_month_date_dot(new Date()));
+					$('#endDate').val(year_month_date_dot(new Date()));
+					break;
+			}
+		});
+
+		$('.js_pop_close.btn_confirm').on('click', function(){
+			his_values.start_day = $('#startDate').val().replaceAll('.', '');
+			his_values.end_day = $('#endDate').val().replaceAll('.', '') + "235959";
+			let sort = $('input[name=radioTab3]:checked').parent().find('label').text();
+			if(sort === '최신순') {
+				his_values.sort = 'desc';
+			} else {
+				his_values.sort = 'asc';
+			}
+			ajax_invest_account_his(his_values);
+			$('.rangeCtrl').html('<span class="range">'+$('#startDate').val() + " ~ " + $('#endDate').val()+'</span>');
+		});
+		// [E] 필터
+
+		// [S] 날짜 연도 이동
+		$(document).on('click', '.btnPrev', function(){
+			move_month(-1)
+		})
+		$(document).on('click', '.btnNext', function(){
+			if(!(year_month.getMonth() === new Date().getMonth() && year_month.getFullYear() === new Date().getFullYear())){
+				move_month(1)
+			} 
+		})
+		let year_month
+		function move_month(num){
+			year_month = new Date($('.range').text());
+			year_month.setMonth(year_month.getMonth() + num);
+			$('.range').text(year_month_dot(year_month));
+			his_values.start_day = year_month_date_none(year_month);
+			year_month.setDate(0);
+			his_values.end_day = year_month_date_none(year_month) + "235959";
+			year_month.setDate(year_month.getDate()+1);
+			ajax_invest_account_his(his_values);
+		}
+		// [E] 날짜 연도 이동
+
+		// ajax 함수 리스트
+		function ajax_invest_account_product(values) {
+			return $.ajax({
+				url: 'http://192.168.240.208:8081/api/invest/account/product',
+				type: 'POST',
+				contentType: 'application/json',
+				dataType: 'json',
+				data: JSON.stringify(values),
+				headers: {
+					"Authorization": "Bearer " + getCookie("jwt")
+				},
+				error: function (jqXHR) {
+					if (jqXHR.status == 401) {
+						tokenCall2(false).done(function () {
+							ajax_invest_prod(member_id);
+						});
+					}
+				}
+			})
+		}
+		function ajax_invest_account_his(his_values) {
+			return $.ajax({
+				url: 'http://192.168.240.208:8081/api/invest/account/trans',
+				type: 'POST',
+				contentType: 'application/json',
+				dataType: 'json',
+				data: JSON.stringify(his_values),
+				headers: {
+					"Authorization": "Bearer " + getCookie("jwt")
+				},
+				error: function (jqXHR) {
+					if (jqXHR.status == 401) {
+						tokenCall2(false).done(function () {
+							ajax_invest_prod(member_id);
+						});
+					}
+				}
+			}).done(function(response){
+				let his_temp = '';
+				if(response.length != 0){
+					for(result of response){
+						let currency = result.currency_code === 'KRW' ? "원" : result.currency_code;
+						let init_date = response[0].trans_date
+						if(init_date != result.tran_date){
+							his_temp +='</ul>'
+										+'<span class="date"><span class="num">'+month_date_dot(result.trans_ditme)+'</span> '+toKor_dayOfWeek(result.trans_dtime.getDay())+'</span>'
+										+'<ul>'
+						}
+						his_temp +='	<li>'
+									+'		<a href="#layer_D1130" class="link btn_open_bottom_sheet"'
+									+'			role="button">'
+									+'			<div class="left">'
+									+'				<span class="category">'+result.trans_type_detail+'</span>'
+									+'				<span class="time">'+result.prod_name+'</span>'
+									+'			</div>'
+									+'			<div class="right">'
+									+'				<span class="amount"><em class="num">'+result.settle_amt.toLocaleString()+'</em>'+(result.currency_code === "KRW" ? '원' : result.currency_code )+'</span>'
+									+'			</div>'
+									+'			<div class="trans_num" style="display:none;">'+result.trans_num+'</div>'
+									+'			<div class="base_amt" style="display:none;">'+result.base_amt+'</div>'
+									//+'			div class="prod_code" style="display:none;">'+result.prod_code+'/div>'
+									+'			<div class="trans_type" style="display:none;">'+result.trans_type+'</div>'
+									+'			<div class="currency" style="display:none;">'+currency+'</div>'
+									+'		</a>'
+									+'	</li>'
+						}
+						his_temp += '</ul>'
+						$('.historyList').html(his_temp);
+					} else {
+						temp = '<p class="listNone">불러올 내역이 없습니다.</p>'
+						$('.historyList').html(temp);
+					}
+			})
+		}
+	// ajax 함수 리스트
+
+	// [S] 바텀시트
+	$(document).on("click", ".btn_open_bottom_sheet", function (e) {
+			e.preventDefault();
+			var $href = $(this).attr('href');
+			layer_bottomsheet($href);
+			$('html').addClass('scroll_lock');
+			// [S] multi layer
+			var dimIdx = $('.dim').index();
+			eval('$focusReturn' + [dimIdx] + '= $(this)');
+			// [E] multi layer
+		});
+		function layer_bottomsheet(el) {
+			var $el = $(el);
+			$el.append("<div class=\"dim\"></div>");
+			isDim ? $('.layer_bottomsheet').show() : $el.show().attr({'tabindex': '0', 'aria-hidden': 'false'}).focus();
+			setTimeout(function () {
+				$el.find('.layer_inner').addClass('on');
+			}, 50);
+			// [S] multi layer
+			var isDim;
+			var dimIdx = $('.dim').index();
+			var thisDim = $el.find('.dim');
+			var thisLyZindex = dimIdx + 4000;
+			$('.dim').css('opacity', '0');
+			thisDim.css('opacity', '.7');
+			thisDim.closest('.layer_bottomsheet, .layer_popup').css('z-index', thisLyZindex);
+			// [E] multi layer
+			$el.find('.js_pop_close').click(function () {
+				$el.find('.layer_inner').removeClass('on');
+				setTimeout(function () {
+					isDim ? $('.layer_bottomsheet').hide() : $el.hide();
+					$('html').removeClass('scroll_lock');
+					$el.attr({'tabindex': '-1', 'aria-hidden': 'true'}).find(".dim").remove();
+					// [S] multi layer
+					if ($('.dim').length == '2') {
+						$('.dim:eq(1)').css('opacity', '.7');
+					} else if ($('.dim').length == '1') {
+						$('.dim').css('opacity', '.7');
+					}
+					// [E] multi layer
+				}, 200);
+				eval('$focusReturn' + [dimIdx]).focus();
+				return false;
+			});
+		}
+		// [E] 바텀시트
+	</script>
+</body>
+
+</html>

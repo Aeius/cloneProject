@@ -1,0 +1,96 @@
+﻿<!DOCTYPE html>
+<html lang="ko" class="leaf">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>CheckPay</title>
+<meta http-equiv="Cache-Control" content="No-Cache">
+<meta http-equiv="Pragma" content="No-Cache">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<!--<meta name="title" content="">-->
+<meta name="description" content="">
+<!--<meta name="keywords" content="">-->
+<!-- The Open Graph protocol -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="">
+<meta property="og:description" content="">
+<meta property="og:url" content="">
+<meta property="og:image" content=""><!-- [D]리얼경로로 변경하세요 -->
+<!-- //The Open Graph protocol -->
+<link rel="SHORTCUT ICON" href=""><!-- [D]리얼경로로 변경하세요 -->
+<link rel="stylesheet" type="text/css" href="../../css/jquery-ui.min.css">
+<link rel="stylesheet" type="text/css" href="../../css/reset.css">
+<link rel="stylesheet" type="text/css" href="../../css/content.css">
+<link rel="stylesheet" type="text/css" href="../../css/theme_waiker.css">
+<script type="text/javascript" src="../../js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="../../js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="../../js/jquery.ui.touch-punch.min.js"></script>
+<script type="text/javascript" src="../../js/slide_slick.js"></script>
+<script type="text/javascript" src="../../js/publishing.ui.library.1.0.0.js"></script>
+<script type="text/javascript" src="../../js/cmd.js"></script>
+<style>
+	div{width:auto;border: 1px solid black; border-radius: 3px; text-align: center; color: gray; padding-top: 15pt; padding-bottom: 15pt; font-weight: bold;}
+</style>
+</head>
+<body th:fragment="content">
+
+<!-- wrap -->
+<div class="wrap" th:id="YY1521">
+	<!-- header -->
+	<div class="header setup"><!-- 2021-10-07 마이페이지 클래스 'setup' 추가 -->
+		<div class="header_inn">
+			<div class="left">
+				<a href="#none" th:href="'javascript:window.history.go(-1);'" class="btnBack"><span class="blind">Back</span></a>
+			</div>
+			<div class="center">
+				<h2 class="tit_h2">이메일 인증</h2>
+			</div>
+			<div class="right">
+				<!-- <a href="#none" class="btnBack"><span class="blind">Back</span></a> -->
+			</div>
+		</div>
+	</div>
+	<!-- //header -->
+
+	<!-- container -->
+	<div class="container">
+		<div class="content">
+
+			<div class="tit2_wrap">
+				<div class="left">
+					<h2 class="tit_h2">
+						이메일을 통해 전송 받은<br>
+						인증번호를 입력해주세요
+					</h2>
+				</div>
+			</div>
+
+			<div class="confirm_mail">
+				<div class="certi_num">
+					<p class="inp_line">
+						<input type="tel" class="certi_num_inp" maxlength="8" placeholder="8자리 인증번호를 입력해주세요" title="8자리 인증번호를 입력해주세요">
+					</p>
+					<p class="inp_time"><span class="time pointColor">10:00</span></p>
+					<p class="inp_err_msg">인증번호가 일치하지 않습니다 (1/5)</p>
+				</div>
+			</div>
+
+			<!-- [S] 하단 고정 영역 -->
+			<div class="fix_bottom">
+				<div class="btn_wrap">
+					<div class="btnGroup btnSeWrap type_col"><!-- 하단고정 복수 버튼일때 btnSeWrap 추가 -->
+						<p><a href="#none" class="btnBl2" role="button">인증번호 재발송</a></p><!-- 하단고정 복수 버튼일때 btnSe 추가 -->
+						<p><a href="#none" class="btnBl1" role="button">확인</a></p><!-- 하단고정 복수 버튼일때 btnSe 추가 -->
+					</div>
+				</div>
+			</div>
+			<!-- [E] 하단 고정 영역 -->
+
+		</div>
+	</div>
+	<!-- //container -->
+</div>
+<!-- //wrap -->
+
+</body>
+</html>

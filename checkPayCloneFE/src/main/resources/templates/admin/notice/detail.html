@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"
+    integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+<!-- Bootstrap -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css"
+    integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js"
+    integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd"
+    crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.17.0/dist/jquery.validate.min.js"></script>
+<!-- custom -->
+	<script src="../../js/common.js"></script>
+	<script src="../../js/adminCommon.js"></script>
+	
+    <!-- css -->
+	<link href="../../css/admin/common.css" rel="stylesheet">
+	<link href="../../css/admin/notice/detail.css" rel="stylesheet">
+</head>
+
+<body>
+    <div id="header">
+            <div class="logo"></div>
+        </div>
+	<div id="navigation">
+        <div class="nav-container">
+            <div class="nav-item"><span class="glyphicon glyphicon-home"></span><a href="/admin/home">홈</a></div>
+                <div class="nav-item"><span class="glyphicon glyphicon-user"></span><a href="/admin/member/">회원 관리</a></div>
+                <div class="nav-item active"><span class="glyphicon glyphicon-bullhorn"></span><a href="/admin/notice/">공지사항 관리</a></div>
+                <div class="nav-item"><span class="glyphicon glyphicon-signal"></span><a href="/admin/statistics/">통계</a></div>
+        </div>
+        <div class="logout" data-toggle="modal" data-target="#logout-modal">
+            <span class="glyphicon glyphicon glyphicon-log-out" aria-hidden="true"></span>
+        </div>
+    </div>
+	<div id="main">
+        <div class="panel panel-default">
+            <!-- Default panel contents -->
+            <div class="panel-heading">공지 상세</div>
+            <div class="form-container">
+				<form id="update-form">
+		            <div class="form-group">
+		                <label for="subject">제목</label>
+		                <input type="text" class="form-control" id="subject" readonly>
+		            </div>
+		            <div class="form-group">
+		                <label for="nalja">작성일자</label>
+		                <input type="text" class="form-control" id="nalja" readonly>
+		            </div>
+		            <div class="form-group">
+		                <label for="content">내용</label>
+		                <pre class="form-control" id="content" readonly contenteditable="false"></pre>
+		            </div>
+		            
+		        </form>
+			</div>
+            <div class="button-group">
+				<button type="button" class="btn btn-primary" id="update-btn">수정</button>
+				<button type="button" class="btn btn-primary" id="modify-btn"  style="display: none; text-align: center;">수정하기</button>
+				<button type="button" class="btn btn-danger" id="delete-btn" data-toggle="modal"
+	                    data-target="#delete-modal">삭제</button>
+				<button type="button" class="btn btn-default" id="back-btn" onclick="history.back();">뒤로</button>
+				<button type="button" class="btn btn-default" id="goDetail-btn" style="display: none;">뒤로</button>
+        	</div>
+    </div>
+    <div class="page-content">
+        <div class="modal fade" id="delete-modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">공지 삭제</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>해당 공지를 삭제하시겠습니까?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
+                        <button type="button" class="btn btn-danger" id="delete-data" data-toggle="modal"
+                            data-target="#delete-msg">삭제</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="delete-msg" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">공지 삭제</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>삭제완료.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal" id="move-index">확인</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+        <!-- 로그아웃 모달 시작 -->
+    <div class="modal fade" id="logout-modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">로그아웃</h4>
+                </div>
+                <div class="modal-body">
+                    <p>로그아웃 하시겠습니까?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
+                    <button type="button" class="btn btn-danger" id="logout-data" data-toggle="modal"
+                        data-target="#logout-msg">로그아웃</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="logout-msg" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">로그아웃</h4>
+                </div>
+                <div class="modal-body">
+                    <p>로그아웃 완료.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" id="move-loginPage">확인</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 로그아웃 모달 끝 -->
+</body>
+
+<script type="text/javascript">
+	var baseUrl = 'http://192.168.240.208:8081';
+	
+	var token = getCookie("jwt");
+	var rtk = getCookie("rtk");
+    var id = parseJwt(getCookie("jwt")).sub;
+
+	var dev = false;
+    if(dev){
+        baseUrl = 'http://localhost:8081';
+    }
+
+    //날짜 포맷팅
+    function dateFormat(date) {
+        let month = date.getMonth() + 1;
+        let day = date.getDate();
+        let hour = date.getHours();
+        let minute = date.getMinutes();
+        let second = date.getSeconds();
+
+        month = month >= 10 ? month : '0' + month;
+        day = day >= 10 ? day : '0' + day;
+        hour = hour >= 10 ? hour : '0' + hour;
+        minute = minute >= 10 ? minute : '0' + minute;
+        second = second >= 10 ? second : '0' + second;
+
+        return date.getFullYear() + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second;
+    }
+    
+     // 새로운 날짜 포맷팅
+    function dateFormat2(date){
+		let year=String(date).substr(0,4);
+		let month=String(date).substr(4,2);
+		let day=String(date).substr(6,2);
+		let hour=String(date).substr(8,2);
+		let minute=String(date).substr(10,2);
+		let second=String(date).substr(12,2);
+		
+		return year+"-"+month+"-"+day+" "+hour+":"+minute+":"+second;
+	}
+
+    $(function () {
+        var path = window.location.search;
+        var noticeNum = path.substr(11)
+        //상세 조회
+        $.ajax({
+            url: baseUrl + "/api/admin/notice/detail/" + noticeNum,
+            type: 'get',
+            dataType: "json",
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("Authorization", "Bearer "+token);
+            },
+            success: function (data) {
+                document.getElementById('subject').value = data.subject;
+                var nalja = dateFormat2(data.nalja);
+                document.getElementById('nalja').value = nalja;
+                //document.getElementById('content').value = data.content;
+                document.getElementById('content').innerHTML=data.content;
+            },
+            error: function (jqXHR) {
+                adminErrorHandler(jqXHR);
+            }
+        });
+    });
+
+    $('#update-btn').click(function () {
+        $(document).ready(function () {
+            $("#subject").removeAttr("readonly");
+            $("#content").removeAttr("readonly");
+            $("#update-btn").hide();
+            $("#delete-btn").hide();
+            $("#back-btn").hide();
+            $("#modify-btn").css("display", "inline");
+            $("#goDetail-btn").css("display", "inline");
+            document.getElementById('content').setAttribute('contenteditable','true');
+            
+            return false;
+        });
+    });
+    $('#goDetail-btn').click(function () {
+        var path = window.location.search;
+        var noticeNum = path.substr(11)
+        $(document).ready(function () {
+            location.href = "/admin/notice/detail?noticeNum=" + Number(noticeNum);
+        });
+    });
+
+    $('#modify-btn').click(function () {
+        var path = window.location.search;
+        var noticeNum = path.substr(11)
+
+        var subject = $("#subject").val();
+        var content = $("#content").html();
+
+        if (subject == "") {
+            alert("제목이 공백. 입력하세요.");
+            return false;
+        }
+        if (content == "") {
+            alert("내용이 공백. 입력하세요.");
+            return false;
+        }
+        var data = {};
+        data["subject"] = subject;
+        data["content"] = content;
+        data["notice_num"] = Number(noticeNum);
+
+        //공지 수정
+        $.ajax({
+            url: baseUrl + "/api/admin/notice/detail/modify",
+            type: 'put',
+            data: JSON.stringify(data),
+            contentType: "application/json; charset=utf-8",
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("Authorization", "Bearer "+token);
+            },
+            success: function (resp) {  //1이 정상수행 리턴값
+                if (resp == 0) {
+                    alert("제목이 공백입니다. 입력하세요.");
+                    return false;
+                }
+                if (resp == 2) {
+                    alert("내용이 공백입니다. 입력하세요.");
+                    return false;
+                }
+                location.href = "/admin/notice";
+            },
+            error: function (jqXHR) {
+                adminErrorHandler(jqXHR);
+            }
+        });
+    });
+
+    $('#delete-data').click(function () {
+        var path = window.location.search;
+        var noticeNum = path.substr(11)
+        noticeNum = Number(noticeNum);
+        //공지 삭제
+        $.ajax({
+            url: baseUrl + "/api/admin/notice/detail/delete/" + noticeNum,
+            type: 'delete',
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("Authorization", "Bearer "+token);
+            },
+            success: function (data) {
+                $('#delete-modal').remove();
+                $('#move-index').click(function () {
+                    location.href = "/admin/notice";
+                });
+            },
+            error: function (jqXHR) {
+                adminErrorHandler(jqXHR);
+            }
+        });
+    });
+
+    //임시 로그아웃 처리
+    $('#logout-data').click(function () {
+        $('#logout-modal').remove();
+        $('#move-loginPage').click(function () {
+            $.ajax({
+                url: baseUrl + "/api/login/logout",
+                type: 'post',
+                data: {
+                    "rtk": rtk
+                },
+                success: function () {
+                    deleteCookie('jwt');
+                    deleteCookie('rtk');
+                    window.location.href = "/admin/login"
+                },
+                error: function (jqXHR) {
+                    console.log("로그아웃 error" + jqXHR.status);
+                }
+            });
+        })
+    })
+</script>
+
+</html>

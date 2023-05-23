@@ -1,0 +1,687 @@
+﻿<!-- [S] 통계 -->
+<!-- <div class="tab_cntDp1" style="display: none;"> -->
+
+<!-- [S] 월 선택 -->
+<div class="calendar_form">
+	<div class="sel_form type_month">
+		<a href="#layer_N001_select_m" class="btn_open_bottom_sheet sel_box" role="button" title="월 선택"><span></span></a>
+	</div>
+</div>
+<!-- [E] 월 선택 -->
+
+<div class="wrap_chart_box">
+	<div class="cal_cate_history">
+		<div class="left">
+			<p class="name">지출</p>
+		</div>
+		<div class="right">
+			<p class="amount"><span class="num">0</span>원</p>
+		</div>
+	</div>
+
+	<div class="setup">
+		<div class="left">
+			<p class="total">총예산<span class="num mgl10">0</span>원</p>
+			<p class="setup_label"><span class="label_txt red"><em class="txt">초과 지출중</em></span></p>
+		</div>
+		<div class="right">
+			<p class="btn_txt_wrap">
+				<a href="#none" class="btn_txt" role="button" title="설정하기"><span>설정하기</span></a>
+				<!--<a href="#none" class="btn_txt" role="button" title="수정하기"><span>수정하기</span></a>-->
+			</p>
+		</div>
+	</div>
+
+	<!-- [S] 차트 파이 타입 -->
+	<div class="wrap_chart type_calendar">
+		<figure class="highcharts-figure" aria-hidden="true">
+			<div id="chart_pie_calendar"></div>
+		</figure>
+		<!-- 접근성 -->
+		<div class="chart_disable blind">
+			<table class="info_tbl">
+				<caption>지출 통계 현황</caption>
+				<colgroup>
+					<col />
+					<col />
+				</colgroup>
+				<thead>
+					<tr>
+						<th scope="col">종목</th>
+						<th scope="col">비율</th>
+					</tr>
+				</thead>
+				<tbody>
+					<!-- 원형 차트 출력 위치 -->
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<!-- [E] 차트 파이 타입 -->
+</div>
+
+<!-- [S] 2021-08-27 내용 없음 추가 -->
+<!--
+<div class="msgResult">
+	<p>불러올 내용이 없습니다</p>
+</div>
+-->
+<!-- [E] 2021-08-27 내용 없음 추가 -->
+
+<ul class="chart_rate">
+	<!-- 카테고리별 소비, 예산 출력 위치 -->
+</ul>
+
+<!-- btn_wrap -->
+<!--
+<div class="btn_wrap">
+	<div class="btnGroup">
+		<p><a href="#none" class="btnBl4" role="button">그외 카테고리 보기<span class="ico_sel_down mgl5"></span></a></p>
+	</div>
+</div>
+-->
+
+<!-- 랭킹 중복 1,2,3위 가능, 노출항목은 3개 고정 -->
+<div class="chart_info rank">
+	<p class="tit">내 소비 랭킹</p>
+	<p class="desc">이번 달 많이 쓰인 지출입니다.</p>
+	<div class="bd_box">
+		<ul>
+			<!-- 소비 랭킹 출력 위치 -->
+		</ul>
+	</div>
+</div>
+
+<!-- 지출내역 노출항목 날짜별 3개 -->
+<div class="chart_info exp">
+	<p class="tit">예정 지출 내역</p>
+	<p class="desc">이번 달 예정된 지출 내역입니다.</p>
+	<div class="bd_box">
+		<ul>
+			<!-- 예상 지출 내역 출력 위치 -->
+		</ul>
+	</div>
+</div>
+
+<!-- </div> -->
+<!-- // [E] 통계 -->
+
+<script>
+
+	// [S] 통계 전체 화면 출력 함수
+	let categoryList = ["식비", "카페/디저트", "술/유흥", "생활", "온라인쇼핑", "패션/쇼핑", "뷰티", "교통", "자동차", "주거/통신", "금융", "경조/선물", "의료/건강", "문화/여가", "여행/숙박", "교육/학습", "자녀/육아", "애완동물", "기타"]
+	function show_statistics(member_id, sel_year, sel_month) {
+		// API 호출 (연, 월)
+		// 카드내역 전체 호출
+		let category_budget_list = new Array(19).fill(0);
+		let expenditurList = new Array(19).fill(0);
+		let total = 0;
+		let total_budget = 0;
+		// [S] 계좌, 카드 전체 내역 불러오기
+		ajax_calender_list(member_id, sel_year, sel_month, sel_sort).done(function (response) {
+			let merchant_count = new Map();
+			for (result of response) {
+				// 카드 내역만 조회
+				if (result.merchant_name != null) {
+					total += result.approved_amt; // 총 지출
+					let idx = categoryList.indexOf(result.catg_nm);
+					expenditurList[idx] += result.approved_amt; // 해당 카테고리 총 지출
+
+					// 가맹점에 대한 지출 금액 누적
+					if (merchant_count.has(result.merchant_name)) {
+						merchant_count.set(result.merchant_name, merchant_count.get(result.merchant_name) + 1);
+					} else {
+						merchant_count.set(result.merchant_name, 1);
+					}
+				}
+			}
+			// [S] 내 소비 랭킹
+			mapToArr = [...merchant_count];
+			const sortedMap = new Map(mapToArr.sort((a, b) => b[1] - a[1])); // val 내림차순 정렬
+			let cnt = 0;
+			let ranking_temp = '';
+			for (const [key, val] of sortedMap) {
+				// 가맹점명, 지출 회수 출력
+				ranking_temp += '<li class="list">'
+					+ '	<p class="no pointColor"><em class="num">' + (cnt + 1) + '</em>위</p>'
+					+ '	<div class="name">'
+					+ '		<p>' + key + '</p>'
+					+ '		<p class="info"><em class="num">' + val + '</em>회</p>'
+					+ '	</div>'
+					+ '</li>'
+				cnt++;
+				if (cnt == 3) break;
+			}
+			$('.chart_info.rank').find('.bd_box>ul').html(ranking_temp);
+			// [E] 내 소비 랭킹
+
+			// 지출이 없는 경우 - 원형차트 제거 + 불러올 내용이 없습니다 출력
+			if (total === 0) {
+				$('.wrap_chart.type_calendar').attr('style', 'display: none;');
+				$('.chart_rate').html('<div class="msgResult"><p>불러올 내용이 없습니다</p></div>');
+				$('.chart_info.rank').find('.bd_box>ul').html('<div class="msgResult"><p>불러올 내용이 없습니다</p></div>');
+				$('.cal_cate_history').find('.right>.amount>.num').text(0);
+				$('.setup').find('.num.mgl10').text(0);
+			} else {
+				$('.wrap_chart.type_calendar').attr('style', 'display: block;');
+				// 예산 불러오기
+				ajax_budget_find(member_id, sel_year, sel_month).done(function (response) {
+					response.forEach(function (ele, idx) {
+						category_budget_list[idx] = ele.category_budget;
+					});
+					total_budget = response[0].total_budget;
+
+					// 차트 파이 출력
+					loadCalendarChart(expenditurList);
+
+					// 총 지출
+					$('.cal_cate_history').find('.amount>.num').text(total.toLocaleString());
+
+					// 총 예산
+					$('.setup').find('.total>.num').text(total_budget.toLocaleString());
+					// 예산 초과 시 '초과 지출중' 표시
+					if (total_budget != 0 && total > total_budget) {
+						$('.setup_label').html('<span class="label_txt red"><em class="txt">초과 지출중</em></span>');
+					} else {
+						$('.setup_label').html('');
+					}
+					// 카테고리 별 예산 및 지출금액
+					var temp = '';
+					for (i = 0; i < expenditurList.length; i++) {
+						let num = i + 1 < 10 ? "0" + (i + 1) : i + 1;
+						// 비율 계산
+						var percent = Math.round(expenditurList[i] / total * 100);
+						// 예산도 없고 지출도 없으면 출력하지 않음
+						if (expenditurList[i] === 0 && category_budget_list[i] === 0) {
+							continue;
+						}
+						temp += '<li class="list">'
+							+ '	<a href="#layer_N1003_1_1" class="btn_open_bottom_sheet budget_info" role="button">'
+							+ '		<div class="left">'
+							+ '			<p class="cate">'
+							+ '				<span class="ico_rate type_' + num + '"></span>'
+							+ '				' + categoryList[i] + ' <span class="num mgl2">' + percent + '</span>%'
+							+ '			</p>'
+							+ '		</div>'
+							+ '		<div class="right">'
+							+ '			<p class="amount"><span class="num">' + expenditurList[i].toLocaleString() + '</span> 원</p>'
+							+ '			<p class="balance">예산 <span class="num">' + category_budget_list[i].toLocaleString() + '</span> 원</p>'
+							+ '		</div>'
+							+ '	</a>'
+							+ '</li>'
+					}
+					$('#statis').find('.chart_rate').html(temp);
+				});
+			}
+		});
+		// [E] 계좌, 카드 전체 내역 불러오기
+
+		// [S] 예정 지출 내역
+		// 대출 상환일
+		let loan = 0;
+		let bills = 0;
+		ajax_loan(member_id, sel_year, sel_month).done(function (response) {
+			loan = response.length;
+			let planned_exp = new Map();
+			for (result of response) {
+				let key = (result.pay_due_date != null ? result.pay_due_date : result.exp_date);
+				let values = [];
+				if (typeof planned_exp.get(key) != "undefined") {
+					for (val of planned_exp.get(key)) {
+						values.push({"name": val.name, "amount": val.amount});
+					}
+					values.push({"name": result.loan_name, "amount": result.balance_amt});
+				} else {
+					values.push({"name": result.loan_name, "amount": result.balance_amt});
+				}
+				planned_exp.set(key, values);
+			}
+			ajax_bills(member_id, sel_year, sel_month).done(function (response) {
+				bills = response.length;
+				for (result of response) {
+					let key = year_month_date_dot(new Date(result.paid_out_date));
+					let values = [];
+					if (typeof planned_exp.get(key) != "undefined") {
+						for (val of planned_exp.get(key)) {
+							values.push({"name": val.name, "amount": val.amount});
+						}
+						values.push({"name": result.org_name, "amount": result.charge_amt});
+					} else {
+						values.push({"name": result.org_name, "amount": result.charge_amt});
+					}
+					planned_exp.set(key, values);
+				}
+				const sorted_map = new Map([...planned_exp].sort());
+				let temp = '';
+				sorted_map.forEach(function (values, key) {
+					temp += '<li class="list">'
+						+ '	<p class="no pointColor"><em class="num">' + key.substring(8, 10) + '</em>일</p>'
+						+ '	<div class="name">'
+					for (val of values) {
+						temp += '	<div class="item">'
+							+ '		<p>' + val.name + '</p>'
+							+ '		<p class="info"><em class="num">' + val.amount.toLocaleString() + '</em> 원</p>'
+							+ '	</div>'
+					}
+					temp += '	</div>'
+						+ '</li>'
+				});
+				if(loan === 0 && bills === 0){
+					temp = '<div class="msgResult"><p>불러올 내용이 없습니다</p></div>'
+				} 
+				$('.chart_info.exp').find('ul').html(temp);
+			});
+		});
+		// [E] 예정 지출 내역
+	}
+	// [E] 통계 전체 화면 출력 함수
+
+	// [S] 통계 카테고리 클릭 시 상세보기
+	$(document).on('click', '.budget_info', function () {
+		let exp_amount = $(this).find('.right>.amount>.num').text();
+		let budget_amount = $(this).find('.right>.balance>.num').text();
+		$('#layer_N1003_1_1').find('.num').eq(2).text(exp_amount.toLocaleString());
+		$('#layer_N1003_1_1').find('.num').eq(3).text(budget_amount.toLocaleString());
+		let click_category = $(this).find('.cate').text().split(' ')[0].trim();
+		$('#layer_N1003_1_1').find('.num').eq(0).text(sel_year); // 연
+		$('#layer_N1003_1_1').find('.num').eq(1).text(sel_month); // 월
+		$('#layer_N1003_1_1').find('.cal_cate_history>.left>.name').text('지출 ' + click_category);
+
+		// API 호출 (모든 지출 내역 조회)
+		ajax_calender_list(member_id, sel_year, sel_month, sel_sort).done(function (response) {
+			let temp = '';
+			let now_date = '';
+			let dayOfWeek = '';
+			let cnt = 0;
+			for (idx = 0; idx < response.length; idx++) {
+				// 카테고리 별 카드 지출 내역 출력
+				if (click_category === response[idx].catg_nm) {
+					cnt++;
+					if (now_date === '') {
+						now_date = month_date_dot(new Date(response[idx].approved_dtime));
+						dayOfWeek = toKor_dayOfWeek(new Date(response[idx].approved_dtime).getDay());
+						temp = '<span class="date"><span class="num">' + now_date + '</span> ' + dayOfWeek + '</span>'
+							+ '<ul class="info">'
+					}
+					// 날짜 출력 - 00.00 0요일
+					let result_date = month_date_dot(new Date(response[idx].approved_dtime));
+					if (now_date != result_date) {
+						now_date = result_date;
+						dayOfWeek = toKor_dayOfWeek(new Date(response[idx].approved_dtime).getDay());
+						temp += '</ul>'
+							+ '</div>'
+							+ '<div class="wrap_date">'
+							+ '<span class="date"><span class="num">' + now_date + '</span> ' + dayOfWeek + '</span>'
+							+ '<ul class="info">'
+					}
+					temp += '<li>'
+						+ '<a href="#layer_N1001_2_1_1" class="btn_open_bottom_sheet history_card_history" role="button">'
+						+ '<div class="left">'
+						+ '<span class="category">' + response[idx].merchant_name + '</span>'
+						+ '<span class="balance">' + response[idx].card_name + '|' + response[idx].catg_nm + '</span>'
+						+ '</div>'
+						+ '<div class="right">'
+						+ '<span class="amount"><em class="num">' + response[idx].approved_amt.toLocaleString() + '</em>원</span>'
+						+ '</div>'
+						+ '	<div style="display: none;" class="installments">' + response[idx].total_install_cnt + '</div>'
+						+ '	<div style="display: none;" class="approved_dtime">' + response[idx].approved_dtime + '</div>'
+						+ '	<div style="display: none;" class="approved_num">' + response[idx].approved_num + '</div>'
+						+ '	<div style="display: none;" class="modified_amt">' + response[idx].modified_amt + '</div>'
+						+ '	<div style="display: none;" class="card_id">' + response[idx].card_id + '</div>'
+						+ '	<div style="display: none;" class="org_code">' + response[idx].org_code + '</div>'
+						+ '	<div style="display: none;" class="appr_status">' + response[idx].status + '</div>'
+						+ '	<div style="display: none;" class="appr_seq">' + response[idx].seq + '</div>'
+						+ '</a>'
+						+ '</li>'
+				}
+
+			}
+			$('#layer_N1003_1_1').find('.historyList').html(temp);
+		});
+	});
+	// [E] 통계 카테고리 클릭 시 상세보기
+
+	// [S] 설정하기 클릭 시 예산 띄우기
+	$(document).on('click', '.setup>.right>.btn_txt_wrap', function () {
+		$('.js_tabclickDp1').eq(3).trigger('click');
+	});
+	// [E]설정하기 클릭 시 예산 띄우기
+
+	// [S] 차트 파이 타입
+	function loadCalendarChart(expenditurList) {
+
+		// 카테고리별 소비 금액 배열
+		let total = 0;
+		for (value of expenditurList) {
+			total += parseInt(value);
+		}
+		// 최초에 가장 높은 비율 출력을 위한 최댓값, 인덱스 계산
+		let max_val = 0;
+		let max_idx = 0;
+		expenditurList.forEach((ele, idx) => {
+			if (max_val < ele) {
+				max_idx = idx;
+				max_val = ele;
+			}
+		})
+
+		// 비율 계산하여 차트에 출력
+		let percentage = new Array(19).fill(0);;
+		for (idx in expenditurList) {
+			var percent = expenditurList[idx] / total * 100;
+			percentage[idx] = Math.round(percent);
+		}
+
+		// 차트 파이 캘린더 타입
+		Highcharts.chart('chart_pie_calendar', {
+			title: {text: ''},// 타이틀 숨김
+			exporting: {enabled: false},// 우측상단 햄버거메뉴 숨김
+			credits: {enabled: false},// highchart 워터마크 숨김
+			tooltip: {enabled: false},// 툴팁 숨김
+			chart: {
+				plotBackgroundColor: '#f7f7f7',
+				plotBorderWidth: null,
+				plotShadow: false,
+				type: 'pie',
+				backgroundColor: '#f7f7f7',
+				events: {
+					load: function () {
+						//전체 카테고리 말풍선 초기 비노출
+						$('.highcharts-data-label').hide();
+						//비중 첫번째로 큰 카테고리 말풍선만 노출
+						$('.highcharts-data-label-color-' + max_idx).show().find('.highcharts-label-box').css({'stroke-width': '3px'});
+					},
+				},
+			},
+			plotOptions: {
+				pie: {
+					allowPointSelect: true, // 선택모션
+					slicedOffset: 20, // 슬라이스간격
+					cursor: 'pointer',
+					colors: ['#ff65ab', '#d57ef7', '#f7c662', '#72eaeb', '#8080f7', '#73abf7', '#73f27c', '#cbf762', '#f7f564', '#f7a664', '#ff6570', '#f77ed3', '#55f4af', '#f77c64', '#50e5dc', '#73abf7', '#5f95f9', '#e659f2', '#b3b3b3'], // 색상지정 [식비, 교육, 쇼핑, 교통, ETC]
+					//colors: ['#ff65ab', '#d57ef7', '#f7c662', '#72eaeb', '#8080f7', '#73abf7', '#73f27c', '#cbf762', '#f7f564', '#f7a664', '#ff6570', '#f77ed3', '#55f4af', '#f77c64', '#50e5dc', '#73abf7', '#5f95f9', '#e659f2', '#b3b3b3'], // 색상지정 [식비, 교육, 쇼핑, 교통, ETC]
+					colorByPoint: true, // 색상지정
+					margin: 0,
+					padding: 0,
+					borderWidth: 0,
+					point: {
+						events: {
+							click: function () {
+								$('.highcharts-data-label').css({'opacity': '1', 'transition': 'all .5s ease'});//카테고리 말풍선 정보
+								$('.highcharts-data-label .highcharts-label-box').css({'stroke-width': '1px', 'transition': 'all 1s ease'});//카테고리 말풍선 정보
+
+								/* 클릭 이벤트 */
+								for (idx = 0; idx < categoryList.length; idx++) {
+									if (this.name === categoryList[idx]) {
+										$('.highcharts-data-label').hide();
+										$('.highcharts-data-label-color-' + idx).show()
+										if (this.selected === false) {
+											$('.highcharts-data-label-color-' + idx + ' .highcharts-label-box').css({'stroke-width': '3px'});
+										} else {
+											//$('.highcharts-data-label').hide();
+										}
+									}
+								}
+
+							}// click
+						}// events
+					},// point
+				},// pie
+			},// plotOptions
+			series: [{
+				innerSize: '38%', //도넛모양
+				size: '68%',// 크기
+				startAngle: -60,// 각도 시작
+				endAngle: 300,// 각도 끝
+				center: ['50%', '24%'], //pie 위치
+				dataLabels: {
+					distance: 0, //항목명과 그래프의 간격
+					color: '#000',
+					backgroundColor: '#fff',
+					borderWidth: 1, //말풍선 라인
+					borderRadius: 15,
+					connectorPadding: 0,
+					overflow: 'inherit',
+					style: {
+						fontFamily: 'notoSans',
+						fontSize: '12px',
+						fontWeight: '700',
+					},
+				},
+				data:
+					[
+						{
+							name: categoryList[0],
+							y: percentage[0],// 100퍼센트 비율
+							sliced: false,
+							selected: false,
+							dataLabels: {
+								useHTML: true,
+								format: '<p class="chart_label_box rate_01"><b> {point.name}</b> <b style="color:#ff65ab;"> ' + percentage[0] + '% </b> </p>',
+								borderColor: '#ff65ab',
+							},
+						},
+						{
+							name: categoryList[1],
+							y: percentage[1],
+							sliced: false,
+							selected: false,
+							dataLabels: {
+								useHTML: true,
+								format: '<p class="chart_label_box rate_02"><b> {point.name}</b> <b style="color:#d57ef7;"> ' + percentage[1] + '% </b> </p>',
+								borderColor: '#d57ef7',
+							},
+						},
+						{
+							name: categoryList[2],
+							y: percentage[2],
+							sliced: false,
+							selected: false,
+							dataLabels: {
+								useHTML: true,
+								format: '<p class="chart_label_box rate_03"><b> {point.name}</b> <b style="color:#f7c662;"> ' + percentage[2] + '% </b> </p>',
+								borderColor: '#f7c662',
+							},
+						},
+						{
+							name: categoryList[3],
+							y: percentage[3],
+							sliced: false,
+							selected: false,
+							dataLabels: {
+								useHTML: true,
+								format: '<p class="chart_label_box rate_04"><b> {point.name}</b> <b style="color:#72eaeb;"> ' + percentage[3] + '% </b> </p>',
+								borderColor: '#72eaeb',
+							},
+						},
+						{
+							name: categoryList[4],
+							y: percentage[4],
+							sliced: false,
+							selected: false,
+							dataLabels: {
+								useHTML: true,
+								format: '<p class="chart_label_box rate_05"><b> {point.name}</b> <b style="color:#8080f7;"> ' + percentage[4] + '% </b> </p>',
+								borderColor: '#8080f7',
+							},
+						},
+						{
+							name: categoryList[5],
+							y: percentage[5],
+							sliced: false,
+							selected: false,
+							dataLabels: {
+								useHTML: true,
+								format: '<p class="chart_label_box rate_06"><b> {point.name}</b> <b style="color:#73abf7;"> ' + percentage[5] + '% </b> </p>',
+								borderColor: '#73abf7',
+							},
+						},
+						{
+							name: categoryList[6],
+							y: percentage[6],
+							sliced: false,
+							selected: false,
+							dataLabels: {
+								useHTML: true,
+								format: '<p class="chart_label_box rate_07"><b> {point.name}</b> <b style="color:#73f27c;"> ' + percentage[6] + '% </b> </p>',
+								borderColor: '#73f27c',
+							},
+						},
+						{
+							name: categoryList[7],
+							y: percentage[7],
+							sliced: false,
+							selected: false,
+							dataLabels: {
+								useHTML: true,
+								format: '<p class="chart_label_box rate_08"><b> {point.name}</b> <b style="color:#cbf762;"> ' + percentage[7] + '% </b> </p>',
+								borderColor: '#cbf762',
+							},
+						},
+						{
+							name: categoryList[8],
+							y: percentage[8],
+							sliced: false,
+							selected: false,
+							dataLabels: {
+								useHTML: true,
+								format: '<p class="chart_label_box rate_09"><b> {point.name}</b> <b style="color:#f7f564;"> ' + percentage[8] + '% </b> </p>',
+								borderColor: '#f7f564',
+							},
+						},
+						{
+							name: categoryList[9],
+							y: percentage[9],
+							sliced: false,
+							selected: false,
+							dataLabels: {
+								useHTML: true,
+								format: '<p class="chart_label_box rate_10"><b> {point.name}</b> <b style="color:#f7a664;"> ' + percentage[9] + '% </b> </p>',
+								borderColor: '#f7a664',
+							},
+						},
+						{
+							name: categoryList[10],
+							y: percentage[10],
+							sliced: false,
+							selected: false,
+							dataLabels: {
+								useHTML: true,
+								format: '<p class="chart_label_box rate_11"><b> {point.name}</b> <b style="color:#ff6570;"> ' + percentage[10] + '% </b> </p>',
+								borderColor: '#ff6570',
+							},
+						},
+						{
+							name: categoryList[11],
+							y: percentage[11],
+							sliced: false,
+							selected: false,
+							dataLabels: {
+								useHTML: true,
+								format: '<p class="chart_label_box rate_12"><b> {point.name}</b> <b style="color:#f77ed3;"> ' + percentage[11] + '% </b> </p>',
+								borderColor: '#f77ed3',
+							},
+						},
+						{
+							name: categoryList[12],
+							y: percentage[12],
+							sliced: false,
+							selected: false,
+							dataLabels: {
+								useHTML: true,
+								format: '<p class="chart_label_box rate_13"><b> {point.name}</b> <b style="color:#55f4af;"> ' + percentage[12] + '% </b> </p>',
+								borderColor: '#55f4af',
+							},
+						},
+						{
+							name: categoryList[13],
+							y: percentage[13],
+							sliced: false,
+							selected: false,
+							dataLabels: {
+								useHTML: true,
+								format: '<p class="chart_label_box rate_14"><b> {point.name}</b> <b style="color:#f77c64;"> ' + percentage[13] + '% </b> </p>',
+								borderColor: '#f77c64',
+							},
+						},
+						{
+							name: categoryList[14],
+							y: percentage[14],
+							sliced: false,
+							selected: false,
+							dataLabels: {
+								useHTML: true,
+								format: '<p class="chart_label_box rate_15"><b> {point.name}</b> <b style="color:#50e5dc;"> ' + percentage[14] + '% </b> </p>',
+								borderColor: '#50e5dc',
+							},
+						},
+						{
+							name: categoryList[15],
+							y: percentage[15],
+							sliced: false,
+							selected: false,
+							dataLabels: {
+								useHTML: true,
+								format: '<p class="chart_label_box rate_16"><b> {point.name}</b> <b style="color:#73abf7;"> ' + percentage[15] + '% </b> </p>',
+								borderColor: '#73abf7',
+							},
+						},
+						{
+							name: categoryList[16],
+							y: percentage[16],
+							sliced: false,
+							selected: false,
+							dataLabels: {
+								useHTML: true,
+								format: '<p class="chart_label_box rate_17"><b> {point.name}</b> <b style="color:#5f95f9;"> ' + percentage[16] + '% </b> </p>',
+								borderColor: '#5f95f9',
+							},
+						},
+						{
+							name: categoryList[17],
+							y: percentage[17],
+							sliced: false,
+							selected: false,
+							dataLabels: {
+								useHTML: true,
+								format: '<p class="chart_label_box rate_18"><b> {point.name}</b> <b style="color:#e659f2;"> ' + percentage[17] + '% </b> </p>',
+								borderColor: '#e659f2',
+							},
+						},
+						{
+							name: categoryList[18],
+							y: percentage[18],
+							sliced: false,
+							selected: false,
+							dataLabels: {
+								useHTML: true,
+								format: '<p class="chart_label_box rate_19"><b> {point.name}</b> <b style="color:#b3b3b3;"> ' + percentage[18] + '% </b> </p>',
+								borderColor: '#b3b3b3',
+							},
+						}
+					]// data
+			}]// series
+		});
+		//접근성
+		$('.chart_disable .rate_01').text($('.chart_label_box.rate_01 b:last-child').html());
+		$('.chart_disable .rate_02').text($('.chart_label_box.rate_02 b:last-child').html());
+		$('.chart_disable .rate_03').text($('.chart_label_box.rate_03 b:last-child').html());
+		$('.chart_disable .rate_04').text($('.chart_label_box.rate_04 b:last-child').html());
+		$('.chart_disable .rate_05').text($('.chart_label_box.rate_05 b:last-child').html());
+		$('.chart_disable .rate_06').text($('.chart_label_box.rate_06 b:last-child').html());
+		$('.chart_disable .rate_07').text($('.chart_label_box.rate_07 b:last-child').html());
+		$('.chart_disable .rate_08').text($('.chart_label_box.rate_08 b:last-child').html());
+		$('.chart_disable .rate_09').text($('.chart_label_box.rate_09 b:last-child').html());
+		$('.chart_disable .rate_10').text($('.chart_label_box.rate_10 b:last-child').html());
+		$('.chart_disable .rate_11').text($('.chart_label_box.rate_11 b:last-child').html());
+		$('.chart_disable .rate_12').text($('.chart_label_box.rate_12 b:last-child').html());
+		$('.chart_disable .rate_13').text($('.chart_label_box.rate_13 b:last-child').html());
+		$('.chart_disable .rate_14').text($('.chart_label_box.rate_14 b:last-child').html());
+		$('.chart_disable .rate_15').text($('.chart_label_box.rate_15 b:last-child').html());
+		$('.chart_disable .rate_16').text($('.chart_label_box.rate_16 b:last-child').html());
+		$('.chart_disable .rate_17').text($('.chart_label_box.rate_17 b:last-child').html());
+		$('.chart_disable .rate_18').text($('.chart_label_box.rate_18 b:last-child').html());
+		$('.chart_disable .rate_19').text($('.chart_label_box.rate_19 b:last-child').html());
+	}
+// [E] 차트 파이 타입 */
+</script>

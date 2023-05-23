@@ -1,0 +1,610 @@
+
+<!DOCTYPE html>
+<html lang="ko" class="leaf">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>CheckPay</title>
+<meta http-equiv="Cache-Control" content="No-Cache">
+<meta http-equiv="Pragma" content="No-Cache">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<!--<meta name="title" content="">-->
+<meta name="description" content="">
+<!--<meta name="keywords" content="">-->
+<!-- The Open Graph protocol -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="">
+<meta property="og:description" content="">
+<meta property="og:url" content="">
+<meta property="og:image" content=""><!-- [D]리얼경로로 변경하세요 -->
+<!-- //The Open Graph protocol -->
+<link rel="SHORTCUT ICON" href=""><!-- [D]리얼경로로 변경하세요 -->
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui.min.css">
+<link rel="stylesheet" type="text/css" href="/css/reset.css">
+<link rel="stylesheet" type="text/css" href="/css/content.css">
+<link rel="stylesheet" type="text/css" href="/css/theme_checkpay.css">
+<script type="text/javascript" src="/js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="/js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="/js/jquery.ui.touch-punch.min.js"></script>
+<script type="text/javascript" src="/js/slide_slick.js"></script>
+<script type="text/javascript" src="/js/publishing.ui.library.1.0.0.js"></script>
+<script type="text/javascript" src="/js/cmd.js"></script>
+<script type="text/javascript" src="../js/common.js"></script>
+</head>
+<body>
+
+<!-- wrap -->
+<div class="wrap">
+
+	<!-- header -->
+	<div class="header">
+		<div class="header_inn">
+			<div class="left">
+				<a onclick="window.history.back()" class="btnBack"><span class="blind">Back</span></a>
+			</div>
+			<div class="right">
+                <!-- <a onclick="window.history.back()" class="btnClose"><span class="blind">close</span></a> -->
+			</div>
+		</div>
+	</div>
+	<!-- //header -->
+
+	<!-- container -->
+	<div class="container">
+		<div class="content">
+			<div class="tBalance">
+				<h3 class="tBaltit"></h3>
+				<p class="tBalAmount"><em class="amount"></em></p>
+				<p class="tBalDetail"></p>
+				<a class="btnRef"><span class="blind">새로고침</span></a>
+				<!-- <a href="#" class="btnRef ing"><span class="blind">새로고침</span></a> -->
+			</div>
+			<div class="accHistory">
+				<div class="topCtrl">
+					<div class="rangeCtrl">
+						<button class="btnPrev"><span class="blind">이전</span></button>
+						<span class="range"></span>
+						<button class="btnNext"><span class="blind">다음</span></button>
+					</div>
+					<a href="#layerFilter" class="btnFilter  btn_open_bottom_sheet" role="button"><span class="blind">필터</span></a>
+				</div>
+				<div class="historyList">
+					
+				</div>
+				<div class="upLoading circleBar type4">
+					<div class="loader"></div>
+					<p class="tx">업데이트 중입니다</p>
+				</div>
+				<div class="toastMsg">
+					<p class="tx">업데이트가 완료되었습니다</p>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- //container -->
+
+</div>
+<!-- //wrap -->
+<div id="layerFilter" class="layer_bottomsheet" >
+	<div class="layer_inner">
+		<div class="layer_tit">
+			<strong class="tit"><span class="blind">조회조건선택팝업</span></strong>
+			<button type="button" class="js_pop_close btn_close"><span class="blind">닫기</span></button>
+		</div>
+		<div class="layer_cont">
+           <div class="filterItem">
+			   <p class="filterTit">조회기간</p>
+				<ul class="radioTab">
+					<li>
+						<input type="radio" id="radio1" name="radioTab1" class="blind">
+						<label for="radio1">1개월</label>
+					</li>
+					<li>
+						<input type="radio" id="radio2" name="radioTab1" class="blind">
+						<label for="radio2">3개월</label>
+					</li>
+					<li>
+						<input type="radio" id="radio3" name="radioTab1" class="blind">
+						<label for="radio3">6개월</label>
+					</li>
+					<li>
+						<input type="radio" id="radio4" name="radioTab1" class="blind">
+						<label for="radio4">직접입력</label>
+					</li>
+				</ul>
+				<div class="selPeriod">
+					<!-- datepicker data-title 추가 -->
+					<!-- 21.08.31 수정 -->
+					<div class="dateItem">
+						<label for="startDate" class="blind">조회기간 시작일</label>
+						<input type="tel" class="datepicker" id="startDate" autocomplete="off" data-title="시작일" placeholder="YYYY.MM.DD">
+					</div>
+					<span class="unit">-</span>
+					<div class="dateItem">
+						<label for="endDate" class="blind">조회기간 종료일</label>
+						<input type="tel" id="endDate" class="datepicker" autocomplete="off" data-title="종료일" placeholder="YYYY.MM.DD">
+					</div>
+				</div>
+		   </div>
+		   <div class="filterItem">
+				<p class="filterTit">조회내용</p>
+				<ul class="radioTab">
+					<li>
+						<input type="radio" id="radio5" name="radioTab2" class="blind">
+						<label for="radio5">전체</label>
+					</li>
+					<li>
+						<input type="radio" id="radio6" name="radioTab2" class="blind">
+						<label for="radio6">입금</label>
+					</li>
+					<li>
+						<input type="radio" id="radio7" name="radioTab2" class="blind">
+						<label for="radio7">출금</label>
+					</li>
+				</ul>
+			</div>
+			<div class="filterItem">
+				<p class="filterTit">정렬순</p>
+				<ul class="radioTab">
+					<li>
+						<input type="radio" id="radio8" name="radioTab3" class="blind">
+						<label for="radio8">최신순</label>
+					</li>
+					<li>
+						<input type="radio" id="radio9" name="radioTab3" class="blind">
+						<label for="radio9">과거순</label>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<div class="layer_footer">
+			<button type="button" class="js_pop_close btn_confirm"><span>확인</span></button>
+		</div>
+	</div>
+</div>
+
+<script>
+	// 업데이트 페이지 보여주기
+	$(function(){
+		$('.upLoading').hide();	// 업데이트 애니메이션
+		$('.toastMsg').hide();	// 업데이트 완료 modal
+		$(window).scroll(function(){	// 스크롤 마지막일 경우 데이터 가져오기
+			// let $window = $(this);
+			let scrollTop = $(this).scrollTop();
+			let windowHeight = $(this).height();
+			let documentHeight = $(document).height();
+			// scrollbar의 thumb가 바닥 전 30px까지 도달 하면 리스트를 가져온다.
+			if( scrollTop + windowHeight + 30 > documentHeight ){
+				banktranlist_next(now_start, now_end,trans_type,sort);
+			}
+		});
+	});
+	var msg='';		// 같은 날인지 확인하기 위해 전역변수선언
+	var isEnd=false; // 스크롤 내렸을 때 업데이트할 데이터가 있는지 유무 판단
+	var offset=0;	// 업데이트할 데이터 페이지 구분
+	var sort ='desc';	// 최신순, 과거순
+	var trans_type = 'both';	// 전체, 출금, 입금
+	var path=window.location.pathname.replace('/bank/detail/','');	// 임시 id, 계좌번호 받아오기
+	// var memb_cd=path.substring(0,1);
+	// var account_num=path.substring(2);
+	var token = getCookie("jwt");
+	var memb_cd=parseJwt(getCookie("jwt")).sub;
+	var account_num='[[${bankReqVo.account_num}]]';
+	var org_code='[[${bankReqVo.org_code}]]';
+
+	// 날짜 디폴트값 현재 날 1일부터 마지막날까지
+	var date = new Date();
+	var now_start = new Date(date.getFullYear(), date.getMonth(), 1);
+	var now_end = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+	
+	// 새로고침 클릭 시 데이터 새로 받아오기
+	$(document).on("click", ".btnRef", function(e){
+		banktranlist(true ,now_start,now_end,trans_type,sort);
+	});
+
+	// [S] 바텀시트
+	$(document).on("click", ".btn_open_bottom_sheet", function(e){
+		e.preventDefault();
+		var $href = $(this).attr('href');
+		layer_bottomsheet($href);
+		$('html').addClass('scroll_lock');//2021-10-28 html 스크롤 잠금 수정
+		$focusReturn = $(this);
+	});
+	function layer_bottomsheet(el){
+		var $el = $(el);
+		$el.append("<div class=\"dim\"></div>");
+		isDim ? $('.layer_bottomsheet').show() : $el.show().attr({'tabindex':'0','aria-hidden':'false'}).focus();
+		setTimeout(function() {
+			$el.find('.layer_inner').addClass('on');
+		}, 50);
+
+		var isDim = $el.siblings().hasClass('dim');
+
+		$el.find('.js_pop_close').click(function(){
+			$el.find('.layer_inner').removeClass('on');
+			setTimeout(function() {
+				isDim ? $('.layer_bottomsheet').hide() : $el.hide();
+				$('html').removeClass('scroll_lock');//2021-10-28 html 스크롤 잠금 수정
+				$el.attr({'tabindex':'-1','aria-hidden':'true'}).find(".dim").remove();
+			}, 200);
+			$focusReturn.focus();
+			return false;
+		});
+		
+	}
+	// [E] 바텀시트
+	// api 호출 및 해당 거래내역들 보기
+	function banktranlist(isBtnRef,start_day, end_day, trans_type, sort){
+		offset=0;
+		isEnd=false;
+		var request_data={
+			"memb_cd" : memb_cd,
+			"org_code": org_code,
+			"start_date": start_day,
+			"end_date": end_day,
+			"account_num": account_num,
+			"trans_type": trans_type,
+			"sort": sort,
+			"offset": offset
+		};
+		$.ajax({
+			url:'http://192.168.240.208:8081/api/bank/depositTrans',
+			type:'POST',
+			dataType: 'json',
+			contentType : 'application/json',
+			data: JSON.stringify(request_data),
+			beforeSend:function(xhr){	// ajax 요청하기전에 실행
+				$('.upLoading').show();
+				if(isBtnRef==true){		// 새로고침인지 확인
+					$('.btnRef').addClass("ing");
+				}
+	        	xhr.setRequestHeader("Authorization", "Bearer "+token);
+			},
+			success: function(data){
+				let arrUl = '';
+				let isData=false;
+				if(data.length == 0 ){	// 데이터가 없는 경우
+					arrUl += '<p class="listNone">불러올 내역이 없습니다.</p>';
+					$('.historyList').html(arrUl);
+					return;
+				}
+				let today = new Date(data[0].trans_dtime);
+				msg = month_date_dot(today);
+				let nowDay = " "+toKor_dayOfWeek(today.getDay());
+				arrUl += '<span class="date"><span class="num">'+msg+'</span> '+nowDay+'</span>';
+				arrUl += '<ul calss= info>'
+				$(data).each(function(index, item){
+					let result = new Date(item.trans_dtime);
+					let arrLi='';
+					// 날짜 포맷팅
+					let dateString = month_date_dot(result); // 월.일
+					let weekday = " "+toKor_dayOfWeek(result.getDay()); // 요일
+					let time = hours_minute_col(result); // 시간 : 분
+					let amt_html='';
+					let money=item.currency_code=='KRW'?'원':item.currency_code;
+					if(msg != dateString){	// 날짜가 같은지 확인
+						msg = dateString;
+						arrUl += '</ul>'
+						arrUl += '<span class="date"><span class="num">'+dateString+'</span> '+weekday+'</span>';
+						arrUl += '<ul>'
+					}	
+					if(item.trans_type=='03'||item.trans_type=='04'||item.trans_type=='06'|| item.trans_type=='98'){			// 입급인지
+						item.trans_type='입금';
+						arrLi += '<li>'
+						amt_html+='<span class="amount"><em class="num">'+numberWithCommas(item.trans_amt)+'</em>'+money+'</span>';
+					}else if(item.trans_type=='02'||item.trans_type=='05'||item.trans_type=='07'||item.trans_type=='99'){	// 출금인지
+					item.trans_type='출금';
+						arrLi += '<li class="withdrawal">'
+						amt_html+='<span class="amount"><em class="num">-'+numberWithCommas(item.trans_amt)+'</em>'+money+'</span>';
+					}else if(item.trans_type=='01'){
+						item.trans_type='신규';
+						arrLi += '<li>'
+						amt_html+='<span class="amount"><em class="num">'+numberWithCommas(item.trans_amt)+'</em>'+money+'</span>';
+					}else {
+						item.trans_type='기타';
+						arrLi += '<li>'
+						amt_html+='<span class="amount"><em class="num">'+numberWithCommas(item.trans_amt)+'</em>'+money+'</span>';
+					}
+					arrLi	+=		'<div class="left">'
+					arrLi	+=			'<span class="category">'+item.trans_memo+'</span>';
+					arrLi	+=			'<span class="time"><span class="tx">'+item.trans_type+'</span>'+time+'</span>';
+					arrLi	+=		'</div>';
+					arrLi	+=		'<div class="right">';
+					arrLi	+=	amt_html;
+					arrLi	+=			'<span class="balance">잔액 <em class="num">'+numberWithCommas(item.balance_amt)+'</em>'+money+'</span>';
+					arrLi	+=		'</div>';
+					arrLi	+=		'</li>';
+					arrUl 	+=arrLi;
+				});
+				if(isData==true){	// 데이터가 있었다면 ul 닫아주기
+					arrUl +='</ul>';
+				}
+				$('.historyList').html(arrUl);
+			},
+			error: function (jqXHR) {
+				if (jqXHR.status == 401 && jqXHR.responseText=="토큰 기한 만료") {
+					tokenCall2();
+				}
+	    	},
+			complete : function(xhr, status) {	// ajax 응답 완료시 오류,성공 상관없이 호출됨
+		    // success와 error 콜백이 호출된 후에 반드시 호출, try - catch - finally의 finally 구문과 동일
+				$('.upLoading').hide();
+				$('.btnRef').removeClass("ing");
+				toastMsgShow();
+			}
+		});
+	}
+
+// [S] 5개씩 비동기 통신으로 업데이트
+function banktranlist_next(start_day, end_day, trans_type, sort){
+	if(isEnd == true){// 데이터 없으면 함수 종료
+           return;
+       }
+	offset+=10;
+	var request_data={
+		"memb_cd" : memb_cd,
+		"org_code": org_code,
+		"start_date": start_day,
+		"end_date": end_day,
+		"account_num": account_num,
+		"trans_type": trans_type,
+		"sort": sort,
+		"offset": offset
+	};
+	$.ajax({
+		url:'http://192.168.240.208:8081/api/bank/depositTrans',
+		type:'POST',
+		dataType: 'json',
+		contentType : 'application/json',
+		data: JSON.stringify(request_data),
+		beforeSend:function(xhr){	// ajax 요청하기전에 실행
+			$('.upLoading').show();
+			xhr.setRequestHeader("Authorization", "Bearer "+token);
+		},
+		success: function(data){
+			let arrUl ='';
+			if(data.length <5 ){	// 데이터가 없는 경우
+				isEnd=true;
+			}
+			if(data.length == 0 ){	// 데이터가 없는 경우
+					return;
+			}
+			let today = new Date(data[0].trans_dtime);
+			let isData=false;
+			$(data).each(function(index, item){
+				let result = new Date(item.trans_dtime);
+				let arrLi = '';
+				isData=true;
+				// 날짜 포맷팅
+				let dateString = month_date_dot(result); // 월.일
+				let weekday = " "+toKor_dayOfWeek(result.getDay()); // 요일
+				let time = hours_minute_col(result) // 시간 : 분
+				let amt_html='';
+				let money=item.currency_code=='KRW'?'원':item.currency_code;
+				if(msg != dateString && index==0){
+					msg = dateString;
+					arrUl += '<span class="date"><span class="num">'+dateString+'</span> '+weekday+'</span>';
+					arrUl += '<ul>'
+				}
+				else if(msg != dateString ){
+					msg = dateString;
+					arrUl += '</ul>'
+					arrUl += '<span class="date"><span class="num">'+dateString+'</span> '+weekday+'</span>';
+					arrUl += '<ul>'
+				}
+				if(item.trans_type=='03'){
+					item.trans_type='입금';
+					arrLi += '<li>'
+					amt_html+='<span class="amount"><em class="num">'+numberWithCommas(item.trans_amt)+'</em>'+money+'</span>';
+				}else if(item.trans_type=='02'){
+					item.trans_type='출금';
+					arrLi += '<li class="withdrawal">'
+					amt_html+='<span class="amount"><em class="num">-'+numberWithCommas(item.trans_amt)+'</em>'+money+'</span>';
+				}else if(item.trans_type=='01'){
+					item.trans_type='신규';
+					arrLi += '<li>'
+					amt_html+='<span class="amount"><em class="num">-'+numberWithCommas(item.trans_amt)+'</em>'+money+'</span>';
+				}
+				arrLi	+=		'<div class="left">'
+				arrLi	+=			'<span class="category">'+item.trans_memo+'</span>';
+				arrLi	+=			'<span class="time"><span class="tx">'+item.trans_type+'</span>'+time+'</span>';
+				arrLi	+=		'</div>';
+				arrLi	+=		'<div class="right">';
+				arrLi	+=	amt_html;
+				arrLi	+=			'<span class="balance">잔액 <em class="num">'+numberWithCommas(item.balance_amt)+'</em>'+money+'</span>';
+				arrLi	+=		'</div>';
+				arrLi	+= 		'</li>';
+				arrUl	+=	arrLi;
+			});
+			if(isData==true){
+				arrUl+='</ul>';
+			}
+			$('.historyList').append(arrUl);
+		},
+		error: function (jqXHR) {
+            if (jqXHR.status == 401 && jqXHR.responseText=="토큰 기한 만료") {
+            	tokenCall2();
+            }
+	    },
+		complete:function(){	// ajax 응답 완료시 오류,성공 상관없이 호출됨
+			$('.upLoading').hide();
+		}
+	});
+}
+// [E] 5개씩 비동기 통신으로 업데이트
+
+// [S] 전체, 입금, 출금 선택시 필터 적용
+$('input:radio[id="radio5"]').change(function(){
+	trans_type='both';
+});
+$('input:radio[id="radio6"]').change(function(){
+	trans_type='03';
+});
+$('input:radio[id="radio7"]').change(function(){
+	trans_type='02';
+});
+// [E] 전체, 입금, 출금 선택시 필터 적용
+
+// 업데이트중 문구 안보이게하고 업데이트완료 문구 2초동안 띄우기
+function toastMsgShow(){	
+	$('.toastMsg').show();
+	setTimeout(function(){
+		$('.toastMsg').hide();
+	},2000);
+}
+$(document).ready(function(){
+	// [S] 날짜 이벤트 코드
+	let today = new Date();
+	let dateString =  year_month_dot(today);
+
+	$(".range").eq(0).text(dateString);	// 오늘 날짜 텍스트 셋팅
+
+	let nextMonthFirstDate ;
+	let nextMonthLastDate ;
+	let count = 1;
+	$(".btnPrev").click(function(){ // 이전 버튼
+		today = new Date(); 	//현재날짜
+		count = count +1;		//현재 카운트 에서 +1
+		nextMonthFirstDate = new Date(today.getFullYear(), today.getMonth()+1, 1);// 현재 날짜
+		nextMonthFirstDate.setMonth(nextMonthFirstDate.getMonth()-count);	// 누른만큼 차감한 날짜
+		nextMonthLastDate = new Date(nextMonthFirstDate.getFullYear(), nextMonthFirstDate.getMonth()+1, 0);// 누른만큼의 날짜를 다시 뉴데이트로 생성?
+		dateString =  year_month_dot(nextMonthLastDate);
+		$(".range").eq(0).text(dateString);
+		// api 불러서 거래내역 보여주는 함수
+		now_start= year_month_date_dash(new Date(nextMonthFirstDate.getFullYear(), nextMonthFirstDate.getMonth(), 1));
+		now_end=year_month_date_dash(nextMonthLastDate);
+		banktranlist(false, now_start, now_end, trans_type, sort); 
+	});
+	$(".btnNext").click(function(){ // 다음 버튼
+		today = new Date();			//현재날짜
+		count = count -1;			//현재 카운트 에서 -1
+		nextMonthFirstDate = new Date(today.getFullYear(), today.getMonth()+1, 1);// 현재 날짜
+		nextMonthFirstDate.setMonth(nextMonthFirstDate.getMonth()-count);	// 누른만큼 증감한 날짜
+		nextMonthLastDate = new Date(nextMonthFirstDate.getFullYear(), nextMonthFirstDate.getMonth()+1, 0);
+		if(Number(today.getFullYear())==nextMonthLastDate.getFullYear()		
+		&&Number(today.getMonth()+1)<Number(('0' + (nextMonthLastDate.getMonth()+1)).slice(-2))){// 현재날짜보다 앞선다면 초기화 및 이동 금지
+			count=1;
+			return false;
+		}
+		dateString = year_month_dot(nextMonthLastDate);	// 계산한 날짜를 포맷에 맞춰서 입력
+		$(".range").eq(0).text(dateString);
+		// api 불러서 거래내역 보여주는 함수
+		now_start= year_month_date_dash(new Date(nextMonthFirstDate.getFullYear(), nextMonthFirstDate.getMonth(), 1));
+		now_end=year_month_date_dash(nextMonthLastDate);
+		banktranlist(false, now_start, now_end, trans_type, sort);
+	});
+	// [E] 날짜 이벤트 코드
+
+	// [S] 개월 수 (윤년 포함) 계산 함수
+	function minusMonth(date, month) {
+		// month달 후의 1일
+		let addMonthFirstDate = new Date(date.getFullYear(),date.getMonth() - month, 1);
+		// month달 후의 말일
+		let addMonthLastDate = new Date(addMonthFirstDate.getFullYear(),addMonthFirstDate.getMonth() + 1, 0);
+		let result = addMonthFirstDate;
+		if(date.getDate() > addMonthLastDate.getDate()) {
+			result.setDate(addMonthLastDate.getDate());
+		} else {
+			result.setDate(date.getDate());
+		}
+		return result;
+	}
+	// [E] 개월 수 계산 함수
+
+	// [S] 1,3,6 개월 조회기간 값 변환
+	$('input:radio[id="radio1"]').change(function(){
+		dateString =  year_month_date_dot(minusMonth(today,1));
+		$('#startDate').val(dateString);
+	});
+	$('input:radio[id="radio2"]').change(function(){
+		dateString =  year_month_date_dot(minusMonth(today,3));
+		$('#startDate').val(dateString);
+	});
+	$('input:radio[id="radio3"]').change(function(){
+		dateString =  year_month_date_dot(minusMonth(today,6));
+		$('#startDate').val(dateString);
+	});
+	// [E] 개월 수 별로 이벤트 구현 코드
+
+	// [S] 디폴트(직접입력, 전체, 최신순)
+	$('#radio4').trigger("click");
+	$('#radio5').trigger("click");
+	// [N] 디폴트 작업
+
+	// [S] 달력을 클릭시 '직접입력'으로 전환
+	$(".ui-datepicker-trigger").click(function(){
+		$('#radio4').trigger("click");
+	}); 
+	// [N] 달력을 클릭시 '직접입력'으로 전환
+
+	// [S] 최신순, 과거순 클릭시 정렬순서값 설정
+	$('#radio8').click(function(){
+		sort = "desc";
+	});
+	$('#radio9').click(function(){
+		sort = "asc";
+	});
+	$('#radio8').trigger("click");
+	// [E] 최신순, 과거순 클릭시 정렬순서값 설정
+
+	// [S] 필터 이벤트 코드 : (필터 이벤트 영역)
+	$(".btn_confirm").click(function(){
+		$('.btnPrev').hide(); // 날짜 왼쪽 화살표 숨기기
+		$('.btnNext').hide(); // 날짜 오른쪽 화살표 숨기기
+		$('.btnFilter').hide(); // 필터 색없는거 숨기기
+		// 필터 색 있는거 생성
+		$('.topCtrl').append("<a href='#layerFilter' class='btnFilter on btn_open_bottom_sheet' role='button'><span class='blind'>"+"필터"+"</span></a>");
+		// 시작일, 종료일 값 불러오기
+		var startDate = $('#startDate').val().slice(2); 
+		var endDate = $('#endDate').val().slice(2);
+		var dateString =  startDate + '~' + endDate;
+		$(".range").html(dateString);
+		let startDate2 = $('#startDate').val();
+		let endDate2 = $('#endDate').val();
+		now_start = startDate2.replaceAll('.', '-');
+		now_end = endDate2.replaceAll('.', '-');
+		// api 처리하기
+		banktranlist(false, now_start, now_end,trans_type,sort);
+	});
+	// [E] 필터 이벤트 코드
+
+	//위에 상품명, 금액, 은행, 계좌번호 나오게하기
+	function bankinfo(){
+		$.ajax({
+		url:'http://192.168.240.208:8081/api/bank/memberact/'+memb_cd,
+		type:'get',
+		beforeSend:function(xhr){
+	        xhr.setRequestHeader("Authorization", "Bearer "+token);
+		},
+		success:function(result){
+			for(list of result){
+				if(list.account_num==account_num&&list.org_code==org_code){ // 계좌번호와 기관코드가 같다면 (계좌번호가 PK가 아니기때문에)
+					// 기관명에서 주식회사, 주 분리 
+					if(list.org_name.includes('주식회사')){
+						list.org_name=list.org_name.replace('주식회사', '');
+					}else if(list.org_name.includes('(주)')){
+						list.org_name=list.org_name.replace('(주)', '');
+					}
+					// console.log('list.org_name : ',list.org_name);
+					let money=list.currency_code=='KRW'?'원':list.currency_code;
+					$('.tBaltit').text(list.prod_name);
+					$('.tBalAmount').html('<em class="amount">'+numberWithCommas(list.balance_amt)+'</em>'+money);
+					$('.tBalDetail').text(list.org_name+" "+list.account_num);
+					return;
+				}
+			}
+		},error: function (jqXHR) {
+            if (jqXHR.status == 401 && jqXHR.responseText=="토큰 기한 만료") {
+            	tokenCall2();
+            }
+	    },complete : function(xhr, status) {
+		    // success와 error 콜백이 호출된 후에 반드시 호출, try - catch - finally의 finally 구문과 동일
+		}
+	});
+	}
+	bankinfo();
+	banktranlist(false, now_start,now_end,trans_type,sort);
+})
+</script>
+</body>
+</html>

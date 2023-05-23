@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>관리자 로그인</title>
+    
+    <!-- Bootstrap -->
+	<script src="https://code.jquery.com/jquery-3.6.4.min.js"
+	    integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+	<!-- custom -->
+	<script src="../../js/common.js"></script>
+	<script src="../../js/adminCommon.js"></script>
+	<!-- Bootstrap -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css"
+	    integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js"
+	    integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd"
+	    crossorigin="anonymous"></script>
+	    
+	    <!-- css -->
+	<link href="../../css/admin/common.css" rel="stylesheet">
+	<link href="../../css/admin/login/login.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <form class="form-signin">
+            <div class="logo"></div>
+
+            <div class="login-form">
+                <label for="id">Admin ID</label>
+                <input type="text" id="id" class="form-control" placeholder="Id" required autofocus>
+                <label for="password">Password</label>
+                <input type="password" id="password" class="form-control" placeholder="Password" required>
+            </div>
+
+            <div class="login-btn-div">
+                <button class="btn btn-lg btn-primary btn-block" type="button" id="login-btn">로그인</button>
+            </div>
+        </form>
+
+    </div> <!-- /container -->
+
+</body>
+<script type="text/javascript">
+    //http://192.168.240.208:8081
+    var baseUrl = 'http://192.168.240.208:8081';
+
+	var dev = false;
+        if(dev){
+            baseUrl = 'http://localhost:8081';
+        }
+	
+    $('#login-btn').click(function () {
+        $.ajax({
+            url: baseUrl + "/api/login/",
+            type: "post",
+            contentType: 'application/json; charset=UTF-8',
+            data: JSON.stringify({
+                id: $("#id").val(),
+                password: $("#password").val()
+            }),
+            datatype: "json",
+            success: function (data) {
+                const dtos = JSON.stringify(data);
+                var tmp = JSON.parse(dtos);
+                if (tmp.state === 'ok') {
+                    var token = tmp.atk
+                    var rtk = tmp.rtk
+                    var jwtToken = parseJwt(tmp.atk);
+                    var role = jwtToken.role;
+                    
+					setCookie("jwt",token,2);
+					setCookie("rtk",rtk,2);
+                    location.href = "/admin/home";
+                }
+                if(tmp.state === 'no'){
+                    alert('없는 정보.');
+                    location.reload();
+                }
+                else if(tmp.state === 'duplicated'){
+                    alert("이미 로그인한 유저 정보가 존재합니다.");
+                    location.reload();
+                }
+            },
+            error: function (jqXHR) {  //아이디가 틀렸을경우
+                if (jqXHR.status == 500 || jqXHR.status == 400) {
+                    alert('아이디 혹은 패스워드와 일치하는 정보가 없습니다.');
+                    location.reload();
+                }
+            }
+        });
+    });
+
+</script>
+
+</html>

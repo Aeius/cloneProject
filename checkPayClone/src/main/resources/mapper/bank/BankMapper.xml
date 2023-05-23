@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bit.checkpayclone.bank.model.BankMapper">
+
+   <select id="findMemberAccount" resultType="com.bit.checkpayclone.bank.model.BankMemberAccountVo">
+		SELECT
+			coalesce(d.currency_code,coalesce(i.currency_code,coalesce(l.currency_code,'KRW'))) as currency_code,
+			a.org_code,
+			o.org_nm as org_name,
+			a.prod_name,
+			a.account_type,
+			coalesce(d.balance_amt,coalesce(i.balance_amt,coalesce(l.balance_amt,0))) as balance_amt,
+			a.is_consent,
+			data_decrypt(a.account_num) as account_num,
+			coalesce(lb.last_offered_rate, 0) as last_offered_rate,
+			a.is_minus
+		FROM
+			tb_a_banks_accounts a
+			LEFT JOIN tb_a_banks_deposit_detail d ON a.memb_cd = d.memb_cd AND a.org_code = d.org_code AND a.account_num = d.account_num 
+			LEFT JOIN tb_a_banks_invest_detail i ON a.memb_cd = i.memb_cd AND a.org_code = i.org_code AND a.account_num = i.account_num 
+			LEFT JOIN tb_a_banks_loan_detail l ON a.memb_cd = l.memb_cd AND a.org_code = l.org_code AND a.account_num = l.account_num 
+			LEFT JOIN tb_a_banks_loan_basic lb ON a.memb_cd = lb.memb_cd AND a.org_code = lb.org_code AND a.account_num = lb.account_num
+			JOIN tf_myd_org o ON a.org_code = o.org_cd
+		WHERE
+			a.memb_cd = #{id};
+   </select>
+   <select id="findDepositTrans" resultType="com.bit.checkpayclone.bank.model.BankDepositTransVo">
+		SELECT 
+			tabdt.currency_code,
+			tabdt.trans_type,
+			tabdt.trans_class,
+			tabdt.trans_memo,
+			to_timestamp(tabdt.trans_dtime, 'YYYYMMDDHH24MIss') as trans_dtime,
+			tabdt.trans_amt,
+			tabdt.balance_amt
+		FROM tb_a_banks_accounts a
+		INNER JOIN tb_a_banks_deposit_trans tabdt ON a.memb_cd = tabdt.memb_cd AND a.org_code = tabdt.org_code AND a.account_num = tabdt.account_num
+		INNER JOIN tf_myd_org o ON a.org_code = o.org_cd
+		WHERE a.memb_cd = #{memb_cd}
+		AND a.org_code = #{org_code}
+		AND tabdt.account_num = data_encrypt(#{account_num})
+		AND a.account_type = ANY (ARRAY['1001'::bpchar, '1002'::bpchar, '1003'::bpchar, '1999'::bpchar])
+		AND to_date(tabdt.trans_dtime, 'YYYYMMDDHH24MIss') between #{start_date}  and #{end_date}
+		<if test='trans_type != null and trans_type.equals("02")'>
+			AND tabdt.trans_type in ('02', '05', '07', '99')
+		</if>
+		<if test='trans_type != null and trans_type.equals("03")'>
+			AND tabdt.trans_type in ('03', '04', '06', '98')
+		</if>
+		<if test='sort != null and sort.equals("desc")'>
+			order by tabdt.trans_dtime desc
+		</if>
+		<if test='sort != null and sort.equals("asc")'>
+			order by tabdt.trans_dtime asc
+		</if>
+		LIMIT 10 offset #{offset};
+   </select>
+   
+   <select id="findInvestDetail" resultType="com.bit.checkpayclone.bank.model.BankInvestDetailVo">
+		SELECT td.balance_amt, td.eval_amt ,td.inv_principal, ta.paid_in_type , ta.exp_date , a.prod_name, o.org_nm as org_name
+			FROM tb_a_banks_invest_basic ta
+			INNER JOIN tb_a_banks_invest_detail td ON ta.memb_cd =td.memb_cd AND ta.org_code =td.org_code AND ta.account_num =td.account_num
+			INNER JOIN tb_a_banks_accounts a ON ta.memb_cd = a.memb_cd AND ta.org_code = a.org_code AND ta.account_num = a.account_num
+			INNER JOIN tf_myd_org o ON ta.org_code = o.org_cd
+			WHERE ta.memb_cd =#{memb_cd}
+			AND ta.account_num = data_encrypt(#{account_num});
+   </select>
+   
+   <select id="findInvestTrans" resultType="com.bit.checkpayclone.bank.model.BankInvestTransVo">
+		SELECT 	ta.currency_code ,
+				ta.trans_type ,
+				ta.base_amt ,
+				ta.trans_amt,
+				ta.balance_amt,
+				to_timestamp(ta.trans_dtime, 'YYYYMMDDHH24MIss') as trans_dtime,
+				ta.trans_fund_num
+		FROM tb_a_banks_accounts a
+		INNER JOIN tb_a_banks_invest_trans ta on a.memb_cd = ta.memb_cd AND a.org_code = ta.org_code AND a.account_num = ta.account_num
+		JOIN tf_myd_org o ON a.org_code = o.org_cd 
+		WHERE ta.memb_cd = #{memb_cd}
+		AND a.org_code = #{org_code}
+		AND ta.account_num = data_encrypt(#{account_num})
+		AND to_date(ta.trans_dtime, 'YYYYMMDDHH24MIss') between #{start_date}  and #{end_date}
+		<if test='sort != null and sort.equals("desc")'>
+			order by ta.trans_dtime desc
+		</if>
+		<if test='sort != null and sort.equals("asc")'>
+			order by ta.trans_dtime asc
+		</if>
+		LIMIT 10 offset #{offset};
+   </select>
+   
+   <select id="selectUserBankCapitalDetail" resultType="com.bit.checkpayclone.capital.model.CapitalVo">
+		select  
+			d.prod_name,
+			b.org_name ,
+			data_decrypt(a.account_num) as account_num,
+			a.balance_amt ,
+			a.currency_code ,
+			c.last_offered_rate ,
+			a.next_repay_date ,
+			a.loan_principal ,
+			c.repay_method ,
+			c.issue_date ,
+			c.exp_date ,
+			c.repay_date ,
+			d.is_minus
+
+		from tb_a_banks_loan_detail a
+		inner join tb_a_mydata_orgs b on a.org_code = b.org_code
+		inner join tb_a_banks_loan_basic c on a.account_num = c.account_num and a.memb_cd = c.memb_cd and a.org_code = c.org_code
+		inner join tb_a_banks_accounts d on a.account_num = d.account_num and a.memb_cd = d.memb_cd and a.org_code = d.org_code
+
+		where a.memb_cd = #{id}
+		and a.org_code = #{org_code}
+		and data_decrypt(a.account_num) = #{account_num}
+	</select>
+	
+	<select id="findLoanTrans" resultType="com.bit.checkpayclone.bank.model.BankLoanTransVo">
+		select 
+			a.currency_code ,
+			case 
+			when a.trans_type = '01' then '실행'
+			when a.trans_type = '02' then '상환'
+			when a.trans_type = '03' then '정정'
+			when a.trans_type = '99' then '기타'
+			end as trans_type,
+			to_timestamp(a.trans_dtime,'YYYYMMDDHH24MIss') as trans_dtime,
+			a.trans_amt,
+			a.balance_amt,
+			a.principal_amt,
+			a.int_amt,
+			a.ret_int_amt,
+			case 
+			when c.int_type = '01' then '정상이자'
+			when c.int_type = '02' then '지연이자'
+			when c.int_type = '03' then '잔액연체이자'
+			when c.int_type = '99' then '기타'
+			end as int_type,
+			c.int_rate,
+			c.int_start_date,
+			c.int_end_date
+			         
+		from tb_a_banks_loan_trans a
+		inner join tb_a_mydata_orgs b on a.org_code = b.org_code
+		inner join tb_a_banks_loan_inter_trans c on a.account_num = c.account_num and a.org_code =c.org_code and a.memb_cd = c.memb_cd and a.trans_dtime =c.trans_dtime 
+		inner join tb_a_banks_accounts d on a.account_num = d.account_num and a.memb_cd = d.memb_cd and a.org_code = d.org_code
+			         
+		where a.memb_cd = #{memb_cd}
+		and a.org_code = #{org_code}
+		and a.account_num = data_encrypt(#{account_num})
+		AND to_date(a.trans_dtime, 'YYYYMMDDHH24MIss') between #{start_date}  and #{end_date}
+		<if test='sort != null and sort.equals("desc")'>
+		order by a.trans_dtime desc
+		</if>
+		<if test='sort != null and sort.equals("asc")'>
+		order by a.trans_dtime asc
+		</if>
+		LIMIT 10 offset #{offset};
+
+	
+	</select>
+</mapper>

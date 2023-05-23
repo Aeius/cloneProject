@@ -1,0 +1,254 @@
+﻿<!DOCTYPE html>
+<html lang="ko" class="leaf">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>CheckPay</title>
+<meta http-equiv="Cache-Control" content="No-Cache">
+<meta http-equiv="Pragma" content="No-Cache">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<!--<meta name="title" content="">-->
+<meta name="description" content="">
+<!--<meta name="keywords" content="">-->
+<!-- The Open Graph protocol -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="">
+<meta property="og:description" content="">
+<meta property="og:url" content="">
+<meta property="og:image" content=""><!-- [D]리얼경로로 변경하세요 -->
+<!-- //The Open Graph protocol -->
+<link rel="SHORTCUT ICON" href=""><!-- [D]리얼경로로 변경하세요 -->
+<link rel="stylesheet" type="text/css" href="../../css/jquery-ui.min.css">
+<link rel="stylesheet" type="text/css" href="../../css/reset.css">
+<link rel="stylesheet" type="text/css" href="../../css/content.css">
+<link rel="stylesheet" type="text/css" href="../../css/theme_checkpay.css">
+<script type="text/javascript" src="../../js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="../../js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="../../js/jquery.ui.touch-punch.min.js"></script>
+<script type="text/javascript" src="../../js/slide_slick.js"></script>
+<script type="text/javascript" src="../../js/publishing.ui.library.1.0.0.js"></script>
+<script type="text/javascript" src="../../js/cmd.js"></script>
+<script type="text/javascript" src="../../js/common.js"></script>
+<!-- thymeleaf -->
+<html xmlns:th="http://www.thymeleaf.org">
+</head>
+
+<body>
+
+<!-- wrap -->
+<div class="wrap">
+
+	<!-- header -->
+	<div class="header">
+		<div class="header_inn">
+			<div class="left">
+				<a href="javascript:history.back();" class="btnBack"><span class="blind">Back</span></a>
+			</div>
+			<div class="right">
+                <!-- <a href="#" class="btnClose"><span class="blind">close</span></a> -->
+			</div>
+		</div>
+	</div>
+	<!-- //header -->
+
+	<!-- container -->
+	<div class="container">
+		<div class="content">
+			<div class="accSetting">
+				<div class="tAccount">
+					<h3 class="tAccTit"></h3>
+				</div>
+				<div class="topTotal">
+					<!-- [S] 2021-11-30 topTotal 영역 수정 -->
+					<a href="#" class="link" title="더보기">
+						<span class="itemTit">청구 금액</span>
+						<span class="itemData">
+							<span class="detail"><span class="num"></span>원</span>
+						</span>
+					</a>
+					<!-- [E] 2021-11-30 topTotal 영역 수정 -->
+				</div>
+				<h4 class="listTit"><em class="pointColor">요약</em></h4>
+				<ul class="accDetailList">
+					<li id="val">
+						<!-- 2021-12-01 상세리스트 좌우 링크영역 확장 -->				
+						<a href="#" class="edit" id="hal_edit" title="더보기">
+							<span class="itemTit">할부</span>
+							<span class="itemData" id="hal"><span class="num"></span>원</span>
+						</a>
+					</li>
+					<!-- <li>
+						<span class="itemTit">사용기간</span>
+						<span class="itemData"><span class="num">21.08.17 ~ 21.09.16</span></span>
+					</li> -->
+					<li>
+						<span class="itemTit">실제 결제일</span>
+						<span class="itemData" id="paid_out_date"><span class="num"></span></span>
+					</li>
+					<li>
+						<span class="itemTit">결제일</span>
+						<span class="itemData" id="charge_day">매달 <span class="num"> </span>일</span>
+					</li>
+					<li>
+						<span class="itemTit">사용카드</span>
+						<span class="itemData" id="card_name"><br>
+							</span>
+					</li>
+				</ul>
+				<h4 class="listTit"><em class="pointColor">카드정보</em></h4>
+				<ul class="accDetailList">
+					<li id="val2">
+						<!-- 2021-12-01 상세리스트 좌우 링크영역 확장 -->
+						<a href="#" class="edit" title="더보기">
+							<span class="itemTit">보유포인트</span>
+							<span class="itemData" id="point"><span class="num"></span></span>
+						</a>
+					</li>
+					<li id="val3">
+						<!-- 2021-12-01 상세리스트 좌우 링크영역 확장 -->
+						<a href="#" class="edit" title="더보기">
+							<span class="itemTit">리볼빙</span>
+							<span class="itemData" id="revolvig"><span class="num"></span>원</span>
+						</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<!-- //container -->
+
+</div>
+<!-- //wrap -->
+
+</body>
+</html>
+
+<script>
+	var year_month='[[${cardbills.paid_out_date}]]';
+	var org_code='[[${cardbills.org_code}]]';
+	var charge_amt='[[${cardbills.charge_amt}]]';	
+	let member_id = parseJwt(getCookie("jwt")).sub;
+
+	
+	function billsDetail(){
+		return $.ajax({
+			url: 'http://192.168.240.208:8081/api/bills/'+ member_id + '/' + org_code +'/' + year_month,
+			// url: 'http://localhost:8081/api/bills/'+ member_id + '/' + org_code +'/' +year_month,
+			type: 'GET',
+			dataType: 'json',
+			headers: {
+				"Authorization" : "Bearer " + getCookie("jwt")
+			},
+			error: function(jqXHR) {
+				if(jqXHR.status == 401) {
+					userErrorHandler(jqXHR);
+				}
+			}
+		})
+		.done(function(data){
+			let arr="";			
+			arr += "<a href=\"javascript:detailmove('cardBillsHalInfo','org_code','"+org_code+"','year_month','"+year_month+ "','charge_amt','"+charge_amt+ "');\" class=\"edit\" id=\"hal_edit\" title=\"더보기\">";
+			arr += '<span class="itemTit">할부</span>';
+			arr += '<span class="itemData" id="hal"><span class="num"></span>원</span>'
+			arr += '</a>';
+			$('#val').html(arr);
+
+			$('.tAccTit').text(data[0].org_name);
+			let card_name_list = new Array();
+			let card_name_list_set;
+			
+			for(val of data){
+				card_name_list.push(val.card_name);
+				card_name_list_set = new Set(card_name_list);
+
+				card_name_list = [...card_name_list_set];
+			}
+			$(data).each(function(index, item){			
+				$('#paid_out_date').find('.num').text(year_month_date_dot(new Date(item.paid_out_date)));
+				$('#charge_day').find('.num').text(item.charge_day);
+				$('#card_name').text(card_name_list);
+				let card_name = $('#card_name').text().replaceAll(',', '<br>');
+				$('#card_name').html(card_name);
+
+				$('#hal').find('.num').text(numberWithCommas(item.install_sum));
+			});			
+			if($('#hal').find('.num').text()=='0'){
+				$('#hal_edit').bind("click",false);				
+			}
+		});
+	}
+
+	function cardPoint(){
+		return $.ajax({
+			url: 'http://192.168.240.208:8081/api/card/membercardpoint/'+ member_id + '/' + org_code,
+			// url: 'http://localhost:8081/api/card/membercardpoint/'+ member_id + '/' + org_code,
+			type: 'GET',
+			dataType: 'json',
+			headers:{
+				"Authorization" : "Bearer " + getCookie("jwt")
+			},
+			error: function(jqXHR) {
+				if(jqXHR.status == 401) {
+					userErrorHandler(jqXHR);
+				}
+			}
+		})
+		.done(function(data){
+			let sum=0;
+			let arr="";			
+			arr += "<a href=\"javascript:detailmove('cardPoint','org_code','"+org_code+"','year_month','"+year_month+ "','charge_amt','"+charge_amt+ "');\" class=\"edit\" title=\"더보기\">";
+			arr += '<span class="itemTit">보유포인트</span>';
+			arr += '<span class="itemData" id="point"><span class="num">78441P</span></span>'
+			arr += '</a>';
+			$('#val2').html(arr);
+			$(data).each(function(index, item){
+				sum += item.remain_point_amt;
+				$('#point').find('.num').text(numberWithCommas(sum)+'P');
+			});
+		});
+	}
+
+	function cardRevolving(){
+		return $.ajax({
+			url:'http://192.168.240.208:8081/api/card/revolvig/'+ member_id + '/' + org_code,
+			// url:'http://localhost:8081/api/card/revolvig/'+ member_id + '/' + org_code,
+			type: 'GET',
+			dataType: 'json',
+			headers:{
+				"Authorization" : "Bearer " + getCookie("jwt")
+			},
+			error: function(jqXHR) {
+				if(jqXHR.status == 401) {
+					userErrorHandler(jqXHR);
+				}
+			}
+		})
+		.done(function(data){
+			let arr="";			
+			arr += "<a href=\"javascript:detailmove('cardRevolving','org_code','"+org_code+"','year_month','"+year_month+ "','charge_amt','"+charge_amt+ "');\" class=\"edit\" title=\"더보기\">";
+			arr += '<span class="itemTit">리볼빙</span>';
+			arr += '<span class="itemData" id="revolvig"><span class="num">20,000</span>원</span>'
+			arr += '</a>';
+			$('#val3').html(arr);
+			$(data).each(function(index, item){
+				$('#revolvig').find('.num').text(numberWithCommas(item.agreed_pay_amt));
+			});
+		});
+	}
+
+	$(document).ready(function(){
+		let arr = "";
+		arr+= "<a href=\"javascript:detailmove('payBills','org_code','"+org_code+"','year_month','"+year_month+ "','charge_amt','"+charge_amt+ "');\" class=\"link\" title=\"더보기\">";
+		arr+='<span class="itemTit">청구 금액</span>';
+		arr+='<span class="itemData">';
+		arr+='<span class="detail"> <span class="num"></span>원</span>';
+		arr+='</span>';
+		arr+='</a>';
+		$('.topTotal').html(arr);
+		$('.detail').find('.num').text(charge_amt);
+		billsDetail();
+		cardPoint();
+		cardRevolving();
+	});
+
+</script>

@@ -1,0 +1,344 @@
+﻿<!DOCTYPE html>
+<html lang="ko" class="leaf">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>CheckPay</title>
+<meta http-equiv="Cache-Control" content="No-Cache">
+<meta http-equiv="Pragma" content="No-Cache">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<!--<meta name="title" content="">-->
+<meta name="description" content="">
+<!--<meta name="keywords" content="">-->
+<!-- The Open Graph protocol -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="">
+<meta property="og:description" content="">
+<meta property="og:url" content="">
+<meta property="og:image" content=""><!-- [D]리얼경로로 변경하세요 -->
+<!-- //The Open Graph protocol -->
+<link rel="SHORTCUT ICON" href=""><!-- [D]리얼경로로 변경하세요 -->
+<link rel="stylesheet" type="text/css" href="../css/jquery-ui.min.css">
+<link rel="stylesheet" type="text/css" href="../css/reset.css">
+<link rel="stylesheet" type="text/css" href="../css/content.css">
+<link rel="stylesheet" type="text/css" href="../css/theme_checkpay.css">
+<script type="text/javascript" src="../js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="../js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="../js/jquery.ui.touch-punch.min.js"></script>
+<script type="text/javascript" src="../js/slide_slick.js"></script>
+<script type="text/javascript" src="../js/publishing.ui.library.1.0.0.js"></script>
+<script type="text/javascript" src="../js/cmd.js"></script>
+<script src="../js/common.js"></script>
+
+<!-- thymeleaf -->
+<html xmlns:th="http://www.thymeleaf.org">
+</head>
+
+<body>
+
+<!-- wrap -->
+<div class="wrap">
+	<!-- header -->
+	<div class="header">
+		<div class="header_inn">
+			<div class="left">
+				<a href="javascript:history.back();" class="btnBack"><span class="blind">Back</span></a>
+			</div>
+			<div class="right">
+                <!-- <a href="#none" class="btnClose"><span class="blind">close</span></a> -->
+			</div>
+		</div>
+	</div>
+	<!-- //header -->
+
+	<!-- container -->
+	<div class="container">
+		<div class="content">
+
+			<div class="tBalance">
+				<h3 class="tBaltit">결제 예정 금액</h3>
+				<p class="tBalAmount"><em class="amount"></em>원</p>
+				<!-- <a href="#" class="btnRef"><span class="blind">새로고침</span></a> -->
+			</div>
+			<div class="asGroup">
+				<div class="listTit">
+					<h3></h3>
+				</div>
+				<div class="asList">
+					<div class="accItem">
+						<a href="paybills/cardBillsInfo">
+							<div class="im">
+								<img src="../img/bank/D1AAAH0000.png" alt="BNK 탑모아 신용카드">
+							</div>
+							<div class="tx">
+								<p class="prdName"></p>
+								<p class="amount"><em></em>원</p>
+							</div>
+						</a>
+					</div>
+					<div class="accItem">
+						<a href="paybills/cardBillsInfo">
+							<div class="im">
+								<img src="../../img/bank/D1AABJ0000.png" alt="KB 프렌즈 신용카드">
+							</div>
+							<div class="tx">
+								<!-- 계좌 오류 발생 시 -->
+								<p class="prdName"><span class="error"><span class="blind">오류</span></span></p>
+								<p class="amount"><em></em>원</p>
+							</div>
+						</a>
+					</div>
+				</div>
+				<div class="listTit">
+					<h3></h3>
+				</div>
+				<div class="asList">
+					<!-- 청구예정일 경우 blockLink 클래스 추가해주세요.-->
+					<div class="accItem blockLink">
+						<a href="paybills/cardBillsInfo">
+							<div class="im">
+								<img src="../../img/bank/D1AAAH0000.png" alt="BNK 언택트 신용카드">
+							</div>
+							<div class="tx">
+								<p class="prdName"><span class="flag">청구예정</span></p>
+								<p class="amount"><em></em>원</p>
+							</div>
+						</a>
+					</div>
+
+				</div>
+				<div class="listTit">
+					<h3></h3>
+				</div>
+				<div class="asList">
+					<div class="accItem">
+						<a href="paybills/cardBillsInfo">
+							<div class="im">
+								<img src="../../img/bank/D1AABJ0000.png" alt="카드의정석 하이브리드">
+							</div>
+							<div class="tx">
+								<p class="prdName"></p>
+								<p class="amount"><em></em>원</p>
+							</div>
+						</a>
+					</div>
+				</div>
+			</div>
+			<div class="btnMore">
+				<a class="btn"></a>
+			</div>
+			<div class="toastMsg" id="update_complete">
+				<p class="tx">업데이트가 완료되었습니다</p>
+			</div>
+		</div>
+	</div>
+	<!-- //container -->
+
+</div>
+<!-- //wrap -->
+
+</body>
+</html>
+
+<script>
+	//[S] 결제 예정 금액 로직- 박진호
+	let today = new Date();
+	let year = today.getFullYear();
+	let month = ('0' + (today.getMonth() + 1)).slice(-2);
+	let month3 = ('0' + (today.getMonth() + 1)).slice(-2);
+	let year_month = year + month;
+	let member_id = parseJwt(getCookie("jwt")).sub;
+
+	// [S] 날짜 버튼 함수 - 박진호
+	let count = 1;
+	function dateButton(count) {
+		let nextMonthFirstDate = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+		nextMonthFirstDate.setMonth(nextMonthFirstDate.getMonth() - count);
+		let nextMonthLastDate = new Date(nextMonthFirstDate.getFullYear(), nextMonthFirstDate.getMonth() + 1, 0);
+		year = nextMonthLastDate.getFullYear();
+		month = ('0' + (nextMonthLastDate.getMonth()+1)).slice(-2);
+		month3 = nextMonthLastDate.getMonth()+1;
+		dataString =  year + month;	
+		
+	}
+	// [E] 날짜 버튼 함수
+	
+	let month2 = ('' + (today.getMonth())).slice(-2);
+	function dateButton2(count) {
+		let nextMonthFirstDate = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+		nextMonthFirstDate.setMonth(nextMonthFirstDate.getMonth() - count);
+		let nextMonthLastDate = new Date(nextMonthFirstDate.getFullYear(), nextMonthFirstDate.getMonth() , 0);
+		year = nextMonthLastDate.getFullYear();
+		month2 = nextMonthLastDate.getMonth() +1;
+		dataString =  year + month;	
+		$('.btn').text(month2+'월 청구 내역 더보기');
+	}
+	var value;
+	// 결제 예정 금액 api 호출 함수
+	function payment(){
+		return $.ajax({
+			url: 'http://192.168.240.208:8081/api/calender/card/bills/'+ member_id + '/' + year_month,
+			// url: 'http://localhost:8081/api/calender/card/bills/'+ member_id + '/' + year_month,
+			type: 'GET',
+			dataType: 'json',
+			headers: {
+				"Authorization" : "Bearer " + getCookie("jwt")
+			},
+			error: function(jqXHR) {
+				if(jqXHR.status == 401) {
+					userErrorHandler(jqXHR);
+				}
+			}
+		})
+		.done(function(data){
+			let arr='';
+			if (data.length == 0) {
+				$('.tBalAmount').find('.amount').text('0');
+				arr += '<div class="listTit">';
+				arr += '<h3>'+(new Date().getMonth()+1)+'월 </h3>';
+				arr += '</div>';
+				arr += '<div class="asList">'
+				arr += '<p class="listNone">불러올 내역이 없습니다.</p>'
+				arr += '</div>'
+				$('.asGroup').html(arr);
+				return;
+			} 
+			let first_result = new Date(data[0].paid_out_date);
+			
+			let nowMonth = ('' + (first_result.getMonth() + 1)).slice(-2);
+			let nowDate = ('0' + (first_result.getDate())).slice(-2);
+			msg = nowMonth + '월 ' + nowDate+'일';
+
+			arr += '<div class="listTit">';
+			arr += '<h3>'+msg+'</h3>';
+			arr += '</div>';
+			arr += '<div class="asList">';
+
+
+			$(data).each(function(index, item){
+				let result = new Date(item.paid_out_date);
+				// 날짜 포맷팅
+				let month = result.getMonth() + 1;
+				let date = ('0' + (result.getDate())).slice(-2);
+				let dateString = month + '월 ' + date +'일'; // 월.일
+
+				if (msg != dateString) {
+					msg = dateString;
+					arr += '</div>';
+					arr += '<div class="listTit">';
+					arr += '<h3>'+msg+'</h3>';
+					arr += '</div>';
+					arr += '<div class="asList">';
+				}
+				$('.tBalAmount').find('.amount').text(numberWithCommas(item.charge_amt));
+				arr += '<div class="accItem">';
+				arr += "<a href=\"javascript:detailmove('cardBills/cardBillsInfo','org_code','"+item.org_code+"','year_month','"+year_month+ "','charge_amt','"+numberWithCommas(item.charge_amt)+ "');\">";
+				arr += '<div class="im">';
+				arr += '<img src="../img/bank/'+item.org_code+'.png">';
+				arr += '</div>';
+				arr += '<div class="tx">';
+				arr += '<p class="prdName">'+item.org_name+'</p>';
+				arr += '<p class="amount"><em>'+numberWithCommas(item.charge_amt)+'</em>원</p>';
+				arr += '</div>';
+				arr += '</a>';
+				arr += '</div>';
+			});
+			$('.asGroup').html(arr);
+		});
+	}
+
+
+	function payment_more(year_month){
+		return $.ajax({
+			url: 'http://192.168.240.208:8081/api/calender/card/bills/'+ member_id + '/' + year_month,
+			// url: 'http://localhost:8081/api/calender/card/bills/'+ member_id + '/' + year_month,
+			type: 'GET',
+			dataType: 'json',
+			headers: {
+				"Authorization" : "Bearer " + getCookie("jwt")
+			},
+			error: function(jqXHR) {
+				if(jqXHR.status == 401) {
+					userErrorHandler(jqXHR);
+				}
+			}
+		})
+		.done(function(data){
+			let arr='';
+			if (data.length == 0) {
+				$('#update_complete').find('.tx').html(month3 +'월 내역이 없습니다.');
+				$('#update_complete').show();
+				setTimeout(function(){
+					$('#update_complete').hide();
+				},1500);
+				return;
+			} 
+			let today = new Date(data[0].paid_out_date);
+			let nowMonth = today.getMonth() + 1;
+			let nowDate = ('0' + (today.getDate())).slice(-2);
+			msg = nowMonth + '월 ' + nowDate+'일';
+
+			arr += '<div class="listTit">';
+			arr += '<h3>'+msg+'</h3>';
+			arr += '</div>';
+			arr += '<div class="asList">';
+
+			$(data).each(function(index, item){
+				let result = new Date(item.paid_out_date);
+				// 날짜 포맷팅
+				let month = result.getMonth() + 1;
+				let date = ('0' + (result.getDate())).slice(-2);
+				let dateString = month + '월 ' + date +'일'; // 월.일
+
+				if (msg != dateString) {
+					msg = dateString;
+					arr += '</div>';
+					arr += '<div class="listTit">';
+					arr += '<h3>'+msg+'</h3>';
+					arr += '</div>';
+					arr += '<div class="asList">';
+				} 
+
+				arr += '<div class="accItem">'
+				arr += "<a href=\"javascript:detailmove('cardBills/cardBillsInfo','org_code','"+item.org_code+"','year_month','"+year_month+ "','charge_amt','"+numberWithCommas(item.charge_amt)+ "');\">";
+				arr += '<div class="im">';
+				arr += '<img src="../img/bank/'+item.org_code+'.png">';
+				arr += '</div>';
+				arr += '<div class="tx">';
+				arr += '<p class="prdName">'+item.org_name+'</p>';
+				arr += '<p class="amount"><em>'+numberWithCommas(item.charge_amt)+'</em>원</p>';
+				arr += '</div>';
+				arr += '</a>';
+				arr += '</div>';
+			});
+			$('.asGroup').append(arr);
+		});
+	}
+
+	$(document).ready(function (){
+		$('#update_complete').hide();
+		payment();
+		$('.btn').text(month2+'월 청구 내역 더보기');
+		
+		$(".btn").click(function(e){
+			count = count + 1;
+			dateButton2(count);
+			dateButton(count);
+			payment_more(dataString);
+			$('#update_complete').find('.tx').html(month3 +'월 업데이트 완료');
+			$('#update_complete').show();
+			setTimeout(function(){
+				$('#update_complete').hide();
+			},1500);
+	
+			let today = new Date();
+			let nowmonth = today.getMonth() + 1;
+			if(count == 6){
+				$('.btn').text(nowmonth+'월 ~ '+month+'월 내역을 모두 확인했습니다.');
+				$('.btn').off("click");
+			}
+		});
+	});
+	//[E] 결제 예정 금액 로직- 박진호
+
+</script>
